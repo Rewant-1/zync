@@ -1,0 +1,17 @@
+# This is a config for E2B sandbox template.
+# You can use template ID (axgxwu3zob7nt9s221z1) or template name (zync-test3) to create a sandbox:
+
+# Python SDK
+# from e2b import Sandbox, AsyncSandbox
+# sandbox = Sandbox("zync-test3") # Sync sandbox
+# sandbox = await AsyncSandbox.create("zync-test3") # Async sandbox
+
+# JS SDK
+# import { Sandbox } from 'e2b'
+# const sandbox = await Sandbox.create('zync-test3')
+
+team_id = "759d64d5-dff1-4079-897b-312c786956b9"
+start_cmd = "/compile_page.sh"
+dockerfile = "e2b.Dockerfile"
+template_name = "zync-test3"
+template_id = "axgxwu3zob7nt9s221z1"

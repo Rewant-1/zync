@@ -52,7 +52,7 @@ export const helloWorld = inngest.createFunction(
           }
         }),
         createTool({
-          name:"creatOrUpdateFiles",
+          name:"createOrUpdateFiles",
           description:"Create or update files in the sandbox",
           parameters:z.object({
             files:z.array(

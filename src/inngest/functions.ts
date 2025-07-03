@@ -113,9 +113,13 @@ export const codeAgentFunction = inngest.createFunction(
           const lastAssistantMessageText=
           lastAssistantTextMessageContent(result);
           if (lastAssistantMessageText && network){
-            if(lastAssistantMessageText?.includes("<task_summary>")){
-              network.state.data.summary=lastAssistantMessageText;
-
+            // Check if the message contains task_summary tags
+            if(lastAssistantMessageText?.includes("<task_summary>") && lastAssistantMessageText?.includes("</task_summary>")){
+              // Extract the content between the tags
+              const summaryMatch = lastAssistantMessageText.match(/<task_summary>([\s\S]*?)<\/task_summary>/);
+              if (summaryMatch) {
+                network.state.data.summary = summaryMatch[1].trim();
+              }
             }
           }
           return result;
@@ -140,7 +144,7 @@ export const codeAgentFunction = inngest.createFunction(
 
 const result=await network.run(event.data.value);
 
-const isError=result.state.data.summary ||
+const isError = !result.state.data.summary ||
 Object.keys(result.state.data.files || {}).length === 0;
 const sandboxUrl=await step.run("get-sandbox-url", async ()=> {
   const sandbox = await getSandbox(sandboxId);
@@ -152,16 +156,17 @@ await step.run("save-result", async () => {
 if (isError) {
   return await prisma.message.create({
     data:{
-      content:"Something went wrong.Please try again.",
+      projectId:event.data.projectId,
+      content:"Something went wrong. Please try again.",
       role:"ASSISTANT",
       type:"ERROR",
     }
   })
-
 }
 
   return await prisma.message.create({
     data:{
+      projectId:event.data.projectId,
       content:result.state.data.summary,
       role:"ASSISTANT",
       type:"RESULT",

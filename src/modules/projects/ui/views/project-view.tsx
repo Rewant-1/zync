@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { Fragment } from "@/generated/prisma";
+import { FragmentWeb } from "../components/fragment-web";
 import {
     ResizableHandle,
     ResizablePanel,
@@ -42,7 +43,7 @@ const [activeFragment,setActiveFragment]=useState<Fragment | null>(null);
                     minSize={50}
                     
                     >
-            TODO: Preview</ResizablePanel>
+            {!!activeFragment && <FragmentWeb data ={activeFragment}/>}</ResizablePanel>
             </ResizablePanelGroup>
 
             

@@ -61,10 +61,9 @@ className="h-full gap-y-0"
             <TabsTrigger value="preview" className="rounded-md">
                 <EyeIcon/><span>Demo</span>
                 </TabsTrigger>
-                <TabsTrigger value="preview" className="rounded-md">
-                <CodeIcon/><span>Code</span>
-                </TabsTrigger>
-            
+                <TabsTrigger value="code" className="rounded-md">
+                  <CodeIcon/><span>Code</span>
+                </TabsTrigger>            
             </TabsList>
             <div className="ml-auto flex items-center-center gap-x-2">
 <Button asChild size="sm" variant="default">

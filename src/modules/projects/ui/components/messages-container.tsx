@@ -20,18 +20,32 @@ export const MessagesContainer=({projectId
    
     const trpc = useTRPC();
      const bottomRef = useRef<HTMLDivElement>(null);
-    const {data:messages}=useSuspenseQuery(trpc.messages.getMany.queryOptions({
-            projectId:projectId,
-        },{
-            refetchInterval:5000,
-        }));
+const lastAssistantMessageIdRef = useRef<string | null>(null);
 
-//useEffect(()=>{
-    //const lastAssistantMessageWithFragment=messages.findLast(
-    //    (message) => message.role === "ASSISTANT" && !!message.fragment);
-  //      if (lastAssistantMessageWithFragment ) {
-//setActiveFragment(lastAssistantMessageWithFragment.fragment);
- //       }},[messages, setActiveFragment]);
+    const { data: messages = [] } = useSuspenseQuery(
+        trpc.messages.getMany.queryOptions(
+            { projectId },
+            { refetchInterval: 3000, refetchIntervalInBackground: false }
+        )
+    );
+
+    // Automatically scroll to bottom when new messages arrive
+    useEffect(() => {
+        if (bottomRef.current) {
+            bottomRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
+
+    // Automatically set active fragment to the latest assistant message's fragment
+    useEffect(() => {
+        const lastAssistantMessage = [...messages].reverse().find((message) => message.role === "ASSISTANT");
+        if (lastAssistantMessage?.fragment && lastAssistantMessage.id !== lastAssistantMessageIdRef.current) {
+            lastAssistantMessageIdRef.current = lastAssistantMessage.id;
+            setActiveFragment(lastAssistantMessage.fragment);
+        } else if (!lastAssistantMessage) {
+            setActiveFragment(null);
+        }
+    }, [messages, setActiveFragment]);
         useEffect(() => {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: "smooth" });    //5.33.24 ye khud se

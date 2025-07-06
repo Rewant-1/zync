@@ -35,20 +35,25 @@ export const ProjectForm = () => {
         },
     });
 
-const createProject= useMutation(trpc.projects.create.mutationOptions({
-    onSuccess:(data)=>{
-        queryClient.invalidateQueries(trpc.projects.getMany.queryOptions(),);
+const createProject = useMutation(trpc.projects.create.mutationOptions({
+    onSuccess: (data) => {
+        queryClient.invalidateQueries(trpc.projects.getMany.queryOptions());
         router.push(`/projects/${data.id}`);
-  
-    },    onError :(error) => {
-        toast.error(error.message);},
-}))
-
-    const onSubmit=async(values:z.infer<typeof formSchema> ) => {
-        await createProject.mutateAsync({
-            value:values.value,
-        });}
-
+    },
+    onError: (error) => {
+        toast.error(error.message || "Failed to create project");
+    },
+}));
+    const onSubmit = async (values: z.infer<typeof formSchema>) => {
+        try {
+            await createProject.mutateAsync({
+                value: values.value,
+            });
+        } catch (error) {
+            // Error is already handled by mutation's onError
+            console.error('Failed to create project:', error);
+        }
+    };
 const onSelect=(value: string) => {
     form.setValue("value", value,{
         shouldDirty: true,
@@ -58,8 +63,8 @@ const onSelect=(value: string) => {
 
 
          const [isFocused, setIsFocused] = useState(false);
-        const isPending=createProject.isPending;
-        const isButtonDisabled=isPending || !form.formState.isValid;
+        const isPending = createProject.isPending;
+        const isButtonDisabled = isPending || !form.formState.isValid;
 
 
     return(
@@ -93,11 +98,10 @@ const onSelect=(value: string) => {
     )}
     />
     <div className="flex gap-x-2 items-end justify-between pt-2">
-        <div className="text=[10px] text-muted-foreground font-mono"></div>
-    <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none"><span>&#8984</span>Enter</kbd>
-    &nbsp; to submit
-    
-    </div>
+        <div className="text-[10px] text-muted-foreground font-mono"></div>
+    <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 px-1.5 text-[10px] text-muted-foreground">
+        <span>&#8984;</span>Enter to submit
+    </kbd>    </div>
     <Button
     disabled={isButtonDisabled} className={cn(
         "size-8 rounded-full",
@@ -113,8 +117,7 @@ const onSelect=(value: string) => {
     
     
     
-    Message form</form>
-    <div className="flex-wrap justify-center gap-2 hidden md:flex max-w-3xl ">
+    </form>    <div className="flex-wrap justify-center gap-2 hidden md:flex max-w-3xl ">
         {PROJECT_TEMPLATES.map((template)=>(
             <Button
                 key={template.title}

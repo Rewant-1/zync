@@ -3,7 +3,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import {formatDistanceToNow}  from 'date-fns';
 import { useQuery } from '@tanstack/react-query';
-import { useTRPC } from '@/trpc/client';import { Button } from '@/components/ui/button';
+import { useTRPC } from '@/trpc/client';
+import { Button } from '@/components/ui/button';
  
 export const ProjectsList=()=>{
     const trpc =useTRPC();
@@ -11,7 +12,7 @@ export const ProjectsList=()=>{
     return (
         <div className="w-full bg-white dark:bg-sidebar rounded-xl p-8 border flex flex-col gap-y-6
         sm:gap-y-4">
-            <h2 className="text-2xl font-semiBold">Previous zync</h2>
+            <h2 className="text-2xl font-semibold">Previous zync</h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                 {projects?.length===0 && (
                     <div className="col-span-full text-center">
@@ -37,9 +38,11 @@ export const ProjectsList=()=>{
                                     <div className="flex flex-col">
                                         <h3 className="truncate font-medium">{project.name}</h3>
                                         <p className="text-sm text-muted-foreground" >
-                                           {formatDistanceToNow(project.updatedAt,{
-                                            addSuffix:true,})}
-                                        </p>
+<p className="text-sm text-muted-foreground">
+  {formatDistanceToNow(new Date(project.updatedAt), {
+    addSuffix: true,
+  })}
+</p>                                        </p>
                                     </div>
                                 </div>
                             </Link>

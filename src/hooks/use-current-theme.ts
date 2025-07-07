@@ -1,11 +1,11 @@
-import {useTheme} from "next-themes";
- export const useCurrentTheme = () => {
-  const {theme, systemTheme} = useTheme();
+import { useTheme } from "next-themes";
 
- if (theme==="dark" || theme==="light") {
-    return theme;}
+export const useCurrentTheme = (): string | undefined => {
+  const { theme, systemTheme } = useTheme();
 
-    return systemTheme;
-  };
+  if (theme === "dark" || theme === "light") {
+    return theme;
+  }
 
-  
+  return systemTheme;
+};  

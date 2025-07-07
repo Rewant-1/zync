@@ -15,6 +15,7 @@ import { MessagesContainer } from "../components/messages-container";
 import { Suspense } from "react";
 import { ProjectHeader } from "../components/project-header";
 import { FileExplorer } from "@/components/file-explorer";
+import { UserControl } from "@/components/user-control";
 interface Props{
     projectId:string;
 };
@@ -66,10 +67,11 @@ className="h-full gap-y-0"
                 </TabsTrigger>            
             </TabsList>
             <div className="ml-auto flex items-center-center gap-x-2">
-<Button asChild size="sm" variant="default">
+<Button asChild size="sm" variant="tertiary">
     <Link href="/pricing">
     <CrownIcon />Upgrade</Link>
 </Button>
+<UserControl />
 
             </div>
             </div>

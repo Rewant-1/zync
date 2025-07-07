@@ -35,7 +35,7 @@ export const MessageLoading = () => {
         <div className="flex flex-col group pb-4 px-2">
             <div className="flex items-center gap-2 pl-2 mb-2">
                 <Image
-                    src="/logo.svg"
+                    src="/logo.png"
                     alt="zync"
                     width={18}
                     height={18}

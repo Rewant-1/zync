@@ -33,7 +33,7 @@ export const ProjectsList=()=>{
                             <Link href={`/projects/${project.id}`}>
                                 <div className="flex items-center gap-x-4 ">
                                     <Image
-                                    src=""
+                                    src="/logo.png"
                                     alt="zync"
                                     width={32}
                                     height={32}

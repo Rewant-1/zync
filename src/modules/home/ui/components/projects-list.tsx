@@ -40,12 +40,11 @@ export const ProjectsList=()=>{
                                     className="object-contain"/>
                                     <div className="flex flex-col">
                                         <h3 className="truncate font-medium">{project.name}</h3>
-                                        <p className="text-sm text-muted-foreground" >
-<p className="text-sm text-muted-foreground">
-  {formatDistanceToNow(new Date(project.updatedAt), {
+                                        <p className="text-sm text-muted-foreground">
+  {formatDistanceToNow(project.updatedAt, {
     addSuffix: true,
   })}
-</p>                                        </p>
+</p>
                                     </div>
                                 </div>
                             </Link>

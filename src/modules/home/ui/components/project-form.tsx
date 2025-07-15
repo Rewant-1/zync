@@ -76,12 +76,12 @@ const onSelect=(value: string) => {
 
     return(
         <Form {...form}>
-            <section className="space-y-6">
+            <section className="space-y-8">
             
             <form onSubmit={form.handleSubmit(onSubmit)}
         className={cn(
-            "relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
-        isFocused && "shadow-xs",)}> 
+            "relative border border-[rgba(185,106,255,0.12)] p-6 rounded-2xl glass transition-all duration-300",
+        isFocused && "border-[rgba(185,106,255,0.3)] shadow-lg shadow-[#b96aff]/10",)}> 
     
     <FormField
     control={form.control}
@@ -90,11 +90,11 @@ const onSelect=(value: string) => {
         <TextareaAutosize
             {...field}
             disabled={isPending}
-            placeholder="What would you like to build"
-            className="w-full resize-none pt-4 bg-transparent outline-none "
+            placeholder="Describe what you'd like to build... (e.g., 'A modern e-commerce website with React and TypeScript')"
+            className="w-full resize-none pt-2 bg-transparent outline-none text-white placeholder:text-neutral-500 text-lg"
             onFocus={() => setIsFocused(true)}
             onBlur={() => setIsFocused(false)}
-            minRows={2}
+            minRows={3}
             maxRows={8}
             onKeyDown={(e)=> {
                 if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
@@ -104,39 +104,34 @@ const onSelect=(value: string) => {
         />
     )}
     />
-    <div className="flex gap-x-2 items-end justify-between pt-2">
-        <div className="text-[10px] text-muted-foreground font-mono"></div>
-    <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 px-1.5 text-[10px] text-muted-foreground">
-        <span>&#8984;</span>Enter to submit
-    </kbd>    </div>
+    <div className="flex gap-x-4 items-center justify-between pt-4">
+        <div className="text-sm text-neutral-500 font-mono"></div>
+    <kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 px-2 text-xs text-neutral-400 bg-[rgba(185,106,255,0.1)] rounded-md border border-[rgba(185,106,255,0.2)]">
+        <span className="text-[#b96aff]">⌘</span>Enter to submit
+    </kbd>    
     <Button
-    disabled={isButtonDisabled} className={cn(
-        "size-8 rounded-full",
-        isButtonDisabled && "bg-muted-foreground border"
+    disabled={isButtonDisabled} 
+    className={cn(
+        "size-10 rounded-full bg-[#00fff0] text-black hover:bg-[#00fff0]/90 transition-all duration-300 shadow-lg shadow-[#00fff0]/20",
+        isButtonDisabled && "bg-neutral-600 text-neutral-400 shadow-none"
     )}>
      
-     {isPending ? (<Loader2Icon className="animate-spin size-4" />) : <ArrowUpIcon className="size-4" />}
-        
-        
-        
-        <ArrowUpIcon/></Button>
+     {isPending ? (<Loader2Icon className="animate-spin size-5" />) : <ArrowUpIcon className="size-5" />}
+    </Button>
+    </div>
+    </form>    
     
-    
-    
-    
-    </form>    <div className="flex-wrap justify-center gap-2 hidden md:flex max-w-3xl ">
+    <div className="flex flex-wrap justify-center gap-3 max-w-4xl mx-auto">
         {PROJECT_TEMPLATES.map((template)=>(
             <Button
                 key={template.title}
                 variant="outline"
-                className="bg-white dark:bg-sidebar"
+                className="bg-[rgba(185,106,255,0.05)] border-[rgba(185,106,255,0.2)] text-white hover:bg-[rgba(185,106,255,0.1)] hover:border-[rgba(185,106,255,0.3)] transition-all duration-300"
                 onClick={()=>onSelect(template.prompt)}
             >
-                {template.emoji}{template.title}
+                {template.emoji} {template.title}
             </Button>
         ))}
-        
-        
-        </div>
+    </div>
         </section></Form>
     );}

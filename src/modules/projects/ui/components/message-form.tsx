@@ -5,11 +5,13 @@ import { z } from "zod";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ArrowUpIcon, Loader2Icon } from "lucide-react";
-import { useMutation,useQueryClient } from "@tanstack/react-query";
+import { useMutation,useQuery,useQueryClient } from "@tanstack/react-query";
 import { cn } from "@/lib/utils";
 import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import {Form, FormField} from "@/components/ui/form";
+import { Usage } from "./usage";
+import { useRouter } from "next/router";
 interface Props{
     projectId: string;
 }
@@ -20,9 +22,12 @@ const formSchema = z.object({
         .max(10000, {message: "Value is too long"}),
 })
 export const MessageForm = ({ projectId }: Props) => {
+    const router = useRouter();
    
     const trpc=useTRPC();
     const queryClient = useQueryClient();
+
+    const {data:usage}=useQuery(trpc.usage.status.queryOptions());
     
     // This can be a prop or state to control the visibility of usage
     const form=useForm<z.infer<typeof formSchema>>({
@@ -36,9 +41,16 @@ const createMessage= useMutation(trpc.messages.create.mutationOptions({
     onSuccess:()=>{
         form.reset();
         queryClient.invalidateQueries(trpc.messages.getMany.queryOptions({projectId}),);
- //queryClient.invalidateQueries(trpc.messages.getMany.queryOptions({projectId})); 
-    },    onError :(error) => {
-        toast.error(error.message);},
+ queryClient.invalidateQueries(trpc.usage.status.queryOptions()); 
+    },  
+    
+    onError :(error) => {
+        toast.error(error.message);
+    if(error.data?.code==="TOO_MANY_REQUESTS"){
+        router.push("/pricing");
+    }
+    
+    },
 }))
 
     const onSubmit=async(values:z.infer<typeof formSchema> ) => {
@@ -48,13 +60,20 @@ const createMessage= useMutation(trpc.messages.create.mutationOptions({
         });}
 
          const [isFocused, setIsFocused] = useState(false);
-    const showUsage = false;
+            const showUsage = !!usage;
         const isPending=createMessage.isPending;
         const isButtonDisabled=isPending || !form.formState.isValid;
 
 
     return(
-        <Form {...form}><form onSubmit={form.handleSubmit(onSubmit)}
+        <Form {...form}>
+            {showUsage && (
+                <Usage 
+                points={usage.remainingPoints}
+                msBeforeNext={ usage.msBeforeNext }/>
+            )}
+            
+            <form onSubmit={form.handleSubmit(onSubmit)}
         className={cn(
             "relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
         isFocused && "shadow-xs",

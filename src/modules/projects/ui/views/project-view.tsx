@@ -17,6 +17,7 @@ import { ProjectHeader } from "../components/project-header";
 import { FileExplorer } from "@/components/file-explorer";
 import { UserControl } from "@/components/user-control";
 import { useAuth } from "@clerk/nextjs";
+import { ErrorBoundary } from "react-error-boundary";
 interface Props{
     projectId:string;
 };
@@ -38,17 +39,21 @@ const [tabState, setTabState] = useState<"preview" | "code">("preview");
                     minSize={20}
                     className="flex flex-col min-h-0"
                     >
+                        <ErrorBoundary fallback={<p>Failed to load project header</p>}>
                         <Suspense fallback={<p>Loading project...</p>}>
                         <ProjectHeader projectId={projectId} />
                         </Suspense>
+                        </ErrorBoundary>
                         
-                        
+                        <ErrorBoundary fallback={<p>Failed to load messages</p>}>
                         <Suspense fallback ={<p>Loading messages...</p>}>
             <MessagesContainer 
             activeFragment={activeFragment}
             setActiveFragment={setActiveFragment}
             
-            projectId={projectId} /></Suspense></ResizablePanel>
+            projectId={projectId} /></Suspense>
+            </ErrorBoundary>
+            </ResizablePanel>
 
             
             <ResizableHandle className="hover:bg-primary transition-colors"/>

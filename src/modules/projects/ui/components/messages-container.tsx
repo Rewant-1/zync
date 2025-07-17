@@ -22,10 +22,10 @@ export const MessagesContainer=({projectId
      const bottomRef = useRef<HTMLDivElement>(null);
 const lastAssistantMessageIdRef = useRef<string | null>(null);
 
-    const { data: messages = [] } = useSuspenseQuery(
+    const { data: messages  } = useSuspenseQuery(
         trpc.messages.getMany.queryOptions(
             { projectId },
-            { refetchInterval: 3000, refetchIntervalInBackground: false }
+            { refetchInterval: 2000, refetchIntervalInBackground: false }
         )
     );
 

@@ -15,7 +15,8 @@ export const codeAgentFunction = inngest.createFunction(
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
-    const sandbox= await Sandbox.create("zync")
+    const sandbox= await Sandbox.create("zync");
+    await sandbox.setTimeout(60_000*10*3); // 60 minutes
     return sandbox.sandboxId
     });
 
@@ -26,8 +27,9 @@ const previousMessages = await step.run("get-previous-messages", async () => {
       projectId: event.data.projectId,
     },
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
+    take:5,
   });
   for (const message of messages) {
     formattedMessages.push({
@@ -36,7 +38,7 @@ const previousMessages = await step.run("get-previous-messages", async () => {
       type: "text",
     });
   }
-  return formattedMessages;
+  return formattedMessages.reverse();
 })
 
 const state = createState<AgentState>({

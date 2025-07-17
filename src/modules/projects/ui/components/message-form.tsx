@@ -11,7 +11,7 @@ import { useTRPC } from "@/trpc/client";
 import { Button } from "@/components/ui/button";
 import {Form, FormField} from "@/components/ui/form";
 import { Usage } from "./usage";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 interface Props{
     projectId: string;
 }
@@ -101,25 +101,26 @@ const createMessage= useMutation(trpc.messages.create.mutationOptions({
     )}
     />
     <div className="flex gap-x-2 items-end justify-between pt-2">
-        <div className="text=[10px] text-muted-foreground font-mono"></div>
-    <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none"><span>&#8984</span>Enter</kbd>
-    &nbsp; to submit
-    
+        <div className="text-[10px] text-muted-foreground font-mono">
+            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                <span className="text-xs">⌘</span>Enter
+            </kbd>
+            <span className="ml-1">to submit</span>
+        </div>
+        <Button
+            type="submit"
+            disabled={isButtonDisabled} 
+            className={cn(
+                "size-8 rounded-full",
+                isButtonDisabled && "bg-muted-foreground border"
+            )}
+        >
+            {isPending ? (
+                <Loader2Icon className="animate-spin size-4" />
+            ) : (
+                <ArrowUpIcon className="size-4" />
+            )}
+        </Button>
     </div>
-    <Button
-    disabled={isButtonDisabled} className={cn(
-        "size-8 rounded-full",
-        isButtonDisabled && "bg-muted-foreground border"
-    )}>
-     
-     {isPending ? (<Loader2Icon className="animate-spin size-4" />) : <ArrowUpIcon className="size-4" />}
-        
-        
-        
-        <ArrowUpIcon/></Button>
-    
-    
-    
-    
-    Message form</form></Form>
+</form></Form>
     );}

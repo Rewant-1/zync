@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { ChromeGrid } from "@/components/ui/chrome-grid";
 import { motion, useMotionValue, useTransform } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight, Sparkles, Star } from "lucide-react";
 import Link from "next/link";
 import { SignUpButton, SignedOut, SignedIn } from "@clerk/nextjs";
 import { useRef, useEffect } from "react";
@@ -131,11 +131,12 @@ export const Hero = () => {
             <Button 
               variant="outline" 
               size="lg" 
-              className="px-10 py-6 text-lg font-semibold border-2 border-[#b96aff]/20 hover:bg-[#b96aff]/10 hover:border-[#b96aff]/40 transition-all duration-300 animate-shimmer text-white rounded-xl"
+              className="px-10 py-6 text-lg font-semibold border-2 border-[#b96aff]/20 hover:bg-[#b96aff]/10 hover:border-[#b96aff]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
               asChild
             >
-              <Link href="#demo">
-                Watch Demo 
+              <Link href="https://github.com/Rewant-1/zync" target="_blank" rel="noopener noreferrer">
+                <Star className="mr-2 w-5 h-5 group-hover:fill-[#b96aff] transition-colors duration-300" />
+                Star us on GitHub
               </Link>
             </Button>
           </motion.div>

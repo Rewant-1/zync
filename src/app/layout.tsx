@@ -28,11 +28,73 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider 
-    appearance={{
-      variables:{
-        colorPrimary:"#C96342",
-      }
-    }}>
+      appearance={{
+        variables: {
+          colorPrimary: "#b96aff",
+          colorBackground: "#0a0a0a",
+          colorInputBackground: "#1a1a1a",
+          colorInputText: "#ffffff",
+          colorText: "#ffffff",
+          colorTextSecondary: "#a1a1aa",
+          colorSuccess: "#00fff0",
+          borderRadius: "0.75rem",
+          fontFamily: "var(--font-geist-sans)",
+        },
+        elements: {
+          card: {
+            backgroundColor: "#0a0a0a",
+            border: "1px solid rgba(186, 85, 255, 0.12)",
+            borderRadius: "1rem",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)",
+          },
+          headerTitle: {
+            color: "#ffffff",
+            fontSize: "1.5rem",
+            fontWeight: "600",
+          },
+          headerSubtitle: {
+            color: "#a1a1aa",
+          },
+          formButtonPrimary: {
+            background: "linear-gradient(135deg, #b96aff 0%, #00fff0 100%)",
+            color: "#000000",
+            fontWeight: "600",
+            borderRadius: "0.5rem",
+            "&:hover": {
+              background: "linear-gradient(135deg, #00fff0 0%, #b96aff 100%)",
+            },
+          },
+          formFieldInput: {
+            backgroundColor: "#1a1a1a",
+            border: "1px solid rgba(186, 85, 255, 0.12)",
+            borderRadius: "0.5rem",
+            color: "#ffffff",
+            "&:focus": {
+              borderColor: "#b96aff",
+              boxShadow: "0 0 0 3px rgba(185, 106, 255, 0.1)",
+            },
+          },
+          formFieldLabel: {
+            color: "#ffffff",
+            fontWeight: "500",
+          },
+          socialButtonsBlockButton: {
+            border: "1px solid rgba(186, 85, 255, 0.12)",
+            backgroundColor: "#1a1a1a",
+            color: "#ffffff",
+            "&:hover": {
+              backgroundColor: "#2a2a2a",
+            },
+          },
+          footerActionLink: {
+            color: "#b96aff",
+            "&:hover": {
+              color: "#00fff0",
+            },
+          },
+        },
+      }}
+    >
     <TRPCReactProvider>
     <html lang="en" suppressHydrationWarning>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}

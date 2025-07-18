@@ -66,7 +66,6 @@ export const Footer = () => {
         <div className="neon-blob-1" />
         <div className="neon-blob-2" />
       </div>
-      {/* Newsletter Section */}
      
 
       {/* Main Footer */}
@@ -91,7 +90,7 @@ export const Footer = () => {
             </p>
             <div className="flex items-center gap-2 text-sm text-muted-foreground mb-4">
               <MapPin className="w-4 h-4" />
-              San Francisco, CA
+              New Delhi, India
             </div>
             <div className="flex items-center gap-4">
               {socialLinks.map((social) => {

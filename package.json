@@ -4,9 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
+    "dev:fast": "next dev --turbopack --experimental-https",
     "build": "next build",
+    "build:analyze": "ANALYZE=true next build",
     "start": "next start",
-    "lint": "next lint"
+    "start:fast": "next start --turbopack",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "perf": "npm run build && npm run start"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.3",
@@ -79,6 +84,7 @@
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
+    "@next/bundle-analyzer": "^15.4.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/prismjs": "^1.26.5",

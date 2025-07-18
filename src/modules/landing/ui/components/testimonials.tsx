@@ -76,12 +76,12 @@ const useCases = [
 
 export const Testimonials = () => {
   return (
-    <section className="section-bg py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-black/80" />
-      <div className="section-overlay">
-        <div className="neon-blob-1" />
-        <div className="neon-blob-2" />
-      </div>
+    <section className="relative py-24 overflow-hidden">
+      {/* Gradient transition from hero */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(186,85,255,0.1),transparent_50%)]" />
+      
+      {/* Content Overlay */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Testimonials Section */}
         <motion.div

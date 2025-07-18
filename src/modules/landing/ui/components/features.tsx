@@ -66,12 +66,13 @@ const features = [
 
 export const Features = () => {
   return (
-    <section id="features" className="section-bg py-24">
-      <div className="absolute inset-0 bg-black/80" />
-      <div className="section-overlay">
-        <div className="neon-blob-1" />
-        <div className="neon-blob-2" />
-      </div>
+    <section id="features" className="relative py-24 overflow-hidden">
+      {/* Smooth transition from hero chrome grid */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/70" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(186,85,255,0.05),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(0,255,240,0.03),transparent_60%)]" />
+      
+      {/* Content Overlay */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -125,30 +126,6 @@ export const Features = () => {
             );
           })}
         </div>
-
-        {/* Additional Feature Highlight */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          viewport={{ once: true }}
-          className="mt-20"
-        >
-          <Card className="bg-gradient-to-r from-blue-50 via-violet-50 to-purple-50 dark:from-blue-950/30 dark:via-violet-950/30 dark:to-purple-950/30 border border-violet-200/50 dark:border-violet-800/50 shadow-xl">
-            <CardContent className="p-12 text-center">
-              <h3 className="text-2xl md:text-3xl font-bold mb-4">
-                From Idea to Production in{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                  Minutes
-                </span>
-              </h3>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Skip the boilerplate and focus on what matters. Our AI understands your requirements 
-                and generates clean, maintainable code that follows industry best practices.
-              </p>
-            </CardContent>
-          </Card>
-        </motion.div>
       </div>
     </section>
   );

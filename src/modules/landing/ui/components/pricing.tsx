@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Check, X, Star, Zap } from "lucide-react";
+import { Check, X, Star } from "lucide-react";
 import { SignUpButton, SignedOut, SignedIn } from "@clerk/nextjs";
 import Link from "next/link";
 
@@ -76,12 +76,12 @@ const plans = [
 
 export const Pricing = () => {
   return (
-    <section id="pricing" className="section-bg py-24 overflow-hidden">
-      <div className="absolute inset-0 bg-black/80" />
-      <div className="section-overlay">
-        <div className="neon-blob-1" />
-        <div className="neon-blob-2" />
-      </div>
+    <section id="pricing" className="relative py-24 overflow-hidden">
+      {/* Continuing the gradient transition */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(186,85,255,0.03),transparent_70%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(0,255,240,0.02),transparent_60%)]" />
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -211,28 +211,7 @@ export const Pricing = () => {
           viewport={{ once: true }}
           className="text-center"
         >
-          <Card className="bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-950/20 dark:to-violet-950/20 border-0">
-            <CardContent className="p-8">
-              <div className="flex items-center justify-center gap-2 mb-4">
-                <Zap className="w-6 h-6 text-blue-600" />
-                <h3 className="text-xl font-bold">All Plans Include</h3>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
-                <div className="flex items-center justify-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>99.9% Uptime SLA</span>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>SSL Security</span>
-                </div>
-                <div className="flex items-center justify-center gap-2">
-                  <Check className="w-4 h-4 text-green-600" />
-                  <span>Regular Updates</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          
         </motion.div>
       </div>
     </section>

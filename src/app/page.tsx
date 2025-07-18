@@ -1,6 +1,5 @@
 import { Hero } from "@/modules/landing/ui/components/hero";
 import { Features } from "@/modules/landing/ui/components/features";
-import { Demo } from "@/modules/landing/ui/components/demo";
 import { Testimonials } from "@/modules/landing/ui/components/testimonials";
 import { Pricing } from "@/modules/landing/ui/components/pricing";
 import { FAQ } from "@/modules/landing/ui/components/faq";
@@ -23,7 +22,6 @@ export default async function LandingPage() {
       <main className="relative">
         <Hero />
         <Features />
-        <Demo />
         <Testimonials />
         <Pricing />
         <FAQ />

@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
+import { ChromeGrid } from "@/components/ui/chrome-grid";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -43,14 +44,13 @@ export const Hero = () => {
   };
 
   return (
-    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16 bg-[#0a0a0a]">
-      {/* Enhanced Background Effects */}
-      <div className="absolute inset-0 bg-black/80" />
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Glassy neon overlays */}
-        <div className="absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/2 w-[60vw] h-[40vw] rounded-full bg-gradient-to-br from-[#b96aff]/20 via-[#00fff0]/20 to-[#fff]/10 blur-3xl opacity-60" />
-        <div className="absolute right-0 bottom-0 w-1/3 h-1/3 bg-gradient-to-tr from-[#b96aff]/20 to-transparent blur-2xl opacity-40" />
+    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Chrome Grid Background */}
+      <div className="absolute inset-0">
+        <ChromeGrid />
       </div>
+      
+      {/* Content Overlay */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -63,12 +63,12 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-gradient-to-r from-[#1a1a1a] via-[#232323] to-[#1a1a1a] border border-[rgba(186,85,255,0.12)] mb-8 shadow-2xl animate-pulse hover:scale-105 hover:shadow-[#b96aff]/30 transition-all duration-300 cursor-pointer glass"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-black/40 backdrop-blur-sm border border-[#b96aff]/20 mb-8 shadow-2xl"
             whileHover={{ scale: 1.08 }}
           >
-            <Sparkles className="w-5 h-5 text-[#b96aff] animate-pulse" />
-            <span className="text-base font-semibold text-[#00fff0]">
-              AI-Powered Web Development ✨
+            <Sparkles className="w-5 h-5 text-[#b96aff]" />
+            <span className="text-base font-semibold text-white">
+              AI-Powered Web Development 
             </span>
           </motion.div>
 
@@ -77,7 +77,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 drop-shadow-lg"
+            className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 text-white"
           >
             Build{" "}
             <span className="text-[#b96aff] drop-shadow-md">
@@ -95,7 +95,7 @@ export const Hero = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.8 }}
-            className="text-xl md:text-2xl text-neutral-400 mb-8 max-w-3xl mx-auto leading-relaxed"
+            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
           >
             Transform your ideas into fully functional web applications with AI-driven code generation, 
             real-time collaboration, and sandboxed execution environments.
@@ -112,18 +112,18 @@ export const Hero = () => {
               <SignUpButton mode="modal">
                 <Button 
                   size="lg" 
-                  className="bg-[#00fff0] text-black px-10 py-6 text-lg font-semibold group shadow-xl shadow-[#00fff0]/40 border-2 border-transparent hover:border-[#b96aff] hover:shadow-2xl hover:shadow-[#b96aff]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2 animate-glow"
+                  className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] text-black px-10 py-6 text-lg font-semibold hover:from-[#00fff0] hover:to-[#b96aff] shadow-lg shadow-[#b96aff]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2"
                 >
                   Start Building Free 
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </SignUpButton>
             </SignedOut>
             <SignedIn>
-              <Button asChild size="lg" className="bg-[#00fff0] text-black px-10 py-6 text-lg font-semibold group shadow-xl shadow-[#00fff0]/40 border-2 border-transparent hover:border-[#b96aff] hover:shadow-2xl hover:shadow-[#b96aff]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2 animate-glow">
+              <Button asChild size="lg" className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] text-black px-10 py-6 text-lg font-semibold hover:from-[#00fff0] hover:to-[#b96aff] shadow-lg shadow-[#b96aff]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2">
                 <Link href="/dashboard">
                   Go to Dashboard 
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
             </SignedIn>
@@ -131,7 +131,7 @@ export const Hero = () => {
             <Button 
               variant="outline" 
               size="lg" 
-              className="px-10 py-6 text-lg font-semibold border-2 border-[rgba(186,85,255,0.12)] hover:bg-gradient-to-r hover:from-[#1a1a1a] hover:to-[#232323] hover:border-[rgba(186,85,255,0.32)] transition-all duration-300 animate-shimmer glass text-white"
+              className="px-10 py-6 text-lg font-semibold border-2 border-[#b96aff]/20 hover:bg-[#b96aff]/10 hover:border-[#b96aff]/40 transition-all duration-300 animate-shimmer text-white rounded-xl"
               asChild
             >
               <Link href="#demo">
@@ -147,9 +147,8 @@ export const Hero = () => {
             transition={{ duration: 0.8, delay: 1.2 }}
             className="mt-16 flex flex-col items-center gap-4"
           >
-            <p className="text-sm text-neutral-500">Trusted by developers worldwide</p>
+            <p className="text-sm text-gray-400">Trusted by developers worldwide</p>
             <div className="flex items-center gap-8 opacity-80">
-              {/* Add company logos here */}
               <div className="text-2xl font-bold text-[#b96aff]">Next.js</div>
               <div className="text-2xl font-bold text-[#00fff0]">React</div>
               <div className="text-2xl font-bold text-[#b96aff]">TypeScript</div>
@@ -159,37 +158,35 @@ export const Hero = () => {
         </motion.div>
       </div>
 
-      {/* Enhanced Floating Elements with Parallax - neon glass orbs */}
+      {/* Enhanced Floating Elements with Parallax */}
       <motion.div
         style={float1}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 1.5 }}
-        className="absolute top-1/4 left-1/4 w-8 h-8 bg-gradient-to-r from-[#b96aff] to-[#00fff0] rounded-full animate-pulse shadow-2xl blur-[2px] glass"
+        className="absolute top-1/4 left-1/4 w-8 h-8 bg-gradient-to-r from-[#b96aff] to-[#00fff0] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
       <motion.div
         style={float2}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 1.7 }}
-        className="absolute top-1/3 right-1/4 w-6 h-6 bg-gradient-to-r from-[#00fff0] to-[#b96aff] rounded-full animate-pulse shadow-2xl blur-[2px] glass"
+        className="absolute top-1/3 right-1/4 w-6 h-6 bg-gradient-to-r from-[#00fff0] to-[#b96aff] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
       <motion.div
         style={float3}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 1.9 }}
-        className="absolute bottom-1/3 left-1/3 w-10 h-10 bg-gradient-to-r from-[#fff] to-[#b96aff] rounded-full animate-pulse shadow-2xl blur-[2px] glass"
+        className="absolute bottom-1/3 left-1/3 w-10 h-10 bg-gradient-to-r from-[#fff] to-[#b96aff] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
       <motion.div
         style={float4}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 2.1 }}
-        className="absolute top-2/3 right-1/3 w-5 h-5 bg-gradient-to-r from-[#b96aff] to-[#fff] rounded-full animate-pulse shadow-2xl blur-[2px] glass"
+        className="absolute top-2/3 right-1/3 w-5 h-5 bg-gradient-to-r from-[#b96aff] to-[#fff] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
     </section>
   );
 };
-
-// Add shimmer animation to globals.css if not present

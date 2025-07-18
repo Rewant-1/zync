@@ -3,7 +3,6 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { 
   Github, 
@@ -11,7 +10,6 @@ import {
   Linkedin, 
   Mail, 
   MapPin,
-  ArrowRight
 } from "lucide-react";
 
 const footerSections = [
@@ -69,38 +67,7 @@ export const Footer = () => {
         <div className="neon-blob-2" />
       </div>
       {/* Newsletter Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        viewport={{ once: true }}
-        className="glass"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="text-center max-w-2xl mx-auto">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Stay Updated with{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
-                zync
-              </span>
-            </h3>
-            <p className="text-muted-foreground mb-8">
-              Get the latest updates, features, and developer resources delivered to your inbox.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className="flex-1 px-4 py-3 rounded-lg border border-[#b96aff] bg-black text-white focus:outline-none focus:ring-2 focus:ring-[#00fff0]"
-              />
-              <Button className="bg-[#00fff0] text-black px-6 group shadow-lg shadow-[#00fff0]/40 border-2 border-transparent hover:border-[#b96aff] hover:shadow-xl hover:shadow-[#b96aff]/60 transition-all duration-300 rounded-lg animate-glow">
-                Subscribe
-                <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform text-black" />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </motion.div>
+     
 
       {/* Main Footer */}
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">

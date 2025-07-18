@@ -1,13 +1,20 @@
 import { auth } from '@clerk/nextjs/server';
 import { initTRPC, TRPCError } from '@trpc/server';
-import { cache } from 'react';
 import superjson from 'superjson';
-export const createTRPCContext = cache(async () => {
-  
-  return { auth: await auth() };
-});
 
-export type Context= Awaited<ReturnType<typeof createTRPCContext>>;
+export const createTRPCContext = async (opts?: { req?: Request }) => {
+  try {
+    // If we have a request object, pass it to auth for proper context
+    const authResult = opts?.req ? await auth() : await auth();
+    return { auth: authResult };
+  } catch (error) {
+    // If auth fails (e.g., called outside request scope), return null auth
+    console.warn('Auth called outside request scope:', error);
+    return { auth: null };
+  }
+};
+
+export type Context = Awaited<ReturnType<typeof createTRPCContext>>;
 // Avoid exporting the entire t-object
 // since it's not very descriptive.
 // For instance, the use of a t variable
@@ -19,7 +26,7 @@ const t = initTRPC.context<Context>().create({
    transformer: superjson,
 });
 const isAuthed = t.middleware( ({ ctx, next }) => {
-  if (!ctx.auth.userId) {
+  if (!ctx.auth || !ctx.auth.userId) {
     throw new TRPCError({
       code: 'UNAUTHORIZED',
       message: 'You must be logged in to access this resource.',

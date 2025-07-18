@@ -67,7 +67,7 @@ export const Hero = () => {
             whileHover={{ scale: 1.08 }}
           >
             <Sparkles className="w-5 h-5 text-[#b96aff] animate-pulse" />
-            <span className="text-base font-semibold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">
+            <span className="text-base font-semibold text-[#00fff0]">
               AI-Powered Web Development ✨
             </span>
           </motion.div>
@@ -80,12 +80,12 @@ export const Hero = () => {
             className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 drop-shadow-lg"
           >
             Build{" "}
-            <span className="bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient drop-shadow-md">
+            <span className="text-[#b96aff] drop-shadow-md">
               Web Apps
             </span>
             <br />
             Just by{" "}
-            <span className="bg-gradient-to-r from-[#00fff0] via-[#b96aff] to-[#fff] bg-clip-text text-transparent animate-gradient">
+            <span className="text-[#00fff0]">
               Describing Them
             </span>
           </motion.h1>
@@ -114,7 +114,7 @@ export const Hero = () => {
                   size="lg" 
                   className="bg-[#00fff0] text-black px-10 py-6 text-lg font-semibold group shadow-xl shadow-[#00fff0]/40 border-2 border-transparent hover:border-[#b96aff] hover:shadow-2xl hover:shadow-[#b96aff]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2 animate-glow"
                 >
-                  Start Building Free ✨
+                  Start Building Free 
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </SignUpButton>
@@ -122,7 +122,7 @@ export const Hero = () => {
             <SignedIn>
               <Button asChild size="lg" className="bg-[#00fff0] text-black px-10 py-6 text-lg font-semibold group shadow-xl shadow-[#00fff0]/40 border-2 border-transparent hover:border-[#b96aff] hover:shadow-2xl hover:shadow-[#b96aff]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2 animate-glow">
                 <Link href="/dashboard">
-                  Go to Dashboard 🚀
+                  Go to Dashboard 
                   <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </Button>
@@ -135,7 +135,7 @@ export const Hero = () => {
               asChild
             >
               <Link href="#demo">
-                Watch Demo 🎬
+                Watch Demo 
               </Link>
             </Button>
           </motion.div>
@@ -150,10 +150,10 @@ export const Hero = () => {
             <p className="text-sm text-neutral-500">Trusted by developers worldwide</p>
             <div className="flex items-center gap-8 opacity-80">
               {/* Add company logos here */}
-              <div className="text-2xl font-bold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">Next.js</div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">React</div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">TypeScript</div>
-              <div className="text-2xl font-bold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">Tailwind</div>
+              <div className="text-2xl font-bold text-[#b96aff]">Next.js</div>
+              <div className="text-2xl font-bold text-[#00fff0]">React</div>
+              <div className="text-2xl font-bold text-[#b96aff]">TypeScript</div>
+              <div className="text-2xl font-bold text-[#00fff0]">Tailwind</div>
             </div>
           </motion.div>
         </motion.div>

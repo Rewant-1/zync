@@ -58,7 +58,7 @@ export const Demo = () => {
                       <Play className="w-8 h-8 text-black ml-1 drop-shadow-lg" />
                     </Button>
                   </motion.div>
-                  <h3 className="text-2xl font-bold mb-2 animate-gradient bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent">Build a Todo App in 2 Minutes</h3>
+                  <h3 className="text-2xl font-bold mb-2 text-[#00fff0]">Build a Todo App in 2 Minutes</h3>
                   <p className="text-white/80">From prompt to deployed application</p>
                 </div>
                 {/* Decorative elements */}
@@ -108,7 +108,7 @@ export const Demo = () => {
                     <div className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-r ${item.gradient} p-3 mb-4 shadow-lg shadow-[#b96aff]/10`}>
                       <Icon className="w-6 h-6 text-black" />
                     </div>
-                    <h3 className="text-3xl font-bold mb-2 bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">{item.stat}</h3>
+                    <h3 className="text-3xl font-bold mb-2 text-[#b96aff]">{item.stat}</h3>
                     <p className="text-neutral-400">{item.description}</p>
                   </CardContent>
                 </Card>

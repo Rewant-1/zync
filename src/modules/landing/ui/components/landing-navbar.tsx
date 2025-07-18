@@ -27,7 +27,7 @@ export const LandingNavbar = () => {
           {/* Logo area */}
           <Link href="/" className="flex items-center gap-3 group">
             <Image src="/logo.png" alt="zync" width={40} height={40} className="rounded-full" />
-            <span className="text-2xl font-extrabold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent drop-shadow-md tracking-tight group-hover:tracking-widest transition-all duration-300 animate-gradient">
+            <span className="text-2xl font-extrabold text-[#00fff0] drop-shadow-md tracking-tight group-hover:tracking-widest transition-all duration-300">
               zync
             </span>
           </Link>
@@ -40,7 +40,7 @@ export const LandingNavbar = () => {
                 href={link.href}
                 className="relative text-lg font-medium text-neutral-300 hover:text-white transition-colors px-2 py-1 group"
               >
-                <span className="relative z-10 animate-gradient bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent group-hover:text-white">
+                <span className="relative z-10 text-[#b96aff] group-hover:text-white transition-colors">
                   {link.label}
                 </span>
                 <motion.span

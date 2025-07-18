@@ -1,6 +1,5 @@
 import { ProjectForm } from "@/modules/home/ui/components/project-form";
 import { ProjectsList } from "@/modules/home/ui/components/projects-list";
-import Image from "next/image";
 
 const DashboardPage = () => {
   return (
@@ -13,14 +12,8 @@ const DashboardPage = () => {
           <div
             className="flex items-center gap-3"
           >
-            <Image
-              src="/logo.png"
-              alt="zync"
-              width={48}
-              height={48}
-              className="rounded-lg"
-            />
-            <span className="text-2xl font-bold bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">
+           
+            <span className="text-3xl font-bold text-[#00fff0]">
               zync
             </span>
           </div>
@@ -30,7 +23,7 @@ const DashboardPage = () => {
           >
             <h1 className="text-3xl md:text-5xl font-bold text-white">
               Build Something{" "}
-              <span className="bg-gradient-to-r from-[#b96aff] via-[#00fff0] to-[#fff] bg-clip-text text-transparent animate-gradient">
+              <span className="text-[#b96aff]">
                 Amazing
               </span>
             </h1>

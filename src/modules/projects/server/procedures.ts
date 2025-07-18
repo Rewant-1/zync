@@ -45,7 +45,7 @@ create: protectedProcedure.input(
 )
 .mutation(async({input,ctx})=>{
 try {
-    await consumeCredits();
+    await consumeCredits(ctx.auth.userId);
 } catch (error) {
     if(error instanceof Error ) {
         throw new TRPCError({

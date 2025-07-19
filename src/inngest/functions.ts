@@ -15,7 +15,7 @@ export const codeAgentFunction = inngest.createFunction(
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const sandboxId = await step.run("get-sandbox-id", async () => {
-    const sandbox= await Sandbox.create("zync");
+    const sandbox= await Sandbox.create("zyncreact");
     await sandbox.setTimeout(60_000*10*3); // 60 minutes
     return sandbox.sandboxId
     });
@@ -49,7 +49,7 @@ const state = createState<AgentState>({
     
     const codeAgent = createAgent<AgentState>({
       name: "code-agent",
-      description: "An expert coding agent",
+      description: "An expert React + Vite coding agent",
       system: PROMPT,
       model: gemini({ model: "gemini-2.0-flash" }),
       tools:[
@@ -177,14 +177,14 @@ const fragmentTitleGenerator=createAgent({
   name:"fragment-title-generator",
   description:"A tool to generate a title for the code fragment",
   system:FRAGMENT_TITLE_PROMPT,
-  model: gemini({ model: "gemini-2.0-flash" }),
+  model: gemini({ model: "gemini-2.0-flash-lite" }),
 })
 
 const responseGenerator=createAgent({
   name:"response-generator",
   description:"A tool to generate a response for the user",
   system:RESPONSE_PROMPT,
-  model: gemini({ model: "gemini-2.0-flash" }),
+  model: gemini({ model: "gemini-2.0-flash-lite" }),
 })
 
 const {
@@ -220,7 +220,7 @@ const isError = !result.state.data.summary ||
 Object.keys(result.state.data.files || {}).length === 0;
 const sandboxUrl=await step.run("get-sandbox-url", async ()=> {
   const sandbox = await getSandbox(sandboxId);
-  const host = sandbox.getHost(3000);
+  const host = sandbox.getHost(5173);
   return `http://${host}`;
 })
 

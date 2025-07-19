@@ -7,7 +7,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   // Performance optimizations
-  swcMinify: true,
   poweredByHeader: false,
   
   // Image optimization

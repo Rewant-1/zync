@@ -327,19 +327,10 @@ Project Configuration:
                     <div className={cn("w-full h-12 rounded-lg bg-gradient-to-r", theme.gradient)} />
                     <div>
                       <h4 className="font-semibold text-white text-sm">{theme.label}</h4>
-                      <div 
-                        className={cn(
-                          "w-3 h-3 rounded-full mx-auto mt-1",
-                          theme.id === "cyberpunk" && "bg-[#00fff0]",
-                          theme.id === "dark" && "bg-[#b96aff]",
-                          theme.id === "neon" && "bg-[#ff6b9d]",
-                          theme.id === "forest" && "bg-[#4ade80]",
-                          theme.id === "ocean" && "bg-[#3b82f6]",
-                          theme.id === "sunset" && "bg-[#f97316]"
-                        )}
-                      />
-                    </div>
-                  </CardContent>
+                      <div
+                        className="w-3 h-3 rounded-full mx-auto mt-1"
+                        style={{ backgroundColor: theme.accent }}
+                      />                  </CardContent>
                 </Card>
               ))}
             </div>

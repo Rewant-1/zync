@@ -37,6 +37,23 @@ export const ProjectHeader = ({ projectId }: Props) => {
 
     const { theme, setTheme } = useTheme();
 
+    // Defensive check for missing or invalid project data
+    if (!project) {
+        return (
+            <header className="p-2 flex justify-between items-center border-b">
+                <div className="flex items-center gap-2 text-muted-foreground">
+                    <div className="w-8 h-8 bg-muted rounded animate-pulse" />
+                    <span className="text-sm">Project not found</span>
+                </div>
+                <Link href="/">
+                    <Button variant="ghost" size="sm">
+                        <ChevronLeftIcon className="size-4 mr-2" />
+                        Back
+                    </Button>
+                </Link>
+            </header>
+        );
+    }
 
 return (
 <header className="p-2 flex justify-between items-center border-b"> 

@@ -3,19 +3,24 @@
 # and ensures the Vite app is (1) running and (2) the `/` page is compiled
 
 function ping_server() {
-    counter=0
-    response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:5173")
-    while [[ ${response} -ne 200 ]]; do
-        let counter++
-        if (( counter % 10 == 0 )); then
-            echo "Waiting for server to start... (attempt $counter)" >> /compile_page.log
-            sleep 0.1
-        fi
+    local timeout=10          # seconds
+    local interval=0.1
+    local start_time=$(date +%s)
+
+    while true; do
+        local response
         response=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:5173")
-        if [[ $counter -ge 100 ]]; then
-            echo "Error: Server failed to start after 10 seconds" >> /compile_page.log
+        if [[ $response -eq 200 ]]; then
+            echo "Server started successfully!" >> /compile_page.log
+            return 0
+        fi
+        if (( $(date +%s) - start_time >= timeout )); then
+            echo "Error: Server failed to start after ${timeout}s" >> /compile_page.log
             exit 1
         fi
+        sleep "$interval"
+    done
+}
     done
     echo "Server started successfully!" >> /compile_page.log
 }
@@ -33,10 +38,11 @@ fi
 if [ -f "/home/user/node_modules/.bin/vite" ]; then
     echo "vite binary found" >> /compile_page.log
 else
-    echo "Error: vite binary not found" >> /compile_page.log
-    exit 1
-fi
-
+cd "$PROJECT_DIR"
+echo "Starting Vite server..." >> /compile_page.log
+"${PROJECT_DIR}/node_modules/.bin/vite" --config vite.config.ts >> /compile_page.log 2>&1 &
+VITE_PID=$!
+trap 'kill $VITE_PID >/dev/null 2>&1' EXIT
 # Start Vite with explicit path to ensure availability
 cd /home/user
 echo "Starting Vite server..." >> /compile_page.log

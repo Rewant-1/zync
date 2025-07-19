@@ -21,14 +21,14 @@ RUN npm install clsx tailwind-merge class-variance-authority
 # Install Shadcn UI dependencies
 RUN npm install @radix-ui/react-dialog @radix-ui/react-slot @radix-ui/react-separator @radix-ui/react-label @radix-ui/react-select @radix-ui/react-checkbox @radix-ui/react-switch @radix-ui/react-tooltip @radix-ui/react-dropdown-menu @radix-ui/react-tabs class-variance-authority lucide-react
 
-# Install and configure Tailwind CSS
-RUN npm install -D tailwindcss@latest postcss@latest autoprefixer@latest @tailwindcss/postcss@latest
+# Install and configure Tailwind CSS with pinned versions
+RUN npm install -D tailwindcss@3.4.1 postcss@8.4.35 autoprefixer@10.4.17
 
 # Create Tailwind config file with proper content paths and color variables
 RUN echo "/** @type {import('tailwindcss').Config} */\nexport default {\n  content: [\n    \"./index.html\",\n    \"./src/**/*.{js,ts,jsx,tsx}\",\n  ],\n  theme: {\n    extend: {\n      colors: {\n        border: \"hsl(var(--border))\",\n        input: \"hsl(var(--input))\",\n        ring: \"hsl(var(--ring))\",\n        background: \"hsl(var(--background))\",\n        foreground: \"hsl(var(--foreground))\",\n        primary: {\n          DEFAULT: \"hsl(var(--primary))\",\n          foreground: \"hsl(var(--primary-foreground))\",\n        },\n        secondary: {\n          DEFAULT: \"hsl(var(--secondary))\",\n          foreground: \"hsl(var(--secondary-foreground))\",\n        },\n        destructive: {\n          DEFAULT: \"hsl(var(--destructive))\",\n          foreground: \"hsl(var(--destructive-foreground))\",\n        },\n        muted: {\n          DEFAULT: \"hsl(var(--muted))\",\n          foreground: \"hsl(var(--muted-foreground))\",\n        },\n        accent: {\n          DEFAULT: \"hsl(var(--accent))\",\n          foreground: \"hsl(var(--accent-foreground))\",\n        },\n        popover: {\n          DEFAULT: \"hsl(var(--popover))\",\n          foreground: \"hsl(var(--popover-foreground))\",\n        },\n        card: {\n          DEFAULT: \"hsl(var(--card))\",\n          foreground: \"hsl(var(--card-foreground))\",\n        },\n      },\n      borderRadius: {\n        lg: \"var(--radius)\",\n        md: \"calc(var(--radius) - 2px)\",\n        sm: \"calc(var(--radius) - 4px)\",\n      },\n    },\n  },\n  plugins: [],\n}" > tailwind.config.js
 
-# Create PostCSS config file with new PostCSS plugin
-RUN echo "export default {\n  plugins: {\n    '@tailwindcss/postcss': {},\n    autoprefixer: {},\n  },\n}" > postcss.config.js
+# Create PostCSS config file with correct PostCSS plugin
+RUN echo "export default {\n  plugins: {\n    tailwindcss: {},\n    autoprefixer: {},\n  },\n}" > postcss.config.js
 
 # Update src/index.css with Tailwind directives and CSS variables
 RUN echo "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n@layer base {\n  :root {\n    --background: 0 0% 100%;\n    --foreground: 222.2 84% 4.9%;\n    --card: 0 0% 100%;\n    --card-foreground: 222.2 84% 4.9%;\n    --popover: 0 0% 100%;\n    --popover-foreground: 222.2 84% 4.9%;\n    --primary: 222.2 47.4% 11.2%;\n    --primary-foreground: 210 40% 98%;\n    --secondary: 210 40% 96%;\n    --secondary-foreground: 222.2 84% 4.9%;\n    --muted: 210 40% 96%;\n    --muted-foreground: 215.4 16.3% 46.9%;\n    --accent: 210 40% 96%;\n    --accent-foreground: 222.2 84% 4.9%;\n    --destructive: 0 84.2% 60.2%;\n    --destructive-foreground: 210 40% 98%;\n    --border: 214.3 31.8% 91.4%;\n    --input: 214.3 31.8% 91.4%;\n    --ring: 222.2 84% 4.9%;\n    --radius: 0.5rem;\n  }\n}" > src/index.css

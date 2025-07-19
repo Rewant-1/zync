@@ -1,70 +1,136 @@
-# Use a Debian-based Node.js image
+# ===================================================================
+# COMPLETE A-Z VITE + REACT + TYPESCRIPT SANDBOX 
+# EVERYTHING pre-installed - Zero config needed!
+# ===================================================================
+
 FROM node:21-slim
 
-# Install curl for server health checks
-RUN apt-get update && apt-get install -y curl && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Environment variables
+ENV NODE_ENV=development
+ENV VITE_HOST=0.0.0.0
+ENV VITE_PORT=5173
+ENV DEBIAN_FRONTEND=noninteractive
 
-# Copy and make the compile script executable
-COPY compile_page.sh /compile_page.sh
-RUN chmod +x /compile_page.sh
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    inotify-tools \
+    procps \
+    nano \
+    lsof \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
+    && npm config set fund false \
+    && npm config set update-notifier false
 
-# Set working directory for the React app
-WORKDIR /home/user/vite-app
+# Set workspace
+WORKDIR /home/user/workspace
 
-# Create a React + Vite project with TypeScript (pinned version for stability)
-RUN npx --yes create-vite@5.2.0 . --template react-ts
+# Create Vite + React + TypeScript project
+RUN npx --yes create-vite@latest . --template react-ts
 
-# Install dependencies, including vite explicitly and common utility packages
-RUN npm install vite@5.2.0 --save-dev
-RUN npm install clsx tailwind-merge class-variance-authority
+# Install ALL core dependencies
+RUN npm install
 
-# Install Shadcn UI dependencies
-RUN npm install @radix-ui/react-dialog @radix-ui/react-slot @radix-ui/react-separator class-variance-authority lucide-react
+# Install COMPLETE modern UI ecosystem - BRUTE FORCE everything!
+RUN npm install \
+    clsx \
+    tailwind-merge \
+    class-variance-authority \
+    @radix-ui/react-dialog \
+    @radix-ui/react-slot \
+    @radix-ui/react-separator \
+    @radix-ui/react-dropdown-menu \
+    @radix-ui/react-tabs \
+    @radix-ui/react-accordion \
+    @radix-ui/react-alert-dialog \
+    @radix-ui/react-avatar \
+    @radix-ui/react-checkbox \
+    @radix-ui/react-collapsible \
+    @radix-ui/react-context-menu \
+    @radix-ui/react-hover-card \
+    @radix-ui/react-label \
+    @radix-ui/react-menubar \
+    @radix-ui/react-navigation-menu \
+    @radix-ui/react-popover \
+    @radix-ui/react-progress \
+    @radix-ui/react-radio-group \
+    @radix-ui/react-scroll-area \
+    @radix-ui/react-select \
+    @radix-ui/react-sheet \
+    @radix-ui/react-switch \
+    @radix-ui/react-table \
+    @radix-ui/react-textarea \
+    @radix-ui/react-toast \
+    @radix-ui/react-toggle \
+    @radix-ui/react-tooltip \
+    @radix-ui/react-slider \
+    @radix-ui/react-calendar \
+    @radix-ui/react-form \
+    @radix-ui/react-input \
+    @radix-ui/react-card \
+    @radix-ui/react-button \
+    lucide-react \
+    framer-motion \
+    react-beautiful-dnd \
+    @types/react-beautiful-dnd \
+    react-hook-form \
+    @hookform/resolvers \
+    zod \
+    date-fns \
+    recharts \
+    cmdk \
+    sonner \
+    vaul \
+    react-day-picker \
+    react-resizable-panels
 
-# Install and configure Tailwind CSS
-RUN npm install -D tailwindcss@latest postcss@latest autoprefixer@latest @tailwindcss/postcss@latest
+# Install complete Tailwind CSS ecosystem
+RUN npm install -D \
+    tailwindcss@latest \
+    postcss@latest \
+    autoprefixer@latest \
+    @tailwindcss/typography \
+    @tailwindcss/forms \
+    @tailwindcss/container-queries \
+    @tailwindcss/aspect-ratio
 
-# Create Tailwind config file with proper content paths and color variables
-RUN echo "/** @type {import('tailwindcss').Config} */\nexport default {\n  content: [\n    \"./index.html\",\n    \"./src/**/*.{js,ts,jsx,tsx}\",\n  ],\n  theme: {\n    extend: {\n      colors: {\n        border: \"hsl(var(--border))\",\n        input: \"hsl(var(--input))\",\n        ring: \"hsl(var(--ring))\",\n        background: \"hsl(var(--background))\",\n        foreground: \"hsl(var(--foreground))\",\n        primary: {\n          DEFAULT: \"hsl(var(--primary))\",\n          foreground: \"hsl(var(--primary-foreground))\",\n        },\n        secondary: {\n          DEFAULT: \"hsl(var(--secondary))\",\n          foreground: \"hsl(var(--secondary-foreground))\",\n        },\n        destructive: {\n          DEFAULT: \"hsl(var(--destructive))\",\n          foreground: \"hsl(var(--destructive-foreground))\",\n        },\n        muted: {\n          DEFAULT: \"hsl(var(--muted))\",\n          foreground: \"hsl(var(--muted-foreground))\",\n        },\n        accent: {\n          DEFAULT: \"hsl(var(--accent))\",\n          foreground: \"hsl(var(--accent-foreground))\",\n        },\n        popover: {\n          DEFAULT: \"hsl(var(--popover))\",\n          foreground: \"hsl(var(--popover-foreground))\",\n        },\n        card: {\n          DEFAULT: \"hsl(var(--card))\",\n          foreground: \"hsl(var(--card-foreground))\",\n        },\n      },\n      borderRadius: {\n        lg: \"var(--radius)\",\n        md: \"calc(var(--radius) - 2px)\",\n        sm: \"calc(var(--radius) - 4px)\",\n      },\n    },\n  },\n  plugins: [],\n}" > tailwind.config.js
+# Initialize Tailwind
+RUN npx tailwindcss init -p
 
-# Create PostCSS config file with new PostCSS plugin
-RUN echo "export default {\n  plugins: {\n    '@tailwindcss/postcss': {},\n    autoprefixer: {},\n  },\n}" > postcss.config.js
+# Create directories
+RUN mkdir -p src/lib src/components/ui
 
-# Update src/index.css with Tailwind directives and CSS variables
-RUN echo "@tailwind base;\n@tailwind components;\n@tailwind utilities;\n\n@layer base {\n  :root {\n    --background: 0 0% 100%;\n    --foreground: 222.2 84% 4.9%;\n    --card: 0 0% 100%;\n    --card-foreground: 222.2 84% 4.9%;\n    --popover: 0 0% 100%;\n    --popover-foreground: 222.2 84% 4.9%;\n    --primary: 222.2 47.4% 11.2%;\n    --primary-foreground: 210 40% 98%;\n    --secondary: 210 40% 96%;\n    --secondary-foreground: 222.2 84% 4.9%;\n    --muted: 210 40% 96%;\n    --muted-foreground: 215.4 16.3% 46.9%;\n    --accent: 210 40% 96%;\n    --accent-foreground: 222.2 84% 4.9%;\n    --destructive: 0 84.2% 60.2%;\n    --destructive-foreground: 210 40% 98%;\n    --border: 214.3 31.8% 91.4%;\n    --input: 214.3 31.8% 91.4%;\n    --ring: 222.2 84% 4.9%;\n    --radius: 0.5rem;\n  }\n}" > src/index.css
+# Create TypeScript syntax fixer utility
+RUN echo '#!/bin/bash' > /usr/local/bin/fix-typescript && \
+    echo 'find ./src -name "*.ts" -o -name "*.tsx" -o -name "*.js" -o -name "*.jsx" | while read file; do' >> /usr/local/bin/fix-typescript && \
+    echo '  sed -i "s/React\\.SetStateAction<{\\([^}]*\\)}>/React.SetStateAction<\\1>/g" "$file" 2>/dev/null || true' >> /usr/local/bin/fix-typescript && \
+    echo '  sed -i "s/: {{ \\([^}]*\\) }}/: { \\1 }/g" "$file" 2>/dev/null || true' >> /usr/local/bin/fix-typescript && \
+    echo '  sed -i "s/useState<{{ \\([^}]*\\) }}>/useState<{ \\1 }>/g" "$file" 2>/dev/null || true' >> /usr/local/bin/fix-typescript && \
+    echo 'done' >> /usr/local/bin/fix-typescript && \
+    echo 'echo "TypeScript syntax fixed!"' >> /usr/local/bin/fix-typescript && \
+    chmod +x /usr/local/bin/fix-typescript
 
-# Create a simple test App.tsx to verify basic functionality
-RUN echo "import './App.css'\n\nfunction App() {\n  return (\n    <div className=\"min-h-screen bg-background p-8\">\n      <h1 className=\"text-2xl font-bold\">Sandbox Ready</h1>\n    </div>\n  )\n}\n\nexport default App" > src/App.tsx
+# File watcher for auto-fixing
+RUN echo '#!/bin/bash' > /usr/local/bin/watch-typescript && \
+    echo 'if command -v inotifywait &> /dev/null; then' >> /usr/local/bin/watch-typescript && \
+    echo '  inotifywait -m -r --format "%w%f" -e modify,create src/ 2>/dev/null | while read file; do' >> /usr/local/bin/watch-typescript && \
+    echo '    if [[ "$file" =~ \\.(ts|tsx|js|jsx)$ ]]; then' >> /usr/local/bin/watch-typescript && \
+    echo '      fix-typescript' >> /usr/local/bin/watch-typescript && \
+    echo '    fi' >> /usr/local/bin/watch-typescript && \
+    echo '  done' >> /usr/local/bin/watch-typescript && \
+    echo 'else' >> /usr/local/bin/watch-typescript && \
+    echo '  echo "File watching not available"' >> /usr/local/bin/watch-typescript && \
+    echo 'fi' >> /usr/local/bin/watch-typescript && \
+    chmod +x /usr/local/bin/watch-typescript
 
-# Create common UI component directories and files
-RUN mkdir -p src/components/ui src/lib
+# Expose port
+EXPOSE 5173
 
-# Create basic dialog component (commonly used by models)
-RUN echo "import * as React from 'react'\nimport * as DialogPrimitive from '@radix-ui/react-dialog'\nimport { X } from 'lucide-react'\nimport { cn } from '@/lib/utils'\n\nconst Dialog = DialogPrimitive.Root\nconst DialogTrigger = DialogPrimitive.Trigger\nconst DialogPortal = DialogPrimitive.Portal\nconst DialogClose = DialogPrimitive.Close\n\nconst DialogOverlay = React.forwardRef<\n  React.ElementRef<typeof DialogPrimitive.Overlay>,\n  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>\n>(({ className, ...props }, ref) => (\n  <DialogPrimitive.Overlay\n    ref={ref}\n    className={cn(\n      'fixed inset-0 z-50 bg-background/80 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',\n      className\n    )}\n    {...props}\n  />\n))\n\nconst DialogContent = React.forwardRef<\n  React.ElementRef<typeof DialogPrimitive.Content>,\n  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>\n>(({ className, children, ...props }, ref) => (\n  <DialogPortal>\n    <DialogOverlay />\n    <DialogPrimitive.Content\n      ref={ref}\n      className={cn(\n        'fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%] sm:rounded-lg',\n        className\n      )}\n      {...props}\n    >\n      {children}\n      <DialogPrimitive.Close className=\"absolute right-4 top-4 rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground\">\n        <X className=\"h-4 w-4\" />\n        <span className=\"sr-only\">Close</span>\n      </DialogPrimitive.Close>\n    </DialogPrimitive.Content>\n  </DialogPortal>\n))\n\nexport { Dialog, DialogPortal, DialogOverlay, DialogClose, DialogTrigger, DialogContent }" > src/components/ui/dialog.tsx
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:5173/ || exit 1
 
-# Create utils function (commonly needed)
-RUN echo "import { type ClassValue, clsx } from 'clsx'\nimport { twMerge } from 'tailwind-merge'\n\nexport function cn(...inputs: ClassValue[]) {\n  return twMerge(clsx(inputs))\n}" > src/lib/utils.ts
-
-# Create basic button component
-RUN echo "import * as React from 'react'\nimport { Slot } from '@radix-ui/react-slot'\nimport { cva, type VariantProps } from 'class-variance-authority'\nimport { cn } from '@/lib/utils'\n\nconst buttonVariants = cva(\n  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',\n  {\n    variants: {\n      variant: {\n        default: 'bg-primary text-primary-foreground hover:bg-primary/90',\n        destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90',\n        outline: 'border border-input bg-background hover:bg-accent hover:text-accent-foreground',\n        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',\n        ghost: 'hover:bg-accent hover:text-accent-foreground',\n        link: 'text-primary underline-offset-4 hover:underline',\n      },\n      size: {\n        default: 'h-10 px-4 py-2',\n        sm: 'h-9 rounded-md px-3',\n        lg: 'h-11 rounded-md px-8',\n        icon: 'h-10 w-10',\n      },\n    },\n    defaultVariants: {\n      variant: 'default',\n      size: 'default',\n    },\n  }\n)\n\nexport interface ButtonProps\n  extends React.ButtonHTMLAttributes<HTMLButtonElement>,\n    VariantProps<typeof buttonVariants> {\n  asChild?: boolean\n}\n\nconst Button = React.forwardRef<HTMLButtonElement, ButtonProps>(\n  ({ className, variant, size, asChild = false, ...props }, ref) => {\n    const Comp = asChild ? Slot : 'button'\n    return (\n      <Comp\n        className={cn(buttonVariants({ variant, size, className }))}\n        ref={ref}\n        {...props}\n      />\n    )\n  }\n)\nButton.displayName = 'Button'\n\nexport { Button, buttonVariants }" > src/components/ui/button.tsx
-
-# Create basic card component
-RUN echo "import * as React from 'react'\nimport { cn } from '@/lib/utils'\n\nconst Card = React.forwardRef<\n  HTMLDivElement,\n  React.HTMLAttributes<HTMLDivElement>\n>(({ className, ...props }, ref) => (\n  <div\n    ref={ref}\n    className={cn(\n      'rounded-lg border bg-card text-card-foreground shadow-sm',\n      className\n    )}\n    {...props}\n  />\n))\n\nconst CardHeader = React.forwardRef<\n  HTMLDivElement,\n  React.HTMLAttributes<HTMLDivElement>\n>(({ className, ...props }, ref) => (\n  <div\n    ref={ref}\n    className={cn('flex flex-col space-y-1.5 p-6', className)}\n    {...props}\n  />\n))\n\nconst CardTitle = React.forwardRef<\n  HTMLParagraphElement,\n  React.HTMLAttributes<HTMLHeadingElement>\n>(({ className, ...props }, ref) => (\n  <h3\n    ref={ref}\n    className={cn(\n      'text-2xl font-semibold leading-none tracking-tight',\n      className\n    )}\n    {...props}\n  />\n))\n\nconst CardDescription = React.forwardRef<\n  HTMLParagraphElement,\n  React.HTMLAttributes<HTMLParagraphElement>\n>(({ className, ...props }, ref) => (\n  <p\n    ref={ref}\n    className={cn('text-sm text-muted-foreground', className)}\n    {...props}\n  />\n))\n\nconst CardContent = React.forwardRef<\n  HTMLDivElement,\n  React.HTMLAttributes<HTMLDivElement>\n>(({ className, ...props }, ref) => (\n  <div ref={ref} className={cn('p-6 pt-0', className)} {...props} />\n))\n\nconst CardFooter = React.forwardRef<\n  HTMLDivElement,\n  React.HTMLAttributes<HTMLDivElement>\n>(({ className, ...props }, ref) => (\n  <div\n    ref={ref}\n    className={cn('flex items-center p-6 pt-0', className)}\n    {...props}\n  />\n))\n\nexport { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent }" > src/components/ui/card.tsx
-
-# Create basic input component
-RUN echo "import * as React from 'react'\nimport { cn } from '@/lib/utils'\n\nexport interface InputProps\n  extends React.InputHTMLAttributes<HTMLInputElement> {}\n\nconst Input = React.forwardRef<HTMLInputElement, InputProps>(\n  ({ className, type, ...props }, ref) => {\n    return (\n      <input\n        type={type}\n        className={cn(\n          'flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',\n          className\n        )}\n        ref={ref}\n        {...props}\n      />\n    )\n  }\n)\nInput.displayName = 'Input'\n\nexport { Input }" > src/components/ui/input.tsx
-
-# Create vite.config.ts with proper server configuration and CSS processing
-RUN echo "import { defineConfig } from 'vite'\nimport react from '@vitejs/plugin-react'\nimport path from 'path'\n\nexport default defineConfig({\n  plugins: [react()],\n  css: {\n    postcss: './postcss.config.js',\n  },\n  server: {\n    host: '0.0.0.0',\n    port: 5173,\n    allowedHosts: ['*.e2b.app', '*.inngest.com']\n  },\n  resolve: {\n    alias: {\n      '@': path.resolve(__dirname, './src')\n    }\n  }\n})" > vite.config.ts
-
-# Update tsconfig.json to include baseUrl and paths with comment removal
-RUN node -e "const fs = require('fs'); const tsconfigPath = 'tsconfig.json'; let tsconfig = { compilerOptions: {} }; if (fs.existsSync(tsconfigPath)) { let content = fs.readFileSync(tsconfigPath, 'utf8'); content = content.replace(/\/\/.*$/gm, '').replace(/\/\*[\s\S]*?\*\//gm, ''); try { tsconfig = JSON.parse(content); } catch (e) { console.error('Invalid JSON in tsconfig.json, using default'); } } tsconfig.compilerOptions.baseUrl = '.'; tsconfig.compilerOptions.paths = { '@/*': ['./src/*'] }; fs.writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2));"
-
-# Ensure src directory exists for dynamic code
-RUN mkdir -p /home/user/src
-
-# Move the app to the home directory efficiently
-RUN cp -r /home/user/vite-app/. /home/user/ && rm -rf /home/user/vite-app
-
-# Healthcheck to verify Vite server
-HEALTHCHECK --interval=30s --timeout=3s CMD curl -f http://localhost:5173 || exit 1
+# Start the compile script
+CMD ["bash", "./compile_page.sh"]

@@ -46,12 +46,13 @@ const [tabState, setTabState] = useState<"preview" | "code">("preview");
                         </ErrorBoundary>
                         
                         <ErrorBoundary fallback={<p>Failed to load messages</p>}>
-                        <Suspense fallback ={<p>Loading messages...</p>}>
+                        <Suspense fallback={<p>Loading messages...</p>}>
             <MessagesContainer 
             activeFragment={activeFragment}
             setActiveFragment={setActiveFragment}
             
-            projectId={projectId} /></Suspense>
+            projectId={projectId} />
+            </Suspense>
             </ErrorBoundary>
             </ResizablePanel>
 
@@ -75,11 +76,11 @@ className="h-full gap-y-0"
                   <CodeIcon/><span>Code</span>
                 </TabsTrigger>            
             </TabsList>
-            <div className="ml-auto flex items-center-center gap-x-2">
-                {hasProAccess && (
-<Button asChild size="sm" variant="tertiary">
+            <div className="ml-auto flex items-center gap-x-2">
+                {!hasProAccess && (
+<Button asChild size="sm" variant="secondary">
     <Link href="/pricing">
-    <CrownIcon />Upgrade</Link>
+    <CrownIcon className="w-4 h-4 mr-1" />Upgrade</Link>
 </Button>)}
 <UserControl />
 

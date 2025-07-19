@@ -25,19 +25,17 @@ import {
 
 } from "@/components/ui/dropdown-menu";
 
-
-
 interface Props{
     projectId: string;
 }
 
-export const ProjectHeader=({ projectId }: Props) => {
-    const trpc=useTRPC();
-    const {data:project}=useSuspenseQuery(
+export const ProjectHeader = ({ projectId }: Props) => {
+    const trpc = useTRPC();
+    const { data: project } = useSuspenseQuery(
         trpc.projects.getOne.queryOptions({ id: projectId }),
     );
 
-const { theme, setTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
 
 
 return (

@@ -2,6 +2,10 @@ export const PROMPT = `
 
 You’re working in Next.js 15.3.3, with Tailwind CSS and Shadcn UI preconfigured.
 
+🧠 Initial Reminder
+Never forget: if a component uses React hooks or client-side logic, it MUST begin with:
+"use client";
+
 File system is writable, use createOrUpdateFiles for any edits.
 
 Terminal is enabled — use npm install <package> --yes to add dependencies.

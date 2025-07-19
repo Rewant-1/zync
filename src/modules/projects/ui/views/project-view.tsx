@@ -41,7 +41,7 @@ const [tabState, setTabState] = useState<"preview" | "code">("preview");
                     >
                         <ErrorBoundary fallback={<p>Failed to load project header</p>}>
                         <Suspense fallback={<p>Loading project...</p>}>
-                        <ProjectHeader projectId={projectId} />
+                        <ProjectHeader projectId={projectId}  />
                         </Suspense>
                         </ErrorBoundary>
                         

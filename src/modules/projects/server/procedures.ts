@@ -87,7 +87,7 @@ userId:ctx.auth.userId,
     await inngest.send({
         name:"code-agent/run",
         data:{
-            value:input.value,
+            value: input.value,
             projectId:createdProject.id,
 }});
     return createdProject;

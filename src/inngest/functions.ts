@@ -98,8 +98,9 @@ const state = createState<AgentState>({
             try {
               const updateFiles=network.state.data.files || {};
               const sandbox =await getSandbox(sandboxId);
+              
               for (const file of files){
-                await sandbox.files.write(file.path,file.content);
+                await sandbox.files.write(file.path, file.content);
                 updateFiles[file.path] = file.content;
               }
               return updateFiles;

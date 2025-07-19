@@ -80,7 +80,7 @@ try {
     await inngest.send({
         name:"code-agent/run",
         data:{
-            value:input.value,
+            value: input.value,
             projectId:input.projectId,
 }});
     return createdMessage;

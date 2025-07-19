@@ -37,7 +37,7 @@ const resetTime=useMemo(() =>{
             <div className="flex items-center gap-x-2">
                 <div>
                     <p className="text-sm">
-                        {points} {hasProAccess ?"":"free"} free credits remaining
+                        {points} {hasProAccess ?"":"free"} credits remaining
                     </p>
                     <p className="text-xs text-muted-foreground">
                         Resets in {""}{resetTime}

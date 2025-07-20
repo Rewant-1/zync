@@ -97,7 +97,7 @@ export const Hero = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            Transform your ideas into fully functional web apps right on the go with AI-driven code generation 
+            Transform your ideas into fully functional web apps on the go with AI-driven code generation 
              and sandboxed execution environments.
           </motion.p>
 

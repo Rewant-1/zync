@@ -33,7 +33,7 @@ const resetTime=useMemo(() =>{
 
 
     return (
-        <div className="rounded-t-xl bg-background border border-b-0 p-2.5">
+        <div className="rounded-t-xl bg-background border border-b-0 p-2.5 mb-0">
             <div className="flex items-center gap-x-2">
                 <div>
                     <p className="text-sm">
@@ -43,14 +43,19 @@ const resetTime=useMemo(() =>{
                         Resets in {""}{resetTime}
                     </p>
                 </div>
-                {!hasProAccess &&(
-                <Button
-                asChild
-                size="sm"
-                variant="tertiary"
-                className="ml-auto"
-                ><Link href="/pricing">
-                    <CrownIcon />Upgrade</Link></Button>)}
+                {!hasProAccess && (
+                    <Button
+                        asChild
+                        size="sm"
+                        variant="tertiary"
+                        className="ml-auto"
+                    >
+                        <Link href="/pricing">
+                            <CrownIcon className="w-4 h-4 mr-1" />
+                            Upgrade
+                        </Link>
+                    </Button>
+                )}
             </div>
         </div>
        

@@ -63,7 +63,7 @@ export const Hero = () => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.4 }}
-            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-black/40 backdrop-blur-sm border border-[#b96aff]/20 mb-8 shadow-2xl"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-black/40 backdrop-blur-sm border border-[#b96aff]/20 mb-3 shadow-2xl"
             whileHover={{ scale: 1.08 }}
           >
             <Sparkles className="w-5 h-5 text-[#b96aff]" />
@@ -97,8 +97,8 @@ export const Hero = () => {
             transition={{ duration: 0.8, delay: 0.8 }}
             className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
           >
-            Transform your ideas into fully functional web applications with AI-driven code generation, 
-            real-time collaboration, and sandboxed execution environments.
+            Transform your ideas into fully functional web apps right on the go with AI-driven code generation 
+             and sandboxed execution environments.
           </motion.p>
 
           {/* CTA Buttons */}

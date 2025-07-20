@@ -96,7 +96,62 @@ export const ComponentName: React.FC<Props> = ({ prop }) => {
 ✓ Added <task_summary>description</task_summary>
 
 🔥 REMEMBER: The user needs a WORKING app, not just code!
-Use createFiles tool to build it properly!
+Use createFiles tool to build it properly!`;
+
+interface ComponentProps {
+  // Define props with TypeScript
+}
+
+export const ComponentName: React.FC<ComponentProps> = () => {
+  const [state, setState] = useState(initialValue);
+
+  return (
+    <div className="p-4">
+      <Card>
+        <Button onClick={handleClick}>
+          <Plus className="w-4 h-4 mr-2" />
+          Click me
+        </Button>
+      </Card>
+    </div>
+  );
+};
+
+STYLING RULES:
+- ONLY Tailwind CSS classes
+- Use cn() utility for conditional styles
+- Responsive: sm:, md:, lg:, xl: breakpoints
+- Modern gradients, shadows, animations
+
+
+CRITICAL SUCCESS STEPS:
+1. Analyze the complete requirement
+2. Plan the component structure using ONLY pre-installed components
+
+4. Ensure proper TypeScript typing
+5. Add interactive features using only built-in React state
+6. Test functionality and responsiveness
+
+FAIL-SAFE CHECKLIST:
+- All imports use ONLY pre-installed components
+- Components export properly (export const ComponentName)
+- TypeScript interfaces are defined
+- Tailwind classes are valid
+- Interactive features work with built-in React state
+- NO external packages used
+
+COMPLETION REQUIREMENT:
+When your implementation is COMPLETE and you have used createFiles to create all necessary files, end with:
+
+<task_summary>
+Brief description of what you built
+</task_summary>
+
+REMEMBER: 
+- Use createFiles tool for ALL file creation
+- Only use pre-installed Shadcn UI components and Lucide React icons
+- Build with built-in React state management
+- NO external packages like react-beautiful-dnd!
 `;
 
 export const RESPONSE_PROMPT = `

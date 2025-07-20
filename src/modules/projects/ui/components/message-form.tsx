@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import {Form, FormField} from "@/components/ui/form";
 import { Usage } from "./usage";
 import { useRouter } from "next/navigation";
+
 interface Props{
     projectId: string;
 }
@@ -21,6 +22,7 @@ const formSchema = z.object({
          .min(1,{message: "Value is required"})
         .max(10000, {message: "Value is too long"}),
 })
+
 export const MessageForm = ({ projectId }: Props) => {
     const router = useRouter();
    
@@ -29,7 +31,6 @@ export const MessageForm = ({ projectId }: Props) => {
 
     const {data:usage}=useQuery(trpc.usage.status.queryOptions());
     
-    // This can be a prop or state to control the visibility of usage
     const form=useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
@@ -37,90 +38,98 @@ export const MessageForm = ({ projectId }: Props) => {
         },
     });
 
-const createMessage= useMutation(trpc.messages.create.mutationOptions({
-    onSuccess:()=>{
-        form.reset();
-        queryClient.invalidateQueries(trpc.messages.getMany.queryOptions({projectId}),);
- queryClient.invalidateQueries(trpc.usage.status.queryOptions()); 
-    },  
-    
-    onError :(error) => {
-        toast.error(error.message);
-    if(error.data?.code==="TOO_MANY_REQUESTS"){
-        router.push("/pricing");
-    }
-    
-    },
-}))
+    const createMessage= useMutation(trpc.messages.create.mutationOptions({
+        onSuccess:()=>{
+            form.reset();
+            queryClient.invalidateQueries(trpc.messages.getMany.queryOptions({projectId}),);
+            queryClient.invalidateQueries(trpc.usage.status.queryOptions()); 
+        },  
+        
+        onError :(error) => {
+            toast.error(error.message);
+            if(error.data?.code==="TOO_MANY_REQUESTS"){
+                router.push("/pricing");
+            }
+        },
+    }))
 
     const onSubmit=async(values:z.infer<typeof formSchema> ) => {
         await createMessage.mutateAsync({
             value:values.value,
             projectId,
-        });}
+        });
+    }
 
-         const [isFocused, setIsFocused] = useState(false);
-            const showUsage = !!usage;
-        const isPending=createMessage.isPending;
-        const isButtonDisabled=isPending || !form.formState.isValid;
-
+    const [isFocused, setIsFocused] = useState(false);
+    const showUsage = !!usage;
+    const isPending=createMessage.isPending;
+    const isButtonDisabled=isPending || !form.formState.isValid;
 
     return(
-        <Form {...form}>
-            {showUsage && (
-                <Usage 
-                points={usage.remainingPoints}
-                msBeforeNext={ usage.msBeforeNext }/>
-            )}
-            
-            <form onSubmit={form.handleSubmit(onSubmit)}
-        className={cn(
-            "relative border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
-        isFocused && "shadow-xs",
-    showUsage && "rounded-t-none",)}> 
-    
-    <FormField
-    control={form.control}
-    name="value"
-    render={({ field }) => (
-        <TextareaAutosize
-            {...field}
-            disabled={isPending}
-            placeholder="What would you like to build"
-            className="w-full resize-none pt-4 bg-transparent outline-none "
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            minRows={2}
-            maxRows={8}
-            onKeyDown={(e)=> {
-                if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
-                    e.preventDefault();
-                    form.handleSubmit(onSubmit)(e);
-                }}}
-        />
-    )}
-    />
-    <div className="flex gap-x-2 items-end justify-between pt-2">
-        <div className="text-[10px] text-muted-foreground font-mono">
-            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
-                <span className="text-xs">⌘</span>Enter
-            </kbd>
-            <span className="ml-1">to submit</span>
+        <div className="relative w-full">
+            <Form {...form}>
+                {showUsage && (
+                    <div className="relative z-20 mb-0">
+                        <Usage 
+                            points={usage.remainingPoints}
+                            msBeforeNext={usage.msBeforeNext}
+                        />
+                    </div>
+                )}
+                
+                <form onSubmit={form.handleSubmit(onSubmit)}
+                    className={cn(
+                        "relative z-10 border p-4 pt-1 rounded-xl bg-sidebar dark:bg-sidebar transition-all",
+                        isFocused && "shadow-xs",
+                        showUsage && "rounded-t-none border-t-0",
+                    )}
+                >
+                    <FormField
+                        control={form.control}
+                        name="value"
+                        render={({ field }) => (
+                            <TextareaAutosize
+                                {...field}
+                                disabled={isPending}
+                                placeholder="What would you like to build"
+                                className="w-full resize-none pt-4 bg-transparent outline-none"
+                                onFocus={() => setIsFocused(true)}
+                                onBlur={() => setIsFocused(false)}
+                                minRows={2}
+                                maxRows={8}
+                                onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+                                    if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) {
+                                        e.preventDefault();
+                                        form.handleSubmit(onSubmit)(e);
+                                    }
+                                }}
+                            />
+                        )}
+                    />
+                    <div className="flex gap-x-2 items-end justify-between pt-2">
+                        <div className="text-[10px] text-muted-foreground font-mono">
+                            <kbd className="ml-auto pointer-events-none inline-flex h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium text-muted-foreground opacity-100">
+                                <span className="text-xs">⌘</span>Enter
+                            </kbd>
+                            <span className="ml-1">to submit</span>
+                        </div>
+                        <Button
+                            type="submit"
+                            disabled={isButtonDisabled} 
+                            className={cn(
+                                "size-8 rounded-full",
+                                isButtonDisabled && "bg-muted-foreground border"
+                            )}
+                        >
+                            {isPending ? (
+                                <Loader2Icon className="animate-spin size-4" />
+                            ) : (
+                                <ArrowUpIcon className="size-4" />
+                            )}
+                        </Button>
+                    </div>
+                </form>
+            </Form>
         </div>
-        <Button
-            type="submit"
-            disabled={isButtonDisabled} 
-            className={cn(
-                "size-8 rounded-full",
-                isButtonDisabled && "bg-muted-foreground border"
-            )}
-        >
-            {isPending ? (
-                <Loader2Icon className="animate-spin size-4" />
-            ) : (
-                <ArrowUpIcon className="size-4" />
-            )}
-        </Button>
-    </div>
-</form></Form>
-    );}
+    );
+};

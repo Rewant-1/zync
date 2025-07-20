@@ -330,7 +330,9 @@ Project Configuration:
                       <div
                         className="w-3 h-3 rounded-full mx-auto mt-1"
                         style={{ backgroundColor: theme.accent }}
-                      />                  </CardContent>
+                      />
+                    </div>
+                  </CardContent>
                 </Card>
               ))}
             </div>

@@ -11,21 +11,27 @@ const isPublicRoute = createRouteMatcher([
 
 const isDashboardRoute = createRouteMatcher(["/dashboard(.*)"])
 
+// Helper function to check if user should be redirected due to lack of authentication
+const shouldRedirectForAuth = (userId: string | null, req: Request): NextResponse | null => {
+  if (!userId) {
+    return NextResponse.redirect(new URL('/', req.url));
+  }
+  return null;
+};
+
 export default clerkMiddleware(async (auth, req) => {
   const { userId } = await auth();
   
   // Protect dashboard routes - redirect to home if not authenticated
   if (isDashboardRoute(req)) {
-    if (!userId) {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+    const redirectResponse = shouldRedirectForAuth(userId, req);
+    if (redirectResponse) return redirectResponse;
   }
   
-  // Allow public routes
+  // Protect non-public routes - redirect to home if not authenticated
   if (!isPublicRoute(req) && !isDashboardRoute(req)) {
-    if (!userId) {
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+    const redirectResponse = shouldRedirectForAuth(userId, req);
+    if (redirectResponse) return redirectResponse;
   }
 })
 

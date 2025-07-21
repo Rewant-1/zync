@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   // Performance optimizations
   poweredByHeader: false,
   
-  // Headers for iframe embedding
+  // Security headers: prevent embedding this app, but allow embedding sandbox content
   async headers() {
     return [
       {
@@ -27,7 +27,6 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],

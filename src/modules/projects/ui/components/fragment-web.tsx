@@ -32,7 +32,7 @@ export function FragmentWeb({data}: Props) {
     };
     
     const handleCopy=() => {
-        navigator.clipboard.writeText(data.sandboxUrl );
+        navigator.clipboard.writeText(safeSandboxUrl );
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
     };

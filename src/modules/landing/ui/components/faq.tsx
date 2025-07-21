@@ -81,7 +81,7 @@ export const FAQ = () => {
               viewport={{ once: true }}
               whileHover={{ scale: 1.03 }}
             >
-              <Card className="border border-[rgba(185,106,255,0.15)] bg-card/80 backdrop-blur-sm hover:border-[rgba(185,106,255,0.3)] transition-all duration-300 hover:shadow-lg hover:shadow-[#b96aff]/10 group-hover:scale-105 relative overflow-hidden">
+              <Card className="border border-[rgba(185,106,255,0.15)] bg-card/80 backdrop-blur-sm hover:border-[rgba(185,106,255,0.3)] transition-all duration-300 hover:shadow-lg hover:shadow-[#b96aff]/10 relative overflow-hidden">
                 <Collapsible 
                   open={openItems.includes(index)}
                   onOpenChange={() => toggleItem(index)}

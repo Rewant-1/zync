@@ -222,7 +222,9 @@ export const codeAgentFunction = inngest.createFunction(
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
       const host = sandbox.getHost(5173); // Changed to Vite's port
-      return `http://${host}`;
+      // Force HTTPS for deployed environments to avoid mixed content issues
+      const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http';
+      return `${protocol}://${host}`;
     });
 
     // Save to database

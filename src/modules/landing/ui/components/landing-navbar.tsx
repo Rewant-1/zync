@@ -24,10 +24,10 @@ export const LandingNavbar = () => {
         initial={{ y: -100, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(186,85,255,0.12)] shadow-xl backdrop-blur-xl rounded-2xl w-[90%] max-w-4xl"
+        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(186,85,255,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl"
       >
         <div className="px-4 sm:px-6">
-          <div className="flex justify-between items-center h-14">
+          <div className="flex justify-between items-center h-12">
             
             {/* Logo Section */}
             <Link href="/" className="flex items-center gap-2 group">
@@ -47,12 +47,12 @@ export const LandingNavbar = () => {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-6">
+            <div className="hidden md:flex items-center gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative group px-2 py-1 rounded-lg transition-all duration-300 hover:bg-[#1a1a1a] border border-transparent hover:border-[rgba(186,85,255,0.12)]"
+                  className="relative group px-3 py-1.5 rounded-lg transition-all duration-300 hover:bg-[#1a1a1a] border border-transparent hover:border-[rgba(186,85,255,0.12)]"
                 >
                   <span className="text-sm font-medium text-neutral-400 group-hover:text-[#b96aff] transition-colors">
                     {link.label}

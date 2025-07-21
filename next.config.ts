@@ -9,6 +9,25 @@ const nextConfig: NextConfig = {
   // Performance optimizations
   poweredByHeader: false,
   
+  // Headers for iframe embedding
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "frame-src 'self' *.e2b.app *.inngest.com; frame-ancestors 'self';",
+          },
+        ],
+      },
+    ];
+  },
+  
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],

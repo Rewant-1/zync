@@ -60,9 +60,9 @@ export const FAQ = () => {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-heading">
             Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] bg-clip-text text-transparent">
               Questions
             </span>
           </h2>
@@ -81,21 +81,19 @@ export const FAQ = () => {
               viewport={{ once: true }}
               whileHover={{ scale: 1.03 }}
             >
-              <Card className="border-0 shadow-2xl hover:shadow-3xl transition-shadow duration-300 glass group-hover:scale-105 relative overflow-hidden">
-                {/* Animated glowing border */}
-                <div className="absolute -inset-1 rounded-2xl pointer-events-none group-hover:opacity-100 opacity-0 transition-all duration-300 bg-gradient-to-r from-[#b96aff]/30 via-[#00fff0]/30 to-[#fff]/30 blur-lg" />
+              <Card className="border border-[rgba(185,106,255,0.15)] bg-card/80 backdrop-blur-sm hover:border-[rgba(185,106,255,0.3)] transition-all duration-300 hover:shadow-lg hover:shadow-[#b96aff]/10 group-hover:scale-105 relative overflow-hidden">
                 <Collapsible 
                   open={openItems.includes(index)}
                   onOpenChange={() => toggleItem(index)}
                 >
                   <CollapsibleTrigger asChild>
-                    <CardHeader className="cursor-pointer hover:bg-muted/50 transition-colors duration-200 p-6">
-                      <CardTitle className="flex items-center justify-between text-left">
-                        <span className="text-lg font-semibold pr-8">{faq.question}</span>
+                    <CardHeader className="cursor-pointer hover:bg-accent/10 transition-colors duration-200 p-6">
+                      <CardTitle className="flex items-center justify-between text-left group">
+                        <span className="text-lg font-semibold pr-8 font-heading group-hover:text-primary transition-colors">{faq.question}</span>
                         {openItems.includes(index) ? (
-                          <ChevronUp className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                          <ChevronUp className="w-5 h-5 text-primary flex-shrink-0" />
                         ) : (
-                          <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                          <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 group-hover:text-primary transition-colors" />
                         )}
                       </CardTitle>
                     </CardHeader>

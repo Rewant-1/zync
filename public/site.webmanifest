@@ -3,6 +3,8 @@
   "short_name": "Zync",
   "description": "Transform your ideas into fully functional web applications with AI-driven code generation.",
   "start_url": "/",
+  "scope": "/",
+  "lang": "en",
   "display": "standalone",
   "background_color": "#000000",
   "theme_color": "#b96aff",

@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   },
   // Basic Open Graph for logo sharing
   openGraph: {
+    title: "zync - Build Web Apps with AI",
+    description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
+    type: "website",
+    url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     images: ["/logo.png"],
   },
 };

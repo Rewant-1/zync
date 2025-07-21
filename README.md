@@ -16,8 +16,6 @@ Zync represents the cutting edge of AI-assisted development, enabling users to g
 - **Zero-to-Deploy**: Generate complete applications in minutes, not hours
 - **AI-First Architecture**: Seamless integration of Google Gemini 2.0 Flash
 - **Production Ready**: Enterprise-grade security, performance, and scalability
-- **Real-time Collaboration**: Live preview with instant feedback loops
-
 ## ✨ Technical Excellence
 
 ### **🔥 Core Innovations**
@@ -144,16 +142,11 @@ model Project {
 - **Error Recovery**: Intelligent debugging and fixes
 - **Context Awareness**: Maintains conversation history
 
-### **⚡ Real-time Collaboration**
-- **Live Updates**: WebSocket-like experience with polling
-- **Fragment Management**: Version control for generated code
-- **Shared Workspaces**: Collaborative development environment
-
 ### **🎯 Developer Experience**
 - **Type Safety**: End-to-end TypeScript
 - **Hot Reloading**: Instant development feedback
 - **Error Boundaries**: Graceful error handling
-- **Responsive Design**: Mobile-first approach
+-
 
 ## 📊 Performance Metrics
 
@@ -212,8 +205,8 @@ cp .env.example .env
 npx prisma migrate deploy
 npx prisma generate
 
-# Start development
-npm run build && npm start
+# Start development server
+npm run dev
 ```
 
 ## 🌟 Portfolio Highlights
@@ -230,6 +223,5 @@ This project demonstrates:
 
 ---
 
-**🔗 Connect with me:** [LinkedIn](https://www.linkedin.com/in/your-profile) | [GitHub](https://github.com/your-username) | [Portfolio](https://your-portfolio.com)
 
 *Built with passion for cutting-edge technology and exceptional user experiences.*

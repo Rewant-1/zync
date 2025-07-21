@@ -14,6 +14,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://zync-ashen.vercel.app/"),
   title: "zync - Build Web Apps with AI",
   description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
   icons: {
@@ -27,7 +28,6 @@ export const metadata: Metadata = {
     title: "zync - Build Web Apps with AI",
     description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
     type: "website",
-    url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     images: ["/logo.png"],
   },
 };

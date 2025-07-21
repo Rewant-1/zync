@@ -15,7 +15,18 @@ Zync represents the cutting edge of AI-assisted development, enabling users to g
 ### 🏆 **Key Achievements**
 - **Zero-to-Deploy**: Generate complete applications in minutes, not hours
 - **AI-First Architecture**: Seamless integration of Google Gemini 2.0 Flash
+- **Creator Mode**: Interactive theme selection and tech stack customization
+- **Enhanced AI Prompting**: Context-aware prompt enhancement and suggestions
 - **Production Ready**: Enterprise-grade security, performance, and scalability
+
+### 🎨 **Creator Mode Features**
+
+- **Dynamic Theme Selection**: Choose from multiple UI themes on-the-fly
+- **Tech Stack Customization**: Select preferred frameworks and libraries
+- **AI Prompt Enhancement**: Intelligent prompt suggestions and context enrichment
+- **Real-time Preview**: See changes instantly with live preview updates
+- **Template Library**: Pre-built templates for common application patterns
+
 ## ✨ Technical Excellence
 
 ### **🔥 Core Innovations**
@@ -136,9 +147,17 @@ model Project {
 
 ## 🚀 Key Features
 
+### **🎨 Creator Mode & Customization**
+- **Interactive Theme Selection**: Switch between multiple UI themes instantly
+- **Dynamic Tech Stack**: Choose frameworks and libraries on-the-go
+- **AI Prompt Enhancement**: Intelligent context enrichment and suggestions
+- **Template Library**: Pre-built patterns for rapid development
+- **Real-time Customization**: See changes applied instantly
+
 ### **🤖 AI-Powered Development**
 - **Natural Language Processing**: Convert descriptions to code
 - **Multi-step Reasoning**: Complex application generation
+- **Enhanced Prompting**: AI-assisted prompt optimization and context awareness
 - **Error Recovery**: Intelligent debugging and fixes
 - **Context Awareness**: Maintains conversation history
 

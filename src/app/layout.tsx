@@ -15,7 +15,17 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "zync - Build Web Apps with AI",
-  description: "Transform your ideas into fully functional web applications with AI-driven code generation, real-time collaboration, and sandboxed execution environments.",
+  description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/logo.png", type: "image/png" },
+    ],
+  },
+  // Basic Open Graph for logo sharing
+  openGraph: {
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({

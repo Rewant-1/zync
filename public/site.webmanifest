@@ -1,0 +1,21 @@
+{
+  "name": "Zync AI App Builder",
+  "short_name": "Zync",
+  "description": "Transform your ideas into fully functional web applications with AI-driven code generation.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#b96aff",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

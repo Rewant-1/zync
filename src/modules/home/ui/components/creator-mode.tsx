@@ -16,7 +16,6 @@ import {
   Monitor, 
   ShoppingCart, 
   Users, 
-  Briefcase,
   Code2,
   Sparkles,
   ArrowUpIcon,
@@ -34,7 +33,6 @@ const APP_TYPES = [
   { id: "admin", label: "Admin Dashboard", icon: Monitor, description: "Control panels & analytics" },
   { id: "ecommerce", label: "E-commerce", icon: ShoppingCart, description: "Online stores & marketplaces" },
   { id: "social", label: "Social Platform", icon: Users, description: "Community & networking apps" },
-  { id: "business", label: "Business App", icon: Briefcase, description: "Enterprise & productivity tools" },
 ];
 
 const TECH_STACKS = [
@@ -175,18 +173,18 @@ Project Configuration:
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h3 className="text-2xl font-bold text-white">What&apos;s your project name?</h3>
-              <p className="text-neutral-400">Give your project a memorable name</p>
+          <div className="space-y-8">
+            <div className="text-center space-y-4">
+              <h3 className="text-3xl font-bold text-white">What&apos;s your project name?</h3>
+              <p className="text-neutral-400 text-lg">Give your project a memorable name</p>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="projectName" className="text-white">Project Name</Label>
+            <div className="space-y-4">
+              <Label htmlFor="projectName" className="text-white text-lg">Project Name</Label>
               <Input
                 id="projectName"
                 {...form.register("projectName")}
                 placeholder="e.g., My Awesome App"
-                className="bg-[rgba(185,106,255,0.05)] border-[rgba(185,106,255,0.2)] text-white placeholder:text-neutral-500"
+                className="bg-[rgba(185,106,255,0.05)] border-[rgba(185,106,255,0.2)] text-white placeholder:text-neutral-500 rounded-lg p-4"
               />
               {form.formState.errors.projectName && (
                 <p className="text-red-400 text-sm">{form.formState.errors.projectName.message}</p>
@@ -307,27 +305,27 @@ Project Configuration:
 
       case 5:
         return (
-          <div className="space-y-6">
-            <div className="text-center space-y-2">
-              <h3 className="text-2xl font-bold text-white">Pick your theme</h3>
-              <p className="text-neutral-400">Choose a color scheme for your project</p>
+          <div className="space-y-8">
+            <div className="text-center space-y-4">
+              <h3 className="text-3xl font-bold text-white">Pick your theme</h3>
+              <p className="text-neutral-400 text-lg">Choose a color scheme for your project</p>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {THEMES.map((theme) => (
                 <Card
                   key={theme.id}
                   className={cn(
-                    "cursor-pointer transition-all duration-300 border-[rgba(185,106,255,0.2)] bg-[rgba(185,106,255,0.05)] hover:bg-[rgba(185,106,255,0.1)]",
+                    "cursor-pointer transition-all duration-300 border-[rgba(185,106,255,0.2)] bg-[rgba(185,106,255,0.05)] hover:bg-[rgba(185,106,255,0.1)] rounded-lg p-6",
                     form.watch("theme") === theme.id && "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
                   )}
                   onClick={() => form.setValue("theme", theme.id)}
                 >
-                  <CardContent className="p-4 text-center space-y-3">
-                    <div className={cn("w-full h-12 rounded-lg bg-gradient-to-r", theme.gradient)} />
+                  <CardContent className="p-6 text-center space-y-4">
+                    <div className={cn("w-full h-16 rounded-lg bg-gradient-to-r", theme.gradient)} />
                     <div>
-                      <h4 className="font-semibold text-white text-sm">{theme.label}</h4>
+                      <h4 className="font-semibold text-white text-lg">{theme.label}</h4>
                       <div
-                        className="w-3 h-3 rounded-full mx-auto mt-1"
+                        className="w-4 h-4 rounded-full mx-auto mt-2"
                         style={{ backgroundColor: theme.accent }}
                       />
                     </div>
@@ -344,10 +342,10 @@ Project Configuration:
   };
 
   return (
-    <div className="space-y-8">
-      <div className="w-full bg-[rgba(185,106,255,0.1)] rounded-full h-2">
+    <div className="space-y-12 p-8">
+      <div className="w-full bg-[rgba(185,106,255,0.1)] rounded-full h-3">
         <div
-          className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] h-2 rounded-full transition-all duration-500"
+          className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] h-3 rounded-full transition-all duration-500"
           style={{ 
             width: `${Math.min(100, Math.max(0, (currentStep / 5) * 100))}%` 
           }}
@@ -355,13 +353,13 @@ Project Configuration:
       </div>
 
       <div className="text-center">
-        <span className="text-sm text-neutral-400">
+        <span className="text-lg text-neutral-400">
           Step {currentStep} of 5
         </span>
       </div>
 
-      <Card className="border-[rgba(185,106,255,0.12)] bg-[rgba(185,106,255,0.05)] min-h-[400px]">
-        <CardContent className="p-8">
+      <Card className="border-[rgba(185,106,255,0.12)] bg-[rgba(185,106,255,0.05)] min-h-[400px] rounded-lg shadow-lg">
+        <CardContent className="p-12">
           {renderStep()}
         </CardContent>
       </Card>
@@ -372,18 +370,18 @@ Project Configuration:
           variant="ghost"
           onClick={prevStep}
           disabled={currentStep === 1}
-          className="text-neutral-400 hover:text-white"
+          className="text-neutral-400 hover:text-white text-lg"
         >
-          <ChevronLeft className="w-4 h-4 mr-2" />
+          <ChevronLeft className="w-5 h-5 mr-2" />
           Previous
         </Button>
 
-        <div className="flex gap-2">
+        <div className="flex gap-3">
           {[1, 2, 3, 4, 5].map((step) => (
             <div
               key={step}
               className={cn(
-                "w-2 h-2 rounded-full transition-all duration-300",
+                "w-3 h-3 rounded-full transition-all duration-300",
                 step === currentStep
                   ? "bg-[#b96aff]"
                   : step < currentStep
@@ -398,12 +396,12 @@ Project Configuration:
           <Button
             onClick={form.handleSubmit(onSubmit)}
             disabled={!canProceed() || createProject.isPending}
-            className="bg-[#00fff0] text-black hover:bg-[#00fff0]/90 shadow-lg shadow-[#00fff0]/20"
+            className="bg-[#00fff0] text-black hover:bg-[#00fff0]/90 shadow-lg shadow-[#00fff0]/20 text-lg"
           >
             {createProject.isPending ? (
-              <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2Icon className="w-5 h-5 mr-2 animate-spin" />
             ) : (
-              <ArrowUpIcon className="w-4 h-4 mr-2" />
+              <ArrowUpIcon className="w-5 h-5 mr-2" />
             )}
             Create Project
           </Button>
@@ -412,10 +410,10 @@ Project Configuration:
             type="button"
             onClick={nextStep}
             disabled={!canProceed()}
-            className="bg-[#b96aff] text-white hover:bg-[#b96aff]/90"
+            className="bg-[#b96aff] text-white hover:bg-[#b96aff]/90 text-lg"
           >
             Next
-            <ChevronRight className="w-4 h-4 ml-2" />
+            <ChevronRight className="w-5 h-5 ml-2" />
           </Button>
         )}
       </div>

@@ -52,10 +52,10 @@ const footerSections = [
 ];
 
 const socialLinks = [
-  { name: "GitHub", icon: Github, href: "#", color: "hover:text-gray-900 dark:hover:text-gray-100" },
-  { name: "Twitter", icon: Twitter, href: "#", color: "hover:text-blue-500" },
-  { name: "LinkedIn", icon: Linkedin, href: "#", color: "hover:text-blue-600" },
-  { name: "Email", icon: Mail, href: "mailto:hello@zync.dev", color: "hover:text-red-500" },
+  { name: "GitHub", icon: Github, href: "https://github.com/Rewant-1", color: "hover:text-gray-900 dark:hover:text-gray-100" },
+  { name: "Twitter", icon: Twitter, href: "https://x.com/bruteBraut", color: "hover:text-blue-500" },
+  { name: "LinkedIn", icon: Linkedin, href: "https://www.linkedin.com/in/rewant-bhriguvanshi/", color: "hover:text-blue-600" },
+  { name: "Email", icon: Mail, href: "mailto:shalinirps2@ece.du.ac.in", color: "hover:text-red-500" },
 ];
 
 export const Footer = () => {

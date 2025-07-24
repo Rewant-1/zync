@@ -1,33 +1,33 @@
 import Image from "next/image";
-import { useState,useEffect } from "react";
+import { useState, useEffect } from "react";
 
-const ShimmerMessages=()=>{
-    const messages=[
+const ShimmerMessages = () => {
+    const messages = [
         "Thinking...",
         "Loading...",
         "Generating ...",
         "Analyzing your request...",
         "Crafting a response...",
-        "Fetching data...", 
+        "Fetching data...",
         "Building website...",
         "Optimizing layouts...",
         "Final touches...",
     ];
-const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
-useEffect(() => {
+    
+    const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+    
+    useEffect(() => {
         const interval = setInterval(() => {
             setCurrentMessageIndex((prevIndex) => (prevIndex + 1) % messages.length);
-        }, 2000); // Change message every second
+        }, 2000);
         return () => clearInterval(interval);
     }, [messages.length]);
 
     return (
         <div className="flex items-center gap-2">
-           
             <span className="text-muted-foreground text-base animate-pulse">{messages[currentMessageIndex]}</span>
         </div>
     );
-
 };
 
 export const MessageLoading = () => {

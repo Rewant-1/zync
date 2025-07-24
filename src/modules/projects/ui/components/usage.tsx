@@ -6,28 +6,26 @@ import { useAuth } from "@clerk/nextjs";
 import { useMemo } from "react";
 
 
-interface Props{
-    points:number;
+interface Props {
+    points: number;
     msBeforeNext: number;
-};
+}
 
-export const Usage = ({points, msBeforeNext}:Props) => {
-    const {has} =useAuth();
-    const hasProAccess = has?.({plan:"pro"});
+export const Usage = ({ points, msBeforeNext }: Props) => {
+    const { has } = useAuth();
+    const hasProAccess = has?.({ plan: "pro" });
 
-const resetTime=useMemo(() =>{
+    const resetTime = useMemo(() => {
     try {
         return formatDuration(
             intervalToDuration({
                 start: new Date(),
                 end: new Date(Date.now() + msBeforeNext),
             }),
-            {format: ["days", "hours", "minutes"]}
+            { format: ["days", "hours", "minutes"] }
         );
-    } catch (error) {
-        console.error("Error calculating reset time:", error);
+    } catch {
         return "soon";
-        
     }
 }, [msBeforeNext])
 

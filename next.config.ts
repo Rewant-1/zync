@@ -1,10 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Performance optimizations
   poweredByHeader: false,
   
-  // Security headers: prevent embedding this app, but allow embedding sandbox content
   async headers() {
     return [
       {
@@ -30,17 +28,47 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // Image optimization
+  
   images: {
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],
   },
   
-  // Compression
   compress: true,
+
+  webpack: (config, { isServer }) => {
+    config.cache = {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    };
+
+    if (!isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          vendor: {
+            test: /[\\/]node_modules[\\/]/,
+            name: 'vendors',
+            chunks: 'all',
+            enforce: true,
+          },
+          common: {
+            name: 'common',
+            minChunks: 2,
+            chunks: 'all',
+            enforce: true,
+          },
+        },
+      };
+    }
+
+    return config;
+  },
   
-  // Experimental features for better performance
   experimental: {
     optimizeCss: true,
     optimizePackageImports: [
@@ -67,4 +95,12 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+if (process.env.ANALYZE === 'true') {
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const withBundleAnalyzer = require('@next/bundle-analyzer')({
+    enabled: true,
+  });
+  module.exports = withBundleAnalyzer(nextConfig);
+} else {
+  module.exports = nextConfig;
+}

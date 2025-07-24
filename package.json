@@ -5,8 +5,11 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:analyze": "set ANALYZE=true && next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
     "postinstall": "prisma generate"
   },
   "dependencies": {
@@ -68,6 +71,7 @@
     "zod": "^3.25.67"
   },
   "devDependencies": {
+    "@next/bundle-analyzer": "^15.4.3",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/prismjs": "^1.26.5",

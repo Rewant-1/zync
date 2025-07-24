@@ -24,14 +24,12 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
         )
     );
 
-    // Automatically scroll to bottom when new messages arrive
     useEffect(() => {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: "smooth" });
         }
     }, [messages]);
 
-    // Automatically set active fragment to the latest assistant message's fragment
     useEffect(() => {
         const lastAssistantMessage = [...messages].reverse().find((message) => message.role === "ASSISTANT");
         if (lastAssistantMessage?.fragment && lastAssistantMessage.id !== lastAssistantMessageIdRef.current) {

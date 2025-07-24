@@ -105,7 +105,6 @@ export const CreatorMode = () => {
 
     setIsEnhancing(true);
     try {
-      // Simulate AI enhancement - replace with actual API call if needed
       const appTypeLabel = APP_TYPES.find(t => t.id === appType)?.label || appType;
       const techLabel = TECH_STACKS.find(t => t.id === techStack)?.tech || techStack;
       
@@ -167,8 +166,8 @@ Project Configuration:
       await createProject.mutateAsync({
         value: finalPrompt,
       });
-    } catch (error) {
-      console.error('Failed to create project:', error);
+    } catch {
+      // Error handling is managed by the mutation's onError callback
     }
   };
 
@@ -346,7 +345,6 @@ Project Configuration:
 
   return (
     <div className="space-y-8">
-      {/* Progress Bar */}
       <div className="w-full bg-[rgba(185,106,255,0.1)] rounded-full h-2">
         <div
           className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] h-2 rounded-full transition-all duration-500"
@@ -356,21 +354,18 @@ Project Configuration:
         />
       </div>
 
-      {/* Step Indicator */}
       <div className="text-center">
         <span className="text-sm text-neutral-400">
           Step {currentStep} of 5
         </span>
       </div>
 
-      {/* Content */}
       <Card className="border-[rgba(185,106,255,0.12)] bg-[rgba(185,106,255,0.05)] min-h-[400px]">
         <CardContent className="p-8">
           {renderStep()}
         </CardContent>
       </Card>
 
-      {/* Navigation */}
       <div className="flex justify-between items-center">
         <Button
           type="button"

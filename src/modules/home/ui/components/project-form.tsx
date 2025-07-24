@@ -61,9 +61,8 @@ const createProject = useMutation(trpc.projects.create.mutationOptions({
             await createProject.mutateAsync({
                 value: values.value,
             });
-        } catch (error) {
+        } catch {
             // Error is already handled by mutation's onError
-            console.error('Failed to create project:', error);
         }
     };
 const onSelect=(value: string) => {

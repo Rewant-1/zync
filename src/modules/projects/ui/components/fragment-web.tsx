@@ -39,22 +39,12 @@ export function FragmentWeb({data}: Props) {
 
     // Add timeout to detect if iframe fails to load
     useEffect(() => {
-        // Log mixed content detection for debugging
-        if (hasMixedContentIssue) {
-            console.warn('Mixed content detected:', {
-                pageProtocol: typeof window !== 'undefined' ? window.location.protocol : 'unknown',
-                sandboxUrl: data.sandboxUrl,
-                fixedUrl: safeSandboxUrl
-            });
-        }
-        
         if (!iframeLoaded && !iframeError) {
             const timeout = setTimeout(() => {
-                console.log('Iframe load timeout - may be blocked by deployment security policies');
                 if (shouldShowIframeWarning() || hasMixedContentIssue) {
                     setShowWarning(true);
                 }
-            }, 8000); // 8 second timeout for warning
+            }, 8000);
 
             return () => clearTimeout(timeout);
         }
@@ -128,16 +118,14 @@ variant="outline"
                         // Handle iframe load errors
                         const iframe = e.target as HTMLIFrameElement;
                         try {
-                            // Check if iframe content loaded successfully
                             if (iframe.contentWindow) {
-                                console.log('Iframe loaded successfully');
+                                // Iframe loaded successfully
                             }
-                        } catch (error) {
-                            console.warn('Iframe access restricted:', error);
+                        } catch {
+                            // Iframe access restricted due to cross-origin policy
                         }
                     }}
-                    onError={(e) => {
-                        console.error('Iframe failed to load:', e);
+                    onError={() => {
                         setIframeError(true);
                     }}/>
                 </div>

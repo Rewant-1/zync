@@ -6,12 +6,9 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-
-
-
 export function convertFilesToTreeItems(
-files:{[path:string]: string} ,
-): TreeItem[]{
+files: { [path: string]: string },
+): TreeItem[] {
   interface TreeNode {
     [key:string]: TreeNode | null;
   }

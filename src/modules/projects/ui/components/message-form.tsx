@@ -13,14 +13,14 @@ import {Form, FormField} from "@/components/ui/form";
 import { Usage } from "./usage";
 import { useRouter } from "next/navigation";
 
-interface Props{
+interface Props {
     projectId: string;
 }
 
 const formSchema = z.object({
-    value:z.string()
-         .min(1,{message: "Value is required"})
-        .max(10000, {message: "Value is too long"}),
+    value: z.string()
+        .min(1, { message: "Value is required" })
+        .max(10000, { message: "Value is too long" }),
 })
 
 export const MessageForm = ({ projectId }: Props) => {

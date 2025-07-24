@@ -5,11 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Hint } from "@/components/hint";
 import { getIframeSandboxAttributes, shouldShowIframeWarning, fixMixedContentUrl, detectMixedContentIssue } from "@/lib/sandbox-utils";
 
-
-
-
-
-
 interface Props{
     data: Fragment;
 }

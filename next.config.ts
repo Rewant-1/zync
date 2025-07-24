@@ -54,13 +54,13 @@ const nextConfig: NextConfig = {
             test: /[\\/]node_modules[\\/]/,
             name: 'vendors',
             chunks: 'all',
-            enforce: true,
+            priority: 10,
           },
           common: {
             name: 'common',
             minChunks: 2,
             chunks: 'all',
-            enforce: true,
+            priority: 5,
           },
         },
       };
@@ -95,12 +95,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-if (process.env.ANALYZE === 'true') {
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const withBundleAnalyzer = require('@next/bundle-analyzer')({
-    enabled: true,
-  });
-  module.exports = withBundleAnalyzer(nextConfig);
-} else {
-  module.exports = nextConfig;
-}
+import withBundleAnalyzer from '@next/bundle-analyzer';
+
+const config = process.env.ANALYZE === 'true'
+  ? withBundleAnalyzer({ enabled: true })(nextConfig)
+  : nextConfig;
+
+export default config;

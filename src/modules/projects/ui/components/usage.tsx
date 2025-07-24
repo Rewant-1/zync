@@ -20,11 +20,10 @@ export const Usage = ({ points, msBeforeNext }: Props) => {
         return formatDuration(
             intervalToDuration({
                 start: new Date(),
-                end: new Date(Date.now() + msBeforeNext),
+                end: new Date(Date.now() + Math.max(0, msBeforeNext)),
             }),
             { format: ["days", "hours", "minutes"] }
-        );
-    } catch {
+        );    } catch {
         return "soon";
     }
 }, [msBeforeNext])
@@ -35,7 +34,7 @@ export const Usage = ({ points, msBeforeNext }: Props) => {
             <div className="flex items-center gap-x-2">
                 <div>
                     <p className="text-sm">
-                        {points} {hasProAccess ?"":"free"} credits remaining
+                        {points} {hasProAccess ?"": "free"} credits remaining
                     </p>
                     <p className="text-xs text-muted-foreground">
                         Resets in {""}{resetTime}

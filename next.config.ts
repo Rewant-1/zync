@@ -95,10 +95,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-import withBundleAnalyzer from '@next/bundle-analyzer';
-
-const config = process.env.ANALYZE === 'true'
-  ? withBundleAnalyzer({ enabled: true })(nextConfig)
-  : nextConfig;
-
-export default config;
+export default nextConfig;

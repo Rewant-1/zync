@@ -18,10 +18,7 @@ export const metadata: Metadata = {
   title: "zync - Build Web Apps with AI",
   description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
   icons: {
-    icon: [
-      // Use generated app icon (src/app/icon.tsx); keep PNG as a fallback
-      { url: "/logo.png", type: "image/png" },
-    ],
+    icon: [{ url: "/logo.png", type: "image/png" }],
   },
   // Basic Open Graph for logo sharing
   openGraph: {

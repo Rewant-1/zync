@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "any" },
+      // Use generated app icon (src/app/icon.tsx); keep PNG as a fallback
       { url: "/logo.png", type: "image/png" },
     ],
   },

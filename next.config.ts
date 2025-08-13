@@ -14,7 +14,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "frame-src 'self' *.e2b.app *.inngest.com; frame-ancestors 'self';",
+            value: "frame-src 'self' *.e2b.app *.inngest.com challenges.cloudflare.com *.challenges.cloudflare.com; frame-ancestors 'self';",
           },
           {
             key: 'X-Content-Type-Options',
@@ -25,6 +25,15 @@ const nextConfig: NextConfig = {
             value: 'origin-when-cross-origin',
           },
         ],
+      },
+    ];
+  },
+  async redirects() {
+    return [
+      {
+        source: '/favicon.ico',
+        destination: '/logo.png',
+        permanent: true,
       },
     ];
   },

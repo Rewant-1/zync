@@ -15,6 +15,8 @@ export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
+  // Performance: record start time
+  const __startTime = Date.now();
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
       await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
@@ -159,6 +161,18 @@ export const codeAgentFunction = inngest.createFunction(
 
     console.log("🚀 Starting agent network...");
     const result = await network.run(event.data.value, { state });
+    // Output quantification after run
+    const files = result.state.data.files || {};
+    const fileCount = Object.keys(files).length;
+    const lineCount = Object.values(files).reduce((acc, content) => {
+      try {
+        if (typeof content !== "string") return acc;
+        return acc + content.split(/\r?\n/).length;
+      } catch {
+        return acc;
+      }
+    }, 0);
+    const hasFiles = fileCount > 0;
     
     console.log("🏁 Agent network completed:", {
       summary: result.state.data.summary,
@@ -168,7 +182,7 @@ export const codeAgentFunction = inngest.createFunction(
 
     // Ensure we have a summary for title/response generation
     const summaryForGeneration = result.state.data.summary || 
-      `Built a React application with ${Object.keys(result.state.data.files || {}).length} files: ${Object.keys(result.state.data.files || {}).join(", ")}`;
+      `Built a React application with ${fileCount} files: ${Object.keys(files).join(", ")}`;
 
     // Generate title and response
     const fragmentTitleGenerator = createAgent({
@@ -227,10 +241,7 @@ export const codeAgentFunction = inngest.createFunction(
       return `${protocol}://${host}`;
     });
 
-    // Save to database
-    const files = result.state.data.files || {};
-    const fileCount = Object.keys(files).length;
-    const hasFiles = fileCount > 0;
+  // Save to database
     const summary = result.state.data.summary || "";
     const hasSummary = summary.length > 0;
 
@@ -280,9 +291,13 @@ export const codeAgentFunction = inngest.createFunction(
       messageId: savedMessage.id,
       url: sandboxUrl,
       fileCount,
+      lineCount,
       success: hasFiles,
       title: generateFragmentTitle()
     });
+
+    // Performance: compute duration right before return
+    const durationInMs = Date.now() - __startTime;
 
     return {
       url: sandboxUrl,
@@ -290,9 +305,11 @@ export const codeAgentFunction = inngest.createFunction(
       files: files,
       summary: summary,
       fileCount,
+      lineCount,
       hasFiles,
       hasSummary,
-      success: hasFiles
+      success: hasFiles,
+      durationInMs,
     };
   },
 );

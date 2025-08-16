@@ -1,7 +1,12 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { ChromeGrid } from "@/components/ui/chrome-grid";
+const ChromeGrid = dynamic(() => import("@/components/ui/chrome-grid").then((mod) => mod.ChromeGrid), { 
+  ssr: false,
+  loading: () => <div className="w-full h-full bg-black" />
+});
+
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles, Star } from "lucide-react";
 import Link from "next/link";
@@ -9,7 +14,6 @@ import { SignUpButton, SignedOut, SignedIn } from "@clerk/nextjs";
 import { useRef, useEffect } from "react";
 
 export const Hero = () => {
-  // Parallax effect for floating elements
   const ref = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -25,7 +29,6 @@ export const Hero = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  // Floating element transforms
   const float1 = {
     x: useTransform(mouseX, [ -1, 1 ], [ -30, 30 ]),
     y: useTransform(mouseY, [ -1, 1 ], [ -20, 20 ]),
@@ -45,24 +48,19 @@ export const Hero = () => {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Chrome Grid Background */}
+      
       <div className="absolute inset-0">
         <ChromeGrid />
       </div>
       
-      {/* Content Overlay */}
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.2 }}
-          className="max-w-4xl mx-auto"
-        >
-          {/* Enhanced Badge */}
+        <div className="max-w-4xl mx-auto">
+          
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.3, delay: 0.1 }}
             className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-black/40 backdrop-blur-sm border border-[#b96aff]/20 mb-3 shadow-2xl"
             whileHover={{ scale: 1.08 }}
           >
@@ -72,13 +70,7 @@ export const Hero = () => {
             </span>
           </motion.div>
 
-          {/* Main Headline */}
-          <motion.h1
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 text-white"
-          >
+          <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 text-white">
             Build{" "}
             <span className="text-[#b96aff] drop-shadow-md">
               Web Apps
@@ -88,24 +80,17 @@ export const Hero = () => {
             <span className="text-[#00fff0]">
               Describing Them
             </span>
-          </motion.h1>
+          </h1>
 
-          {/* Subheading */}
-          <motion.p
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.8 }}
-            className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed"
-          >
+          <p className="text-xl md:text-2xl text-gray-300 mb-8 max-w-3xl mx-auto leading-relaxed">
             Transform your ideas into fully functional web apps on the go with AI-driven code generation 
              and sandboxed execution environments.
-          </motion.p>
+          </p>
 
-          {/* CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1.0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <SignedOut>
@@ -141,11 +126,10 @@ export const Hero = () => {
             </Button>
           </motion.div>
 
-          {/* Social Proof */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 1.2 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
             className="mt-16 flex flex-col items-center gap-4"
           >
             <p className="text-sm text-gray-400">Trusted by developers worldwide</p>
@@ -156,10 +140,9 @@ export const Hero = () => {
               <div className="text-2xl font-bold text-[#00fff0]">Tailwind</div>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
 
-      {/* Enhanced Floating Elements with Parallax */}
       <motion.div
         style={float1}
         initial={{ opacity: 0, scale: 0 }}

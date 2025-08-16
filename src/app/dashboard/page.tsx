@@ -13,7 +13,7 @@ const DashboardPage = () => {
 
   return (
     <div className="flex flex-col max-w-6xl mx-auto w-full">
-      {/* Hero Section */}
+      
       <section className="space-y-8 py-16">
         <div className="flex flex-col items-center space-y-6">
           <div className="flex items-center gap-3">
@@ -30,7 +30,6 @@ const DashboardPage = () => {
             </p>
           </div>
 
-          {/* Mode Selection Navbar */}
           <div className="flex items-center p-1.5 bg-[rgba(185,106,255,0.05)] border border-[rgba(185,106,255,0.2)] rounded-full max-w-md mx-auto">
             <Button
               variant="ghost"
@@ -61,13 +60,11 @@ const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Content based on selected mode */}
         <div className="max-w-4xl mx-auto w-full">
           {mode === "quick" ? <ProjectForm /> : <CreatorMode />}
         </div>
       </section>
 
-      {/* Projects List */}
       <div className="pb-16">
         <ProjectsList />
       </div>

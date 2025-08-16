@@ -9,13 +9,13 @@ const Page = () => {
   
   return (
     <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Subtle background */}
+     
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/70" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(186,85,255,0.03),transparent_70%)]" />
       
       <div className="relative z-0 flex flex-col max-w-7xl mx-auto w-full px-4">
         <section className="space-y-16 pt-[12vh] pb-16">
-          {/* Minimal Header */}
+          
           <motion.div 
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -32,8 +32,6 @@ const Page = () => {
               Simple pricing, powerful features. Start free or upgrade anytime.
             </p>
           </motion.div>
-
-          {/* Enhanced Pricing Table */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -64,9 +62,8 @@ const Page = () => {
               />
             </div>
             
-            {/* Most Popular Enhancement - Blue Outline for Middle Card */}
             <div className="hidden md:block absolute top-0 left-1/2 transform -translate-x-1/2 w-full h-full pointer-events-none z-0">
-              {/* Blue outline for middle card */}
+              
               <div className="absolute top-0 left-1/3 w-1/3 h-full">
                 <div className="absolute -inset-1 border-2 border-[#00fff0] rounded-2xl animate-pulse" />
                 <div className="absolute -inset-2 bg-gradient-to-r from-[#00fff0]/10 via-[#00fff0]/5 to-[#00fff0]/10 rounded-2xl blur-md" />

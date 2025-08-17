@@ -21,10 +21,7 @@ export const LandingNavbar = () => {
   return (
     <>
       <motion.nav
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(186,85,255,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl"
+        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl"
       >
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-12">
@@ -51,7 +48,7 @@ export const LandingNavbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative group px-3 py-1.5 rounded-lg transition-all duration-300 hover:bg-[#1a1a1a] border border-transparent hover:border-[rgba(186,85,255,0.12)]"
+                  className="relative group px-3 py-1.5 rounded-lg transition-all duration-300 hover:bg-[#1a1a1a] border border-transparent hover:border-[rgba(251,191,36,0.12)]"
                 >
                   <span className="text-sm font-medium text-neutral-400 group-hover:text-[#ffc107] transition-colors">
                     {link.label}
@@ -68,7 +65,7 @@ export const LandingNavbar = () => {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(186,85,255,0.12)] text-xs px-3 py-1"
+                    className="text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-xs px-3 py-1"
                   >
                     Sign In
                   </Button>
@@ -97,7 +94,7 @@ export const LandingNavbar = () => {
 
             {/* Mobile Menu Button */}
             <button
-              className="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(186,85,255,0.12)]"
+              className="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)]"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             >
               {isMobileMenuOpen ? (
@@ -116,27 +113,27 @@ export const LandingNavbar = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden glass border-t border-[rgba(186,85,255,0.12)] backdrop-blur-xl rounded-b-2xl"
+            className="md:hidden glass border-t border-[rgba(251,191,36,0.12)] backdrop-blur-xl rounded-b-2xl"
           >
             <div className="px-4 py-4 space-y-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="block px-3 py-2 rounded-lg text-neutral-400 hover:text-[#ffc107] hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(255,193,7,0.12)] text-sm"
+          className="block px-3 py-2 rounded-lg text-neutral-400 hover:text-[#ffc107] hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
 
-              <div className="pt-3 border-t border-[rgba(186,85,255,0.12)] space-y-2">
+        <div className="pt-3 border-t border-[rgba(251,191,36,0.12)] space-y-2">
                 <SignedOut>
                   <SignInButton mode="modal">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(186,85,255,0.12)] text-sm"
+            className="w-full justify-start text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
                     >
                       Sign In
                     </Button>

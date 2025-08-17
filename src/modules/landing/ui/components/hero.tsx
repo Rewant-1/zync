@@ -6,20 +6,23 @@ const ChromeGrid = dynamic(
   () => import("@/components/ui/chrome-grid").then((mod) => mod.ChromeGrid),
   {
     ssr: false,
-    loading: () => <div className="w-full h-full bg-black" />,
+    loading: () => (
+      <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.06),transparent_70%)]" />
+    ),
   }
 );
 
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles, Star } from "lucide-react";
 import Link from "next/link";
-import { SignUpButton, SignedOut, SignedIn } from "@clerk/nextjs";
-import { useRef, useEffect } from "react";
+import { SignUpButton, SignedOut, SignedIn, ClerkLoading } from "@clerk/nextjs";
+import { useRef, useEffect, useState } from "react";
 
 export const Hero = () => {
   const ref = useRef<HTMLDivElement>(null);
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
+  const [showGrid, setShowGrid] = useState(false);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -31,6 +34,28 @@ export const Hero = () => {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
+
+  // Defer ChromeGrid mounting until idle to avoid competing with critical paint
+  useEffect(() => {
+    const schedule = (cb: () => void) => {
+      const w = window as unknown as {
+        requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+        cancelIdleCallback?: (id: number) => void;
+      };
+      if (typeof w.requestIdleCallback === "function") {
+        const id = w.requestIdleCallback(cb, { timeout: 500 });
+        return () => {
+          if (typeof w.cancelIdleCallback === "function") w.cancelIdleCallback(id);
+        };
+      }
+      const id = setTimeout(cb, 150);
+      return () => clearTimeout(id);
+    };
+    const cancel = schedule(() => setShowGrid(true));
+    return () => {
+      if (typeof cancel === "function") cancel();
+    };
+  }, []);
 
   const float1 = {
     x: useTransform(mouseX, [-1, 1], [-30, 30]),
@@ -55,17 +80,17 @@ export const Hero = () => {
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
     >
       <div className="absolute inset-0">
-        <ChromeGrid />
+        {showGrid ? <ChromeGrid /> : <div className="w-full h-full bg-black" />}
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
+          {/* Badge */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.1 }}
+            transition={{ duration: 0.25 }}
             className="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-black/40 backdrop-blur-sm border border-[#ffc107]/20 mb-3 shadow-2xl"
-            whileHover={{ scale: 1.08 }}
           >
             <Sparkles className="w-5 h-5 text-[#ffc107]" />
             <span className="text-base font-semibold text-white">
@@ -86,11 +111,21 @@ export const Hero = () => {
           </p>
 
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 1, y: 0 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
+            transition={{ duration: 0.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
+            {/* Fast fallback while Clerk loads auth state */}
+            <ClerkLoading>
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black px-10 py-6 text-lg font-semibold hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2"
+              >
+                <Link href="/sign-up">Start Building Free</Link>
+              </Button>
+            </ClerkLoading>
             <SignedOut>
               <SignUpButton mode="modal">
                 <Button

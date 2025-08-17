@@ -92,13 +92,13 @@ export const Features = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.25, ease: "easeOut" }}
                 viewport={{ once: true }}
-                className="group transition-transform duration-500 will-change-transform hover:-translate-y-1 hover:scale-[1.05]"
+                className="group transition-transform duration-300 will-change-transform hover:-translate-y-1 hover:scale-[1.05]"
               >
-                <Card className="h-full border-0 shadow-2xl hover:shadow-3xl transition-all duration-500 bg-white/90 dark:bg-background/90 backdrop-blur-md group-hover:border-2 group-hover:border-amber-400/70 group-hover:bg-white/95 dark:group-hover:bg-background/95 relative overflow-hidden">
-                  <div className="absolute -inset-1 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-cyan-400/20 via-amber-300/30 to-cyan-400/20 blur-lg" />
+                <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-shadow duration-300 bg-white/90 dark:bg-background/90 backdrop-blur-md group-hover:border group-hover:border-amber-400/50 group-hover:bg-white/95 dark:group-hover:bg-background/95 relative overflow-hidden">
+                  <div className="absolute -inset-1 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gradient-to-r from-[#ffc107]/30 via-[#00fff0]/30 to-[#fff]/30 blur-lg" />
                   <CardHeader className="text-center pb-4">
                     <div
-                      className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-r ${feature.gradient} p-3 mb-4 group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-cyan-500/20`}
+                      className={`w-12 h-12 mx-auto rounded-xl bg-gradient-to-r ${feature.gradient} p-3 mb-4 group-hover:scale-105 transition-transform duration-300 shadow-md shadow-cyan-500/10`}
                     >
                       <Icon className="w-6 h-6 text-white" />
                     </div>

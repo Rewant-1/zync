@@ -23,7 +23,7 @@ export const Navbar = () => {
           "glass border-[rgba(251,191,36,0.12)] shadow-xl shadow-[#fbbf24]/10"
       )}
     >
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl md:max-w-4xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
           
           <Link href="/dashboard" className="flex items-center gap-3 group">

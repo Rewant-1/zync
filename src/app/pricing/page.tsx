@@ -44,9 +44,9 @@ const Page = () => {
                     pricingTableContainer:
                       "grid! grid-cols-1! md:grid-cols-3! gap-8! max-w-6xl! mx-auto! relative!",
                     pricingTableCard:
-                      "border-[rgba(255,193,7,0.12)]! shadow-2xl! rounded-2xl! bg-[#1a1a1a]/90! backdrop-blur-md! hover:shadow-[#ffc107]/20! transition-all duration-300! hover:scale-102! relative! overflow-visible! min-h-[600px]! flex! flex-col! z-0!",
+                      "border-0! shadow-2xl! rounded-2xl! bg-white/90! dark:bg-[var(--background)]/90! backdrop-blur-sm! hover:shadow-[#ffc107]/20! transition-all duration-300! hover:scale-102! relative! overflow-visible! min-h-[600px]! flex! flex-col! z-0!",
                     pricingTableHeader:
-                      "text-white! bg-transparent! p-6! border-b! border-[rgba(186,85,255,0.12)]! flex-shrink-0!",
+                      "text-white! bg-transparent! p-6! border-b! border-[rgba(251,191,36,0.12)]! flex-shrink-0!",
                     pricingTableHeaderTitle: "text-xl! font-bold! text-white!",
                     pricingTableHeaderDescription: "text-neutral-400! mt-2!",
                     pricingTablePrice: "text-[#00fff0]! font-bold! text-3xl!",

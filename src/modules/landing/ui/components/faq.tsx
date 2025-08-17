@@ -70,7 +70,7 @@ export const FAQ = () => {
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-heading">
             Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
               Questions
             </span>
           </h2>
@@ -89,7 +89,7 @@ export const FAQ = () => {
               viewport={{ once: true }}
               whileHover={{ scale: 1.03 }}
             >
-              <Card className="border border-[rgba(185,106,255,0.15)] bg-card/80 backdrop-blur-sm hover:border-[rgba(185,106,255,0.3)] transition-all duration-300 hover:shadow-lg hover:shadow-[#b96aff]/10 relative overflow-hidden">
+              <Card className="border border-[rgba(255,193,7,0.15)] bg-card/80 backdrop-blur-sm hover:border-[rgba(255,193,7,0.3)] transition-all duration-300 hover:shadow-lg hover:shadow-[#ffc107]/10 relative overflow-hidden">
                 <Collapsible
                   open={openItems.includes(index)}
                   onOpenChange={() => toggleItem(index)}

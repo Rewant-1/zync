@@ -9,17 +9,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Globe, 
-  Monitor, 
-  ShoppingCart, 
-  Users, 
+import {
+  ChevronLeft,
+  ChevronRight,
+  Globe,
+  Monitor,
+  ShoppingCart,
+  Users,
   Code2,
   Sparkles,
   ArrowUpIcon,
-  Loader2Icon
+  Loader2Icon,
 } from "lucide-react";
 import TextareaAutosize from "react-textarea-autosize";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -29,32 +29,103 @@ import { useRouter } from "next/navigation";
 import { useClerk } from "@clerk/nextjs";
 
 const APP_TYPES = [
-  { id: "landing", label: "Landing Page", icon: Globe, description: "Marketing & promotional websites" },
-  { id: "admin", label: "Admin Dashboard", icon: Monitor, description: "Control panels & analytics" },
-  { id: "ecommerce", label: "E-commerce", icon: ShoppingCart, description: "Online stores & marketplaces" },
-  { id: "social", label: "Social Platform", icon: Users, description: "Community & networking apps" },
+  {
+    id: "landing",
+    label: "Landing Page",
+    icon: Globe,
+    description: "Marketing & promotional websites",
+  },
+  {
+    id: "admin",
+    label: "Admin Dashboard",
+    icon: Monitor,
+    description: "Control panels & analytics",
+  },
+  {
+    id: "ecommerce",
+    label: "E-commerce",
+    icon: ShoppingCart,
+    description: "Online stores & marketplaces",
+  },
+  {
+    id: "social",
+    label: "Social Platform",
+    icon: Users,
+    description: "Community & networking apps",
+  },
 ];
 
 const TECH_STACKS = [
-  { id: "react-modern", label: "Modern React", tech: "React + TypeScript + Tailwind", popular: true },
-  { id: "next-full", label: "Next.js Full-Stack", tech: "Next.js + Prisma + tRPC", popular: true },
-  { id: "vue-nuxt", label: "Vue Ecosystem", tech: "Vue 3 + Nuxt + Pinia", popular: false },
-  { id: "svelte", label: "Svelte Kit", tech: "SvelteKit + TypeScript", popular: false },
+  {
+    id: "react-modern",
+    label: "Modern React",
+    tech: "React + TypeScript + Tailwind",
+    popular: true,
+  },
+  {
+    id: "next-full",
+    label: "Next.js Full-Stack",
+    tech: "Next.js + Prisma + tRPC",
+    popular: true,
+  },
+  {
+    id: "vue-nuxt",
+    label: "Vue Ecosystem",
+    tech: "Vue 3 + Nuxt + Pinia",
+    popular: false,
+  },
+  {
+    id: "svelte",
+    label: "Svelte Kit",
+    tech: "SvelteKit + TypeScript",
+    popular: false,
+  },
 ];
 
 const THEMES = [
-  { id: "modern-dark", label: "Modern Dark", gradient: "from-slate-900 to-slate-800", accent: "#00fff0" },
-  { id: "purple-dream", label: "Purple Dream", gradient: "from-purple-900 to-pink-800", accent: "#b96aff" },
-  { id: "ocean-blue", label: "Ocean Blue", gradient: "from-blue-900 to-cyan-800", accent: "#0ea5e9" },
-  { id: "forest-green", label: "Forest Green", gradient: "from-green-900 to-emerald-800", accent: "#10b981" },
-  { id: "sunset-orange", label: "Sunset Orange", gradient: "from-orange-900 to-red-800", accent: "#f97316" },
+  {
+    id: "modern-dark",
+    label: "Modern Dark",
+    gradient: "from-slate-900 to-slate-800",
+    accent: "#00fff0",
+  },
+  {
+    id: "purple-dream",
+    label: "Purple Dream",
+    gradient: "from-purple-900 to-pink-800",
+    accent: "#b96aff",
+  },
+  {
+    id: "ocean-blue",
+    label: "Ocean Blue",
+    gradient: "from-blue-900 to-cyan-800",
+    accent: "#0ea5e9",
+  },
+  {
+    id: "forest-green",
+    label: "Forest Green",
+    gradient: "from-green-900 to-emerald-800",
+    accent: "#10b981",
+  },
+  {
+    id: "sunset-orange",
+    label: "Sunset Orange",
+    gradient: "from-orange-900 to-red-800",
+    accent: "#f97316",
+  },
 ];
 
 const formSchema = z.object({
-  projectName: z.string().min(1, "Project name is required").max(100, "Name too long"),
+  projectName: z
+    .string()
+    .min(1, "Project name is required")
+    .max(100, "Name too long"),
   appType: z.string().min(1, "Please select an app type"),
   techStack: z.string().min(1, "Please select a tech stack"),
-  description: z.string().min(10, "Please provide more details").max(1000, "Description too long"),
+  description: z
+    .string()
+    .min(10, "Please provide more details")
+    .max(1000, "Description too long"),
   theme: z.string().min(1, "Please select a theme"),
 });
 
@@ -80,22 +151,24 @@ export const CreatorMode = () => {
     mode: "onChange",
   });
 
-  const createProject = useMutation(trpc.projects.create.mutationOptions({
-    onSuccess: (data) => {
-      queryClient.invalidateQueries(trpc.projects.getMany.queryOptions());
-      queryClient.invalidateQueries(trpc.usage.status.queryOptions());
-      router.push(`/projects/${data.id}`);
-    },
-    onError: (error) => {
-      toast.error(error.message || "Failed to create project");
-      if (error.data?.code === "UNAUTHORIZED") {
-        clerk.openSignIn();
-      }
-      if (error.data?.code === "TOO_MANY_REQUESTS") {
-        router.push("/pricing");
-      }
-    },
-  }));
+  const createProject = useMutation(
+    trpc.projects.create.mutationOptions({
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(trpc.projects.getMany.queryOptions());
+        queryClient.invalidateQueries(trpc.usage.status.queryOptions());
+        router.push(`/projects/${data.id}`);
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to create project");
+        if (error.data?.code === "UNAUTHORIZED") {
+          clerk.openSignIn();
+        }
+        if (error.data?.code === "TOO_MANY_REQUESTS") {
+          router.push("/pricing");
+        }
+      },
+    })
+  );
 
   const enhanceDescription = async () => {
     const { projectName, appType, techStack, description } = form.getValues();
@@ -103,9 +176,11 @@ export const CreatorMode = () => {
 
     setIsEnhancing(true);
     try {
-      const appTypeLabel = APP_TYPES.find(t => t.id === appType)?.label || appType;
-      const techLabel = TECH_STACKS.find(t => t.id === techStack)?.tech || techStack;
-      
+      const appTypeLabel =
+        APP_TYPES.find((t) => t.id === appType)?.label || appType;
+      const techLabel =
+        TECH_STACKS.find((t) => t.id === techStack)?.tech || techStack;
+
       const enhancedPrompt = `Create a ${appTypeLabel.toLowerCase()} called "${projectName}" using ${techLabel}. 
 
 ${description}
@@ -142,12 +217,18 @@ Requirements:
   const canProceed = () => {
     const values = form.getValues();
     switch (currentStep) {
-      case 1: return !!values.projectName.trim();
-      case 2: return !!values.appType;
-      case 3: return !!values.techStack;
-      case 4: return !!values.description.trim() && values.description.length >= 10;
-      case 5: return !!values.theme;
-      default: return false;
+      case 1:
+        return !!values.projectName.trim();
+      case 2:
+        return !!values.appType;
+      case 3:
+        return !!values.techStack;
+      case 4:
+        return !!values.description.trim() && values.description.length >= 10;
+      case 5:
+        return !!values.theme;
+      default:
+        return false;
     }
   };
 
@@ -156,9 +237,9 @@ Requirements:
 
 Project Configuration:
 - Name: ${values.projectName}
-- Type: ${APP_TYPES.find(t => t.id === values.appType)?.label}
-- Tech Stack: ${TECH_STACKS.find(t => t.id === values.techStack)?.tech}
-- Theme: ${THEMES.find(t => t.id === values.theme)?.label}`;
+- Type: ${APP_TYPES.find((t) => t.id === values.appType)?.label}
+- Tech Stack: ${TECH_STACKS.find((t) => t.id === values.techStack)?.tech}
+- Theme: ${THEMES.find((t) => t.id === values.theme)?.label}`;
 
     try {
       await createProject.mutateAsync({
@@ -175,11 +256,17 @@ Project Configuration:
         return (
           <div className="space-y-8">
             <div className="text-center space-y-4">
-              <h3 className="text-3xl font-bold text-white">What&apos;s your project name?</h3>
-              <p className="text-neutral-400 text-lg">Give your project a memorable name</p>
+              <h3 className="text-3xl font-bold text-white">
+                What&apos;s your project name?
+              </h3>
+              <p className="text-neutral-400 text-lg">
+                Give your project a memorable name
+              </p>
             </div>
             <div className="space-y-4">
-              <Label htmlFor="projectName" className="text-white text-lg">Project Name</Label>
+              <Label htmlFor="projectName" className="text-white text-lg">
+                Project Name
+              </Label>
               <Input
                 id="projectName"
                 {...form.register("projectName")}
@@ -187,7 +274,9 @@ Project Configuration:
                 className="bg-[rgba(185,106,255,0.05)] border-[rgba(185,106,255,0.2)] text-white placeholder:text-neutral-500 rounded-lg p-4"
               />
               {form.formState.errors.projectName && (
-                <p className="text-red-400 text-sm">{form.formState.errors.projectName.message}</p>
+                <p className="text-red-400 text-sm">
+                  {form.formState.errors.projectName.message}
+                </p>
               )}
             </div>
           </div>
@@ -197,8 +286,12 @@ Project Configuration:
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h3 className="text-2xl font-bold text-white">What type of app?</h3>
-              <p className="text-neutral-400">Choose the category that best fits your project</p>
+              <h3 className="text-2xl font-bold text-white">
+                What type of app?
+              </h3>
+              <p className="text-neutral-400">
+                Choose the category that best fits your project
+              </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {APP_TYPES.map((type) => (
@@ -206,7 +299,8 @@ Project Configuration:
                   key={type.id}
                   className={cn(
                     "cursor-pointer transition-all duration-300 border-[rgba(185,106,255,0.2)] bg-[rgba(185,106,255,0.05)] hover:bg-[rgba(185,106,255,0.1)]",
-                    form.watch("appType") === type.id && "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
+                    form.watch("appType") === type.id &&
+                      "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
                   )}
                   onClick={() => form.setValue("appType", type.id)}
                 >
@@ -214,7 +308,9 @@ Project Configuration:
                     <type.icon className="w-6 h-6 text-[#b96aff] mt-1" />
                     <div>
                       <h4 className="font-semibold text-white">{type.label}</h4>
-                      <p className="text-sm text-neutral-400">{type.description}</p>
+                      <p className="text-sm text-neutral-400">
+                        {type.description}
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -227,8 +323,12 @@ Project Configuration:
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h3 className="text-2xl font-bold text-white">Choose your tech stack</h3>
-              <p className="text-neutral-400">Select the technologies you want to use</p>
+              <h3 className="text-2xl font-bold text-white">
+                Choose your tech stack
+              </h3>
+              <p className="text-neutral-400">
+                Select the technologies you want to use
+              </p>
             </div>
             <div className="space-y-3">
               {TECH_STACKS.map((stack) => (
@@ -236,7 +336,8 @@ Project Configuration:
                   key={stack.id}
                   className={cn(
                     "cursor-pointer transition-all duration-300 border-[rgba(185,106,255,0.2)] bg-[rgba(185,106,255,0.05)] hover:bg-[rgba(185,106,255,0.1)]",
-                    form.watch("techStack") === stack.id && "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
+                    form.watch("techStack") === stack.id &&
+                      "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
                   )}
                   onClick={() => form.setValue("techStack", stack.id)}
                 >
@@ -245,7 +346,9 @@ Project Configuration:
                       <Code2 className="w-5 h-5 text-[#b96aff]" />
                       <div>
                         <div className="flex items-center gap-2">
-                          <h4 className="font-semibold text-white">{stack.label}</h4>
+                          <h4 className="font-semibold text-white">
+                            {stack.label}
+                          </h4>
                           {stack.popular && (
                             <span className="px-2 py-1 text-xs bg-[#00fff0] text-black rounded-full font-medium">
                               Popular
@@ -266,12 +369,16 @@ Project Configuration:
         return (
           <div className="space-y-6">
             <div className="text-center space-y-2">
-              <h3 className="text-2xl font-bold text-white">Describe your project</h3>
+              <h3 className="text-2xl font-bold text-white">
+                Describe your project
+              </h3>
               <p className="text-neutral-400">Tell us what you want to build</p>
             </div>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="description" className="text-white">Project Description</Label>
+                <Label htmlFor="description" className="text-white">
+                  Project Description
+                </Label>
                 <div className="relative border border-[rgba(185,106,255,0.2)] rounded-lg bg-[rgba(185,106,255,0.05)] p-4">
                   <TextareaAutosize
                     {...form.register("description")}
@@ -282,7 +389,9 @@ Project Configuration:
                   />
                 </div>
                 {form.formState.errors.description && (
-                  <p className="text-red-400 text-sm">{form.formState.errors.description.message}</p>
+                  <p className="text-red-400 text-sm">
+                    {form.formState.errors.description.message}
+                  </p>
                 )}
               </div>
               <Button
@@ -308,7 +417,9 @@ Project Configuration:
           <div className="space-y-8">
             <div className="text-center space-y-4">
               <h3 className="text-3xl font-bold text-white">Pick your theme</h3>
-              <p className="text-neutral-400 text-lg">Choose a color scheme for your project</p>
+              <p className="text-neutral-400 text-lg">
+                Choose a color scheme for your project
+              </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               {THEMES.map((theme) => (
@@ -316,14 +427,22 @@ Project Configuration:
                   key={theme.id}
                   className={cn(
                     "cursor-pointer transition-all duration-300 border-[rgba(185,106,255,0.2)] bg-[rgba(185,106,255,0.05)] hover:bg-[rgba(185,106,255,0.1)] rounded-lg p-6",
-                    form.watch("theme") === theme.id && "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
+                    form.watch("theme") === theme.id &&
+                      "border-[#b96aff] bg-[rgba(185,106,255,0.2)]"
                   )}
                   onClick={() => form.setValue("theme", theme.id)}
                 >
                   <CardContent className="p-6 text-center space-y-4">
-                    <div className={cn("w-full h-16 rounded-lg bg-gradient-to-r", theme.gradient)} />
+                    <div
+                      className={cn(
+                        "w-full h-16 rounded-lg bg-gradient-to-r",
+                        theme.gradient
+                      )}
+                    />
                     <div>
-                      <h4 className="font-semibold text-white text-lg">{theme.label}</h4>
+                      <h4 className="font-semibold text-white text-lg">
+                        {theme.label}
+                      </h4>
                       <div
                         className="w-4 h-4 rounded-full mx-auto mt-2"
                         style={{ backgroundColor: theme.accent }}
@@ -346,8 +465,8 @@ Project Configuration:
       <div className="w-full bg-[rgba(185,106,255,0.1)] rounded-full h-3">
         <div
           className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] h-3 rounded-full transition-all duration-500"
-          style={{ 
-            width: `${Math.min(100, Math.max(0, (currentStep / 5) * 100))}%` 
+          style={{
+            width: `${Math.min(100, Math.max(0, (currentStep / 5) * 100))}%`,
           }}
         />
       </div>
@@ -359,9 +478,7 @@ Project Configuration:
       </div>
 
       <Card className="border-[rgba(185,106,255,0.12)] bg-[rgba(185,106,255,0.05)] min-h-[400px] rounded-lg shadow-lg">
-        <CardContent className="p-12">
-          {renderStep()}
-        </CardContent>
+        <CardContent className="p-12">{renderStep()}</CardContent>
       </Card>
 
       <div className="flex justify-between items-center">

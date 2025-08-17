@@ -18,4 +18,4 @@ export const useCurrentTheme = (): string | undefined => {
   }
 
   return systemTheme;
-};  
+};

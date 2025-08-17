@@ -8,9 +8,7 @@ const LandingLayout = ({ children }: Props) => {
   return (
     <div className="min-h-screen bg-background">
       <LandingNavbar />
-      <main className="relative">
-        {children}
-      </main>
+      <main className="relative">{children}</main>
     </div>
   );
 };

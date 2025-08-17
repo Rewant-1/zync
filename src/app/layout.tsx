@@ -16,14 +16,15 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL("https://zync-ashen.vercel.app/"),
   title: "zync - Build Web Apps with AI",
-  description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
+  description:
+    "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
   icons: {
     icon: [{ url: "/logo.png", type: "image/png" }],
   },
-  // Basic Open Graph for logo sharing
   openGraph: {
     title: "zync - Build Web Apps with AI",
-    description: "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
+    description:
+      "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
     type: "website",
     images: ["/logo.png"],
   },
@@ -35,7 +36,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider 
+    <ClerkProvider
       appearance={{
         variables: {
           colorPrimary: "#b96aff",
@@ -103,20 +104,29 @@ export default function RootLayout({
         },
       }}
     >
-    <TRPCReactProvider>
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-      </head>
-      <body className={`${inter.variable} antialiased`}
-      ><ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-        <Toaster/>
-        {children}
-      </ThemeProvider>
-      
-      </body>
-    </html>
-    </TRPCReactProvider></ClerkProvider>
+      <TRPCReactProvider>
+        <html lang="en" suppressHydrationWarning>
+          <head>
+            <link rel="preconnect" href="https://fonts.googleapis.com" />
+            <link
+              rel="preconnect"
+              href="https://fonts.gstatic.com"
+              crossOrigin="anonymous"
+            />
+          </head>
+          <body className={`${inter.variable} antialiased`}>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="system"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              {children}
+            </ThemeProvider>
+          </body>
+        </html>
+      </TRPCReactProvider>
+    </ClerkProvider>
   );
 }

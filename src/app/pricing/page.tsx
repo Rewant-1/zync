@@ -22,7 +22,7 @@ const Page = () => {
           >
             <h1 className="text-4xl md:text-5xl font-bold text-white">
               Choose Your{" "}
-              <span className="bg-gradient-to-r from-[#b96aff] to-[#00fff0] bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
                 Plan
               </span>
             </h1>
@@ -44,7 +44,7 @@ const Page = () => {
                     pricingTableContainer:
                       "grid! grid-cols-1! md:grid-cols-3! gap-8! max-w-6xl! mx-auto! relative!",
                     pricingTableCard:
-                      "border-[rgba(186,85,255,0.12)]! shadow-2xl! rounded-2xl! bg-[#1a1a1a]/90! backdrop-blur-md! hover:shadow-[#b96aff]/20! transition-all duration-300! hover:scale-102! relative! overflow-visible! min-h-[600px]! flex! flex-col! z-0!",
+                      "border-[rgba(255,193,7,0.12)]! shadow-2xl! rounded-2xl! bg-[#1a1a1a]/90! backdrop-blur-md! hover:shadow-[#ffc107]/20! transition-all duration-300! hover:scale-102! relative! overflow-visible! min-h-[600px]! flex! flex-col! z-0!",
                     pricingTableHeader:
                       "text-white! bg-transparent! p-6! border-b! border-[rgba(186,85,255,0.12)]! flex-shrink-0!",
                     pricingTableHeaderTitle: "text-xl! font-bold! text-white!",
@@ -52,7 +52,7 @@ const Page = () => {
                     pricingTablePrice: "text-[#00fff0]! font-bold! text-3xl!",
                     pricingTablePriceUnit: "text-neutral-400! text-lg!",
                     pricingTableButton:
-                      "bg-gradient-to-r from-[#b96aff] to-[#00fff0]! hover:from-[#00fff0] hover:to-[#b96aff]! text-black! font-semibold! shadow-lg! shadow-[#00fff0]/40! hover:shadow-[#b96aff]/60! transition-all duration-300! rounded-lg! border-0! py-3! px-6! w-full! mt-auto! relative! z-auto!",
+                      "bg-gradient-to-r from-[#ffc107] to-[#00fff0]! hover:from-[#00fff0] hover:to-[#ffc107]! text-black! font-semibold! shadow-lg! shadow-[#00fff0]/40! hover:shadow-[#ffc107]/60! transition-all duration-300! rounded-lg! border-0! py-3! px-6! w-full! mt-auto! relative! z-auto!",
                     pricingTableFeature:
                       "text-neutral-300! bg-transparent! py-2! flex! items-center! gap-2!",
                     pricingTableFeatureIcon: "text-[#00fff0]! w-4! h-4!",

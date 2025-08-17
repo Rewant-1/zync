@@ -21,7 +21,7 @@ const DashboardPage = () => {
 
           <div className="text-center space-y-4">
             <h1 className="text-3xl md:text-5xl font-bold text-white">
-              Build Something <span className="text-[#b96aff]">Amazing</span>
+              Build Something <span className="text-[#ffc107]">Amazing</span>
             </h1>
             <p className="text-lg md:text-xl text-neutral-400 max-w-2xl mx-auto">
               Create apps and websites by chatting with AI. Turn your ideas into
@@ -29,14 +29,14 @@ const DashboardPage = () => {
             </p>
           </div>
 
-          <div className="flex items-center p-1.5 bg-[rgba(185,106,255,0.05)] border border-[rgba(185,106,255,0.2)] rounded-full max-w-md mx-auto">
+          <div className="flex items-center p-1.5 bg-[rgba(255,193,7,0.05)] border border-[rgba(255,193,7,0.2)] rounded-full max-w-md mx-auto">
             <Button
               variant="ghost"
               className={cn(
                 "flex-1 rounded-full px-6 py-2 text-sm font-medium transition-all duration-300",
                 mode === "quick"
                   ? "bg-[#00fff0] text-black hover:bg-[#00fff0]/90 shadow-lg shadow-[#00fff0]/20"
-                  : "text-neutral-400 hover:text-white hover:bg-[rgba(185,106,255,0.1)]"
+                  : "text-neutral-400 hover:text-white hover:bg-[rgba(255,193,7,0.1)]"
               )}
               onClick={() => setMode("quick")}
             >
@@ -48,8 +48,8 @@ const DashboardPage = () => {
               className={cn(
                 "flex-1 rounded-full px-6 py-2 text-sm font-medium transition-all duration-300",
                 mode === "creator"
-                  ? "bg-[#b96aff] text-white hover:bg-[#b96aff]/90 shadow-lg shadow-[#b96aff]/20"
-                  : "text-neutral-400 hover:text-white hover:bg-[rgba(185,106,255,0.1)]"
+                  ? "bg-[#ffc107] text-black hover:bg-[#ffc107]/90 shadow-lg shadow-[#ffc107]/20"
+                  : "text-neutral-400 hover:text-white hover:bg-[rgba(255,193,7,0.1)]"
               )}
               onClick={() => setMode("creator")}
             >

@@ -39,7 +39,7 @@ export default function RootLayout({
     <ClerkProvider
       appearance={{
         variables: {
-          colorPrimary: "#b96aff",
+          colorPrimary: "#ffc107",
           colorBackground: "#0a0a0a",
           colorInputBackground: "#1a1a1a",
           colorInputText: "#ffffff",
@@ -52,7 +52,7 @@ export default function RootLayout({
         elements: {
           card: {
             backgroundColor: "#0a0a0a",
-            border: "1px solid rgba(186, 85, 255, 0.12)",
+            border: "1px solid rgba(255, 193, 7, 0.12)",
             borderRadius: "1rem",
             boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)",
           },
@@ -65,22 +65,22 @@ export default function RootLayout({
             color: "#a1a1aa",
           },
           formButtonPrimary: {
-            background: "linear-gradient(135deg, #b96aff 0%, #00fff0 100%)",
+            background: "linear-gradient(135deg, #ffc107 0%, #00fff0 100%)",
             color: "#000000",
             fontWeight: "600",
             borderRadius: "0.5rem",
             "&:hover": {
-              background: "linear-gradient(135deg, #00fff0 0%, #b96aff 100%)",
+              background: "linear-gradient(135deg, #00fff0 0%, #ffc107 100%)",
             },
           },
           formFieldInput: {
             backgroundColor: "#1a1a1a",
-            border: "1px solid rgba(186, 85, 255, 0.12)",
+            border: "1px solid rgba(255, 193, 7, 0.12)",
             borderRadius: "0.5rem",
             color: "#ffffff",
             "&:focus": {
-              borderColor: "#b96aff",
-              boxShadow: "0 0 0 3px rgba(185, 106, 255, 0.1)",
+              borderColor: "#ffc107",
+              boxShadow: "0 0 0 3px rgba(255, 193, 7, 0.12)",
             },
           },
           formFieldLabel: {
@@ -88,7 +88,7 @@ export default function RootLayout({
             fontWeight: "500",
           },
           socialButtonsBlockButton: {
-            border: "1px solid rgba(186, 85, 255, 0.12)",
+            border: "1px solid rgba(255, 193, 7, 0.12)",
             backgroundColor: "#1a1a1a",
             color: "#ffffff",
             "&:hover": {
@@ -96,7 +96,7 @@ export default function RootLayout({
             },
           },
           footerActionLink: {
-            color: "#b96aff",
+            color: "#ffc107",
             "&:hover": {
               color: "#00fff0",
             },

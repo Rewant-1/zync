@@ -35,17 +35,20 @@ export const Hero = () => {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
-  // Defer ChromeGrid mounting until idle to avoid competing with critical paint
   useEffect(() => {
     const schedule = (cb: () => void) => {
       const w = window as unknown as {
-        requestIdleCallback?: (cb: () => void, opts?: { timeout?: number }) => number;
+        requestIdleCallback?: (
+          cb: () => void,
+          opts?: { timeout?: number }
+        ) => number;
         cancelIdleCallback?: (id: number) => void;
       };
       if (typeof w.requestIdleCallback === "function") {
         const id = w.requestIdleCallback(cb, { timeout: 500 });
         return () => {
-          if (typeof w.cancelIdleCallback === "function") w.cancelIdleCallback(id);
+          if (typeof w.cancelIdleCallback === "function")
+            w.cancelIdleCallback(id);
         };
       }
       const id = setTimeout(cb, 150);
@@ -85,7 +88,7 @@ export const Hero = () => {
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
-          {/* Badge */}
+         
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -116,7 +119,6 @@ export const Hero = () => {
             transition={{ duration: 0.2 }}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            {/* Fast fallback while Clerk loads auth state */}
             <ClerkLoading>
               <Button
                 asChild

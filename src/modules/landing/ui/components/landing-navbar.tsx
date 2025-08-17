@@ -25,7 +25,7 @@ export const LandingNavbar = () => {
       >
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-12">
-            {/* Logo Section */}
+           
             <Link href="/" className="flex items-center gap-2 group">
               <div className="relative">
                 <Image
@@ -42,7 +42,6 @@ export const LandingNavbar = () => {
               </span>
             </Link>
 
-            {/* Desktop Navigation */}
             <div className="hidden md:flex items-center gap-4">
               {navLinks.map((link) => (
                 <Link
@@ -58,7 +57,6 @@ export const LandingNavbar = () => {
               ))}
             </div>
 
-            {/* Desktop Auth Section */}
             <div className="hidden md:flex items-center gap-2">
               <SignedOut>
                 <SignInButton mode="modal">
@@ -92,7 +90,6 @@ export const LandingNavbar = () => {
               </SignedIn>
             </div>
 
-            {/* Mobile Menu Button */}
             <button
               className="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)]"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -106,7 +103,6 @@ export const LandingNavbar = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20 }}

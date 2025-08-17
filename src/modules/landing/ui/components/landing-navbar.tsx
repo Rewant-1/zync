@@ -20,12 +20,9 @@ export const LandingNavbar = () => {
 
   return (
     <>
-      <motion.nav
-        className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl"
-      >
+      <motion.nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl">
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-12">
-           
             <Link href="/" className="flex items-center gap-2 group">
               <div className="relative">
                 <Image
@@ -116,20 +113,20 @@ export const LandingNavbar = () => {
                 <Link
                   key={link.href}
                   href={link.href}
-          className="block px-3 py-2 rounded-lg text-neutral-400 hover:text-[#ffc107] hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
+                  className="block px-3 py-2 rounded-lg text-neutral-400 hover:text-[#ffc107] hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {link.label}
                 </Link>
               ))}
 
-        <div className="pt-3 border-t border-[rgba(251,191,36,0.12)] space-y-2">
+              <div className="pt-3 border-t border-[rgba(251,191,36,0.12)] space-y-2">
                 <SignedOut>
                   <SignInButton mode="modal">
                     <Button
                       variant="ghost"
                       size="sm"
-            className="w-full justify-start text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
+                      className="w-full justify-start text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
                     >
                       Sign In
                     </Button>

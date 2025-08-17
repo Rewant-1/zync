@@ -25,7 +25,7 @@ export const Navbar = () => {
     >
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14">
-          {/* Logo Section */}
+          
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <div className="relative">
               <Image
@@ -41,8 +41,6 @@ export const Navbar = () => {
               zync
             </span>
           </Link>
-
-          {/* Auth Section */}
           <div className="flex items-center gap-4">
             <SignedOut>
               <div className="flex gap-2">

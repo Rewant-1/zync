@@ -115,6 +115,14 @@ const THEMES = [
   },
 ];
 
+const THEME_ACCENT_CLASS: Record<string, string> = {
+  "modern-dark": "bg-[#00fff0]",
+  "amber-gold": "bg-[#fbbf24]",
+  "ocean-blue": "bg-[#0ea5e9]",
+  "forest-green": "bg-[#10b981]",
+  "sunset-orange": "bg-[#f97316]",
+};
+
 const formSchema = z.object({
   projectName: z
     .string()
@@ -170,30 +178,25 @@ export const CreatorMode = () => {
     })
   );
 
+  const enhancePrompt = useMutation(
+    trpc.projects.enhancePrompt.mutationOptions()
+  );
+
   const enhanceDescription = async () => {
     const { projectName, appType, techStack, description } = form.getValues();
-    if (!description.trim()) return;
+    if (!description.trim() || !projectName || !appType || !techStack) return;
 
     setIsEnhancing(true);
     try {
-      const appTypeLabel =
-        APP_TYPES.find((t) => t.id === appType)?.label || appType;
-      const techLabel =
-        TECH_STACKS.find((t) => t.id === techStack)?.tech || techStack;
-
-      const enhancedPrompt = `Create a ${appTypeLabel.toLowerCase()} called "${projectName}" using ${techLabel}. 
-
-${description}
-
-Requirements:
-- Modern, responsive design with excellent UX
-- Clean, professional interface
-- Mobile-first approach
-- Optimized performance
-- Accessible components
-- Type-safe implementation`;
-
-      form.setValue("description", enhancedPrompt);
+      const result = await enhancePrompt.mutateAsync({
+        projectName,
+        appType,
+        techStack,
+        description,
+      });
+      if (result?.enhanced) {
+        form.setValue("description", result.enhanced);
+      }
       toast.success("Description enhanced with AI!");
     } catch {
       toast.error("Failed to enhance description");
@@ -233,21 +236,14 @@ Requirements:
   };
 
   const onSubmit = async (values: FormData) => {
-    const finalPrompt = `${values.description}
-
-Project Configuration:
-- Name: ${values.projectName}
-- Type: ${APP_TYPES.find((t) => t.id === values.appType)?.label}
-- Tech Stack: ${TECH_STACKS.find((t) => t.id === values.techStack)?.tech}
-- Theme: ${THEMES.find((t) => t.id === values.theme)?.label}`;
+    // Use the enhanced description directly as value for agent generation
+    const finalPrompt = `${values.description}\n\nProject Configuration:\n- Name: ${values.projectName}\n- Type: ${APP_TYPES.find((t) => t.id === values.appType)?.label}\n- Tech Stack: ${TECH_STACKS.find((t) => t.id === values.techStack)?.tech}\n- Theme: ${THEMES.find((t) => t.id === values.theme)?.label}`;
 
     try {
       await createProject.mutateAsync({
         value: finalPrompt,
       });
-    } catch {
-     
-    }
+    } catch {}
   };
 
   const renderStep = () => {
@@ -444,8 +440,7 @@ Project Configuration:
                         {theme.label}
                       </h4>
                       <div
-                        className="w-4 h-4 rounded-full mx-auto mt-2"
-                        style={{ backgroundColor: theme.accent }}
+                        className={cn("w-4 h-4 rounded-full mx-auto mt-2", THEME_ACCENT_CLASS[theme.id])}
                       />
                     </div>
                   </CardContent>
@@ -460,14 +455,25 @@ Project Configuration:
     }
   };
 
+  const progressWidthClass = (
+    [
+      "w-[0%]",
+      "w-[20%]",
+      "w-[40%]",
+      "w-[60%]",
+      "w-[80%]",
+      "w-[100%]",
+    ][currentStep] || "w-[0%]"
+  );
+
   return (
     <div className="space-y-12 p-8">
       <div className="w-full bg-[rgba(251,191,36,0.1)] rounded-full h-3">
         <div
-          className="bg-gradient-to-r from-[#fbbf24] to-[#00fff0] h-3 rounded-full transition-all duration-500"
-          style={{
-            width: `${Math.min(100, Math.max(0, (currentStep / 5) * 100))}%`,
-          }}
+          className={cn(
+            "bg-gradient-to-r from-[#fbbf24] to-[#00fff0] h-3 rounded-full transition-all duration-500",
+            progressWidthClass
+          )}
         />
       </div>
 

@@ -21,13 +21,11 @@ interface Props {
 
 export const CodeView = ({ code, lang }: Props) => {
   useEffect(() => {
-    // Force re-highlight when code or language changes
     setTimeout(() => {
       Prism.highlightAll();
     }, 0);
   }, [code, lang]);
 
-  // Map common extensions to Prism language identifiers
   const getLanguage = (lang: string) => {
     const langMap: { [key: string]: string } = {
       js: "javascript",

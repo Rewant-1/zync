@@ -40,7 +40,7 @@ export const codeAgentFunction = inngest.createFunction(
           orderBy: {
             createdAt: "desc",
           },
-          take: 4, // faster processing
+          take: 4, 
         });
 
         for (const message of messages) {

@@ -4,11 +4,9 @@ import superjson from 'superjson';
 
 export const createTRPCContext = async (opts?: { req?: Request }) => {
   try {
-    // If we have a request object, pass it to auth for proper context
     const authResult = opts?.req ? await auth() : await auth();
     return { auth: authResult };
   } catch {
-    // If auth fails (e.g., called outside request scope), return null auth
     return { auth: null };
   }
 };

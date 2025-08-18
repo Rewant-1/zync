@@ -18,7 +18,7 @@ export const messagesRouter=createTRPCRouter({
             where :{
                 projectId: input.projectId,
                 project:{
-                    userId: ctx.auth.userId, // Ensure the user owns the project
+                    userId: ctx.auth.userId, 
                 },
             },
             orderBy:{
@@ -44,7 +44,7 @@ create: protectedProcedure
     const existingProject=await prisma.project.findUnique({
         where:{
             id: input.projectId,
-            userId: ctx.auth.userId, // Ensure the user owns the project
+            userId: ctx.auth.userId,
         },});
          if(!existingProject){
             throw new TRPCError({code:"NOT_FOUND",message:"Project not found"})};

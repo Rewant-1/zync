@@ -246,7 +246,7 @@ Project Configuration:
         value: finalPrompt,
       });
     } catch {
-      // Error handling is managed by the mutation's onError callback
+     
     }
   };
 

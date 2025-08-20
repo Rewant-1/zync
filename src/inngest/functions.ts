@@ -38,6 +38,9 @@ const OPENAI_BASE_URL =
   process.env.OPENAI_BASE_URL ||
   (process.env.OPENROUTER_API_KEY ? "https://openrouter.ai/api/v1" : undefined);
 
+const OPENAI_API_KEY =
+  process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY || "";
+
 export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
@@ -87,7 +90,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
   description: "An expert React coding agent",
   system: PROMPT,
-  model: openai({ model: AI_MODEL, baseUrl: OPENAI_BASE_URL }),
+  model: openai({ model: AI_MODEL, baseUrl: OPENAI_BASE_URL, apiKey: OPENAI_API_KEY }),
       tools: [
         createTool({
           name: "createFiles",

@@ -1,6 +1,7 @@
 import { inngest } from "./client";
 import {
   gemini,
+  openai,
   createAgent,
   createTool,
   createNetwork,
@@ -68,7 +69,9 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert React coding agent",
       system: PROMPT,
-      model: gemini({ model: "gemini-2.0-flash" }),
+      model: openai({ model: "openai/gpt-oss-20b:free", 
+        baseUrl: "https://openrouter.ai/api/v1",
+       }),
       tools: [
         createTool({
           name: "createFiles",

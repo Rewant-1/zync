@@ -72,6 +72,8 @@ export const codeAgentFunction = inngest.createFunction(
       model: openai({ model: "openai/gpt-oss-20b:free", 
         baseUrl: "https://openrouter.ai/api/v1",
         apiKey: process.env.OPENROUTER_API_KEY,
+        
+        
        }),
       tools: [
         createTool({

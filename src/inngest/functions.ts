@@ -1,6 +1,5 @@
 import { inngest } from "./client";
 import {
-  openai,
   gemini,
   createAgent,
   createTool,
@@ -20,26 +19,6 @@ interface AgentState {
   files: { [path: string]: string };
 }
 
-// Allow using OpenRouter seamlessly: if only OPENROUTER_API_KEY is set,
-// propagate it to OPENAI_API_KEY so AgentKit's OpenAI provider picks it up.
-if (process.env.OPENROUTER_API_KEY && !process.env.OPENAI_API_KEY) {
-  process.env.OPENAI_API_KEY = process.env.OPENROUTER_API_KEY;
-}
-
-// Resolve model and base URL from env; supports OpenAI and OpenRouter.
-const AI_MODEL =
-  process.env.AI_MODEL ||
-  (process.env.OPENAI_BASE_URL?.includes("openrouter.ai") ||
-  process.env.OPENROUTER_API_KEY
-    ? "openai/gpt-oss-20b:free"
-    : "gpt-4o");
-
-const OPENAI_BASE_URL =
-  process.env.OPENAI_BASE_URL ||
-  (process.env.OPENROUTER_API_KEY ? "https://openrouter.ai/api/v1" : undefined);
-
-const OPENAI_API_KEY =
-  process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY || "";
 
 export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },

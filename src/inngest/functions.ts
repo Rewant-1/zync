@@ -1,6 +1,7 @@
 import { inngest } from "./client";
 import {
   gemini,
+  openai,
   createAgent,
   createTool,
   createNetwork,
@@ -18,6 +19,13 @@ interface AgentState {
   summary: string;
   files: { [path: string]: string };
 }
+
+// OpenRouter/OpenAI config for the coding agent
+const AI_MODEL = process.env.AI_MODEL || "openai/gpt-oss-20b:free";
+const OPENAI_BASE_URL =
+  process.env.OPENAI_BASE_URL || "https://openrouter.ai/api/v1";
+const OPENAI_API_KEY =
+  process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY || "";
 
 
 export const codeAgentFunction = inngest.createFunction(
@@ -69,7 +77,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
   description: "An expert React coding agent",
   system: PROMPT,
-  model: gemini({ model:"gemini-2.0-flash" }),
+  model: openai({ model: AI_MODEL, baseUrl: OPENAI_BASE_URL, apiKey: OPENAI_API_KEY }),
       tools: [
         createTool({
           name: "createFiles",

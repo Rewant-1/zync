@@ -25,7 +25,7 @@ export const codeAgentFunction = inngest.createFunction(
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const modelsToTry = [
-      "deepseek/deepseek-v3-0324:free",
+      "deepseek/deepseek-chat-v3-0324:free",
       "moonshotai/kimi-k2:free",
       "z-ai/glm-4.5-air:free",
       

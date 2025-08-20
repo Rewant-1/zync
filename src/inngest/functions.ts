@@ -25,9 +25,10 @@ export const codeAgentFunction = inngest.createFunction(
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const modelsToTry = [
+      "deepseek/deepseek-v3-0324:free",
       "moonshotai/kimi-k2:free",
       "z-ai/glm-4.5-air:free",
-      "deepseek/deepseek-v3-0324:free",
+      
     ];
 
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;

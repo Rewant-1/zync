@@ -24,6 +24,14 @@ export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
+    const modelsToTry = [
+      "moonshotai/kimi-k2:free",
+      "z-ai/glm-4.5-air:free",
+      "deepseek/deepseek-v3-0324:free",
+    ];
+
+    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
       await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
@@ -65,120 +73,150 @@ export const codeAgentFunction = inngest.createFunction(
       }
     );
 
-    const codeAgent = createAgent<AgentState>({
-      name: "code-agent",
-      description: "An expert React coding agent",
-      system: PROMPT,
-      model: openai({ model: "qwen/qwen3-coder:free", 
-        baseUrl: "https://openrouter.ai/api/v1",
-        apiKey: process.env.OPENROUTER_API_KEY,
-        
-        
-       }),
-      tools: [
-        createTool({
-          name: "createFiles",
-          description:
-            "Create files in the sandbox - MUST be used to build the app",
-          parameters: z.object({
-            files: z
-              .array(
-                z.object({
-                  path: z.string().describe("File path relative to /home/user"),
-                  content: z.string().describe("Complete file content"),
-                })
-              )
-              .min(1, "Must create at least one file"),
+    // 2. Try models in order with simple fallback on 429.
+  type MinimalRunResult = { state: { data: AgentState } };
+  let runResult: MinimalRunResult | null = null;
+
+    for (const model of modelsToTry) {
+  try {
+
+        const codeAgent = createAgent<AgentState>({
+          name: "code-agent",
+          description: "An expert React coding agent",
+          system: PROMPT,
+          model: openai({
+            model,
+            baseUrl: "https://openrouter.ai/api/v1",
+            apiKey: openRouterApiKey,
           }),
-          handler: async (
-            { files },
-            { step, network }: Tool.Options<AgentState>
-          ) => {
-            const result = await step?.run("createFiles", async () => {
-              try {
-                const sandbox = await getSandbox(sandboxId);
-                const updatedFiles = { ...network.state.data.files };
+          tools: [
+            createTool({
+              name: "createFiles",
+              description:
+                "Create files in the sandbox - MUST be used to build the app",
+              parameters: z.object({
+                files: z
+                  .array(
+                    z.object({
+                      path: z
+                        .string()
+                        .describe("File path relative to /home/user"),
+                      content: z.string().describe("Complete file content"),
+                    })
+                  )
+                  .min(1, "Must create at least one file"),
+              }),
+              handler: async (
+                { files },
+                { step, network }: Tool.Options<AgentState>
+              ) => {
+                const res = await step?.run("createFiles", async () => {
+                  try {
+                    const sandbox = await getSandbox(sandboxId);
+                    const updatedFiles = { ...network.state.data.files };
 
-                for (const file of files) {
-                  await sandbox.files.write(file.path, file.content);
-                  updatedFiles[file.path] = file.content;
-                }
+                    for (const file of files) {
+                      await sandbox.files.write(file.path, file.content);
+                      updatedFiles[file.path] = file.content;
+                    }
 
-                await sandbox.commands.run(
-                  "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
-                  {
-                    background: true,
+                    await sandbox.commands.run(
+                      "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
+                      {
+                        background: true,
+                      }
+                    );
+
+                    return updatedFiles;
+                  } catch (e) {
+                    return `Error creating files: ${e}`;
                   }
-                );
+                });
 
-                return updatedFiles;
-              } catch (e) {
-                return `Error creating files: ${e}`;
+                if (typeof res === "object" && res !== null) {
+                  network.state.data.files = res as Record<string, string>;
+                  return `Successfully created ${
+                    files.length
+                  } files and started dev server: ${files
+                    .map((f) => f.path)
+                    .join(", ")}`;
+                } else {
+                  return res || "Failed to create files";
+                }
+              },
+            }),
+          ],
+          lifecycle: {
+            onResponse: async ({ result, network }) => {
+              const lastAssistantMessageText =
+                lastAssistantTextMessageContent(result);
+
+              if (lastAssistantMessageText && network) {
+                if (
+                  lastAssistantMessageText.includes("<task_summary>") &&
+                  lastAssistantMessageText.includes("</task_summary>")
+                ) {
+                  const summaryMatch = lastAssistantMessageText.match(
+                    /<task_summary>([\s\S]*?)<\/task_summary>/
+                  );
+                  if (summaryMatch) {
+                    network.state.data.summary = summaryMatch[1].trim();
+                  }
+                }
               }
-            });
 
-            if (typeof result === "object" && result !== null) {
-              network.state.data.files = result;
-              return `Successfully created ${
-                files.length
-              } files and started dev server: ${files
-                .map((f) => f.path)
-                .join(", ")}`;
-            } else {
-              return result || "Failed to create files";
-            }
+              return result;
+            },
           },
-        }),
-      ],
-      lifecycle: {
-        onResponse: async ({ result, network }) => {
-          const lastAssistantMessageText =
-            lastAssistantTextMessageContent(result);
+        });
 
-          if (lastAssistantMessageText && network) {
-            if (
-              lastAssistantMessageText.includes("<task_summary>") &&
-              lastAssistantMessageText.includes("</task_summary>")
-            ) {
-              const summaryMatch = lastAssistantMessageText.match(
-                /<task_summary>([\s\S]*?)<\/task_summary>/
-              );
-              if (summaryMatch) {
-                network.state.data.summary = summaryMatch[1].trim();
-              }
+        const network = createNetwork<AgentState>({
+          name: "coding-agent-network",
+          agents: [codeAgent],
+          maxIter: 6,
+          defaultState: state,
+          router: async ({ network }) => {
+            const currentFiles = Object.keys(network.state.data.files || {});
+            const hasFiles = currentFiles.length > 0;
+            if (hasFiles) {
+              return undefined;
             }
-          }
+            return codeAgent;
+          },
+        });
 
-          return result;
-        },
-      },
-    });
-
-    const network = createNetwork<AgentState>({
-      name: "coding-agent-network",
-      agents: [codeAgent],
-      maxIter: 6, 
-      defaultState: state,
-      router: async ({ network }) => {
-        const currentFiles = Object.keys(network.state.data.files || {});
-
-        const hasFiles = currentFiles.length > 0;
-
-        if (hasFiles) {
-          return undefined; 
+        // Run with the current model
+        runResult = (await network.run(event.data.value, {
+          state,
+        })) as unknown as MinimalRunResult;
+        break;
+      } catch (error: unknown) {
+        const status = (error as { cause?: { status?: number } })?.cause?.status;
+        if (status === 429) {
+          continue;
         }
+        throw error;
+      }
+    }
 
-        return codeAgent;
-      },
-    });
-
-    const result = await network.run(event.data.value, { state });
+    if (!runResult) {
+      await prisma.message.create({
+        data: {
+          projectId: event.data.projectId,
+          content:
+            "Sorry, all available AI models are currently busy. Please try again in a few minutes.",
+          role: "ASSISTANT",
+          type: "ERROR",
+        },
+      });
+      throw new Error("All fallback models were rate-limited or failed.");
+    }
 
     const summaryForGeneration =
-      result.state.data.summary ||
+      runResult.state.data.summary ||
       `Built a React application with ${
-        Object.keys(result.state.data.files || {}).length
-      } files: ${Object.keys(result.state.data.files || {}).join(", ")}`;
+        Object.keys(runResult.state.data.files || {}).length
+      } files: ${Object.keys(runResult.state.data.files || {}).join(", ")}`;
 
     
     const fragmentTitleGenerator = createAgent({
@@ -239,10 +277,10 @@ export const codeAgentFunction = inngest.createFunction(
       return `${protocol}://${host}`;
     });
 
-    const files = result.state.data.files || {};
+  const files = runResult.state.data.files || {};
     const fileCount = Object.keys(files).length;
     const hasFiles = fileCount > 0;
-    const summary = result.state.data.summary || "";
+  const summary = runResult.state.data.summary || "";
     const hasSummary = summary.length > 0;
 
     await step.run("save-result", async () => {

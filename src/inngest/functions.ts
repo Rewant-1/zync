@@ -90,7 +90,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
   description: "An expert React coding agent",
   system: PROMPT,
-  model: openai({ model: AI_MODEL, baseUrl: OPENAI_BASE_URL, apiKey: OPENAI_API_KEY }),
+  model: gemini({ model:"gemini-2.0-flash" }),
       tools: [
         createTool({
           name: "createFiles",

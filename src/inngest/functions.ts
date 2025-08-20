@@ -69,7 +69,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "code-agent",
       description: "An expert React coding agent",
       system: PROMPT,
-      model: openai({ model: "openai/gpt-oss-20b:free", 
+      model: openai({ model: "qwen/qwen3-coder:free", 
         baseUrl: "https://openrouter.ai/api/v1",
         apiKey: process.env.OPENROUTER_API_KEY,
         

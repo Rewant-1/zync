@@ -1,7 +1,6 @@
 import { inngest } from "./client";
 import {
   gemini,
-  openai,
   createAgent,
   createTool,
   createNetwork,
@@ -20,41 +19,17 @@ interface AgentState {
   files: { [path: string]: string };
 }
 
-// OpenRouter/OpenAI config for the coding agent
-const AI_MODEL = process.env.AI_MODEL || "openai/gpt-oss-20b:free";
-const OPENAI_BASE_URL =
-  process.env.OPENAI_BASE_URL || "https://openrouter.ai/api/v1";
-const OPENAI_API_KEY =
-  process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY || "";
-
 export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
-    console.log("[code-agent] Event received", {
-      projectId: event.data?.projectId,
-      aiModel: AI_MODEL,
-      openaiBaseUrlSet: Boolean(OPENAI_BASE_URL),
-      hasOpenAIKey: Boolean(OPENAI_API_KEY),
-    });
-    // Quick visibility into runtime env (no secrets leaked)
-    await step.run("env-check", async () => {
-      console.log("[code-agent] Performing env check");
-      return {
-        hasOpenAIKey: Boolean(process.env.OPENAI_API_KEY || process.env.OPENROUTER_API_KEY),
-        openaiBaseUrl: process.env.OPENAI_BASE_URL || "(unset)",
-        aiModel: process.env.AI_MODEL || "(unset)",
-      };
-    });
-
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
       await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
-      console.log("[code-agent] Sandbox created", { sandboxId: sandbox.sandboxId });
       return sandbox.sandboxId;
     });
 
-  const previousMessages = await step.run(
+    const previousMessages = await step.run(
       "get-previous-messages",
       async () => {
         const formattedMessages: Message[] = [];
@@ -65,7 +40,7 @@ export const codeAgentFunction = inngest.createFunction(
           orderBy: {
             createdAt: "desc",
           },
-          take: 4,
+          take: 4, 
         });
 
         for (const message of messages) {
@@ -75,7 +50,6 @@ export const codeAgentFunction = inngest.createFunction(
             type: "text",
           });
         }
-  console.log("[code-agent] Loaded previous messages", { count: formattedMessages.length });
         return formattedMessages.reverse();
       }
     );
@@ -90,15 +64,11 @@ export const codeAgentFunction = inngest.createFunction(
       }
     );
 
-  const codeAgent = createAgent<AgentState>({
+    const codeAgent = createAgent<AgentState>({
       name: "code-agent",
       description: "An expert React coding agent",
       system: PROMPT,
-      model: openai({
-        model: AI_MODEL,
-        baseUrl: OPENAI_BASE_URL,
-        apiKey: OPENAI_API_KEY,
-      }),
+      model: gemini({ model: "gemini-2.0-flash" }),
       tools: [
         createTool({
           name: "createFiles",
@@ -124,7 +94,6 @@ export const codeAgentFunction = inngest.createFunction(
                 const updatedFiles = { ...network.state.data.files };
 
                 for (const file of files) {
-                  console.log("[code-agent] Writing file", { path: file.path, size: file.content?.length });
                   await sandbox.files.write(file.path, file.content);
                   updatedFiles[file.path] = file.content;
                 }
@@ -135,11 +104,9 @@ export const codeAgentFunction = inngest.createFunction(
                     background: true,
                   }
                 );
-                console.log("[code-agent] Dev server start command issued");
 
                 return updatedFiles;
               } catch (e) {
-                console.error("[code-agent] Error creating files", e);
                 return `Error creating files: ${e}`;
               }
             });
@@ -157,7 +124,7 @@ export const codeAgentFunction = inngest.createFunction(
           },
         }),
       ],
-  lifecycle: {
+      lifecycle: {
         onResponse: async ({ result, network }) => {
           const lastAssistantMessageText =
             lastAssistantTextMessageContent(result);
@@ -172,7 +139,6 @@ export const codeAgentFunction = inngest.createFunction(
               );
               if (summaryMatch) {
                 network.state.data.summary = summaryMatch[1].trim();
-                console.log("[code-agent] Summary captured", { length: network.state.data.summary.length });
               }
             }
           }
@@ -185,7 +151,7 @@ export const codeAgentFunction = inngest.createFunction(
     const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codeAgent],
-      maxIter: 6,
+      maxIter: 6, 
       defaultState: state,
       router: async ({ network }) => {
         const currentFiles = Object.keys(network.state.data.files || {});
@@ -193,24 +159,14 @@ export const codeAgentFunction = inngest.createFunction(
         const hasFiles = currentFiles.length > 0;
 
         if (hasFiles) {
-          console.log("[code-agent] Router: files present, no agent routed");
-          return undefined;
+          return undefined; 
         }
 
-        console.log("[code-agent] Router: routing to codeAgent");
         return codeAgent;
       },
     });
 
-    console.log("[code-agent] Running network with input", {
-      hasInput: Boolean(event.data?.value),
-      inputSize: typeof event.data?.value === "string" ? event.data.value.length : undefined,
-    });
     const result = await network.run(event.data.value, { state });
-    console.log("[code-agent] Network finished", {
-      fileCount: Object.keys(result.state.data.files || {}).length,
-      hasSummary: Boolean(result.state.data.summary),
-    });
 
     const summaryForGeneration =
       result.state.data.summary ||
@@ -218,6 +174,7 @@ export const codeAgentFunction = inngest.createFunction(
         Object.keys(result.state.data.files || {}).length
       } files: ${Object.keys(result.state.data.files || {}).join(", ")}`;
 
+    
     const fragmentTitleGenerator = createAgent({
       name: "fragment-title-generator",
       description: "Generate a concise title for the code fragment",
@@ -271,9 +228,8 @@ export const codeAgentFunction = inngest.createFunction(
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
-      const host = sandbox.getHost(5173);
+      const host = sandbox.getHost(5173); 
       const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-      console.log("[code-agent] Sandbox host resolved", { host, protocol });
       return `${protocol}://${host}`;
     });
 
@@ -284,7 +240,6 @@ export const codeAgentFunction = inngest.createFunction(
     const hasSummary = summary.length > 0;
 
     await step.run("save-result", async () => {
-      console.log("[code-agent] Saving result", { hasFiles, fileCount, hasSummary });
       if (!hasFiles) {
         return await prisma.message.create({
           data: {

@@ -32,11 +32,18 @@ export const codeAgentFunction = inngest.createFunction(
 
   const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
+  // Progress messages disabled: keep as no-op to avoid DB writes and UI pop-ins
+  const createProgress = async () => Promise.resolve();
+
     // Guard: API key must be present (no point trying fallbacks without a key)
     if (!openRouterApiKey) {
+  await createProgress();
       throw new Error("Missing OPENROUTER_API_KEY");
     }
 
+    await step.run("progress:start", async () => {
+  await createProgress();
+    });
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
@@ -44,7 +51,9 @@ export const codeAgentFunction = inngest.createFunction(
       return sandbox.sandboxId;
     });
 
-    
+    await step.run("progress:sandbox-ready", async () => {
+  await createProgress();
+    });
 
     const previousMessages = await step.run(
       "get-previous-messages",
@@ -70,20 +79,23 @@ export const codeAgentFunction = inngest.createFunction(
         return formattedMessages.reverse();
       }
     );
+
+    const state = createState<AgentState>(
+      {
+        summary: "",
+        files: {},
+      },
+      {
+        messages: previousMessages,
+      }
+    );
+
+  // 2. Try models in order with fallback on retriable errors and empty results.
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
   for (const model of modelsToTry) {
       try {
-        const state = createState<AgentState>(
-          {
-            summary: "",
-            files: {},
-          },
-          {
-            messages: previousMessages,
-          }
-        );
         const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",
@@ -177,7 +189,7 @@ export const codeAgentFunction = inngest.createFunction(
         const network = createNetwork<AgentState>({
           name: "coding-agent-network",
           agents: [codeAgent],
-          maxIter: 1,
+          maxIter: 6,
           defaultState: state,
           router: async ({ network }) => {
             const currentFiles = Object.keys(network.state.data.files || {});
@@ -190,7 +202,9 @@ export const codeAgentFunction = inngest.createFunction(
         });
 
         
-        
+        await step.run("progress:agent-start", async () => {
+          await createProgress();
+        });
 
         const result = (await network.run(event.data.value, {
           state,
@@ -199,9 +213,12 @@ export const codeAgentFunction = inngest.createFunction(
         const n = Object.keys(result.state.data.files || {}).length;
         if (n > 0) {
           runResult = result;
-          
+          await step.run("progress:files-created", async () => {
+            await createProgress();
+          });
           break;
         } else {
+          await createProgress();
           continue;
         }
       } catch (error: unknown) {
@@ -213,9 +230,11 @@ export const codeAgentFunction = inngest.createFunction(
           typeof status === "undefined"; // network or unknown error
 
         if (shouldFallback) {
+          await createProgress();
           continue;
         }
         // Non-retriable errors (e.g., 401/403) – surface immediately
+  await createProgress();
         throw error;
       }
     }
@@ -297,7 +316,9 @@ export const codeAgentFunction = inngest.createFunction(
       return `${protocol}://${host}`;
     });
 
-    
+    await step.run("progress:url", async () => {
+  await createProgress();
+    });
 
     const files = runResult.state.data.files || {};
     const fileCount = Object.keys(files).length;

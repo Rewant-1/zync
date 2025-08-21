@@ -84,41 +84,9 @@ export const codeAgentFunction = inngest.createFunction(
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
-    // Idle-timeout per model: if there's no activity for N ms, fall back.
-    const MODEL_IDLE_TIMEOUT_MS = Number(process.env.MODEL_IDLE_TIMEOUT_MS ?? 8000);
-    const withIdleTimeout = <T>(
-      promise: Promise<T>,
-      getLastActivity: () => number,
-      idleMs: number,
-      label: string
-    ) =>
-      new Promise<T>((resolve, reject) => {
-        let settled = false;
-        const intervalMs = Math.max(250, Math.min(1000, Math.floor(idleMs / 4)));
-        const interval = setInterval(() => {
-          const idleFor = Date.now() - getLastActivity();
-          if (idleFor > idleMs) {
-            clearInterval(interval);
-            if (!settled) reject(new Error(`Idle timeout for ${label} after ${idleFor}ms`));
-          }
-        }, intervalMs);
-        promise
-          .then((val) => {
-            settled = true;
-            clearInterval(interval);
-            resolve(val);
-          })
-          .catch((err) => {
-            settled = true;
-            clearInterval(interval);
-            reject(err);
-          });
-      });
-
   for (const model of modelsToTry) {
       try {
-  let lastActivity = Date.now();
-  const codeAgent = createAgent<AgentState>({
+        const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",
           system: PROMPT,
@@ -148,15 +116,12 @@ export const codeAgentFunction = inngest.createFunction(
                 { files },
                 { step, network }: Tool.Options<AgentState>
               ) => {
-    // mark activity at tool start
-    lastActivity = Date.now();
                 const res = await step?.run("createFiles", async () => {
                   try {
                     const sandbox = await getSandbox(sandboxId);
                     const updatedFiles = { ...network.state.data.files };
 
                     for (const file of files) {
-          lastActivity = Date.now();
                       await sandbox.files.write(file.path, file.content);
                       updatedFiles[file.path] = file.content;
                     }
@@ -189,8 +154,6 @@ export const codeAgentFunction = inngest.createFunction(
           ],
           lifecycle: {
             onResponse: async ({ result, network }) => {
-        // any model output is activity
-        lastActivity = Date.now();
               const lastAssistantMessageText =
                 lastAssistantTextMessageContent(result);
 
@@ -231,12 +194,9 @@ export const codeAgentFunction = inngest.createFunction(
         
         
 
-        const result = (await withIdleTimeout(
-          network.run(event.data.value, { state }) as Promise<unknown>,
-          () => lastActivity,
-          MODEL_IDLE_TIMEOUT_MS,
-          `model ${model}`
-        )) as MinimalRunResult;
+        const result = (await network.run(event.data.value, {
+          state,
+        })) as unknown as MinimalRunResult;
 
         const n = Object.keys(result.state.data.files || {}).length;
         if (n > 0) {

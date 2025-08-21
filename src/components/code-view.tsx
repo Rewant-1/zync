@@ -1,6 +1,6 @@
 import Prism from "prismjs";
 import { useEffect } from "react";
-
+import 'prismjs/components/prism-prisma';
 import "prismjs/components/prism-javascript";
 import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-jsx";

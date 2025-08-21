@@ -70,22 +70,20 @@ export const codeAgentFunction = inngest.createFunction(
         return formattedMessages.reverse();
       }
     );
-
-    const state = createState<AgentState>(
-      {
-        summary: "",
-        files: {},
-      },
-      {
-        messages: previousMessages,
-      }
-    );
-
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
   for (const model of modelsToTry) {
       try {
+        const state = createState<AgentState>(
+          {
+            summary: "",
+            files: {},
+          },
+          {
+            messages: previousMessages,
+          }
+        );
         const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",

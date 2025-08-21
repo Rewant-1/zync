@@ -21,10 +21,7 @@ interface AgentState {
 }
 
 export const codeAgentFunction = inngest.createFunction(
-  {
-    id: "code-agent",
-    retries: 0,
-  },
+  { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const modelsToTry = [
@@ -33,21 +30,29 @@ export const codeAgentFunction = inngest.createFunction(
       "z-ai/glm-4.5-air:free",
     ];
 
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-    const createProgress = async () => Promise.resolve();
+  const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+
+  // Progress messages disabled: keep as no-op to avoid DB writes and UI pop-ins
+  const createProgress = async () => Promise.resolve();
+
+    // Guard: API key must be present (no point trying fallbacks without a key)
+    if (!openRouterApiKey) {
+  await createProgress();
+      throw new Error("Missing OPENROUTER_API_KEY");
+    }
 
     await step.run("progress:start", async () => {
-      await createProgress();
+  await createProgress();
     });
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
-      await sandbox.setTimeout(60_000 * 10 * 3);
+      await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
       return sandbox.sandboxId;
     });
 
     await step.run("progress:sandbox-ready", async () => {
-      await createProgress();
+  await createProgress();
     });
 
     const previousMessages = await step.run(
@@ -75,21 +80,22 @@ export const codeAgentFunction = inngest.createFunction(
       }
     );
 
+    const state = createState<AgentState>(
+      {
+        summary: "",
+        files: {},
+      },
+      {
+        messages: previousMessages,
+      }
+    );
+
+  // 2. Try models in order with fallback on retriable errors and empty results.
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
-    for (const model of modelsToTry) {
+  for (const model of modelsToTry) {
       try {
-        const state = createState<AgentState>(
-          {
-            summary: "",
-            files: {},
-          },
-          {
-            messages: previousMessages,
-          }
-        );
-
         const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",
@@ -160,6 +166,7 @@ export const codeAgentFunction = inngest.createFunction(
             onResponse: async ({ result, network }) => {
               const lastAssistantMessageText =
                 lastAssistantTextMessageContent(result);
+
               if (lastAssistantMessageText && network) {
                 if (
                   lastAssistantMessageText.includes("<task_summary>") &&
@@ -173,6 +180,7 @@ export const codeAgentFunction = inngest.createFunction(
                   }
                 }
               }
+
               return result;
             },
           },
@@ -192,6 +200,7 @@ export const codeAgentFunction = inngest.createFunction(
             return codeAgent;
           },
         });
+
         
         await step.run("progress:agent-start", async () => {
           await createProgress();
@@ -213,24 +222,19 @@ export const codeAgentFunction = inngest.createFunction(
           continue;
         }
       } catch (error: unknown) {
-        const errorObj = error as { status?: number; cause?: { status?: number }; response?: { status?: number } };
-        const status =
-          errorObj?.status ||
-          errorObj?.cause?.status ||
-          errorObj?.response?.status;
-
+        const status = (error as { cause?: { status?: number } })?.cause?.status;
         const shouldFallback =
           status === 429 ||
           status === 408 ||
           (typeof status === "number" && status >= 500 && status < 600) ||
-          typeof status === "undefined";
+          typeof status === "undefined"; // network or unknown error
 
         if (shouldFallback) {
           await createProgress();
           continue;
         }
-        
-        await createProgress();
+        // Non-retriable errors (e.g., 401/403) – surface immediately
+  await createProgress();
         throw error;
       }
     }
@@ -268,21 +272,24 @@ export const codeAgentFunction = inngest.createFunction(
       model: gemini({ model: "gemini-2.0-flash" }),
     });
 
-    const [
-        { output: fragmentTitleOutput },
-        { output: responseOutput }
-    ] = await Promise.all([
-        fragmentTitleGenerator.run(summaryForGeneration),
-        responseGenerator.run(summaryForGeneration)
-    ]);
+    const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(
+      summaryForGeneration
+    );
+    const { output: responseOutput } = await responseGenerator.run(
+      summaryForGeneration
+    );
 
     const generateFragmentTitle = () => {
       try {
         if (fragmentTitleOutput?.[0]?.type === "text") {
           const content = fragmentTitleOutput[0].content;
-          return Array.isArray(content) ? content.join(" ") : content || "React Component";
+          if (Array.isArray(content)) {
+            return content.join(" ");
+          }
+          return content || "React Component";
         }
-      } catch {
+      } catch (e) {
+        console.error("Error generating title:", e);
       }
       return "React Component";
     };
@@ -291,9 +298,13 @@ export const codeAgentFunction = inngest.createFunction(
       try {
         if (responseOutput?.[0]?.type === "text") {
           const content = responseOutput[0].content;
-          return Array.isArray(content) ? content.join(" ") : content || "Built your React component successfully!";
+          if (Array.isArray(content)) {
+            return content.join(" ");
+          }
+          return content || "Built your React component successfully!";
         }
-      } catch {
+      } catch (e) {
+        console.error("Error generating response:", e);
       }
       return "Built your React component successfully!";
     };
@@ -306,7 +317,7 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     await step.run("progress:url", async () => {
-      await createProgress();
+  await createProgress();
     });
 
     const files = runResult.state.data.files || {};

@@ -2,12 +2,16 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import {
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  ClerkLoading,
+  ClerkLoaded,
+} from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { UserControl } from "@/components/user-control";
 import { motion } from "framer-motion";
-import { Menu, X, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { Sparkles } from "lucide-react";
 
 const navLinks = [
   { href: "#features", label: "Features" },
@@ -16,8 +20,6 @@ const navLinks = [
 ];
 
 export const LandingNavbar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
     <>
       <motion.nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl">
@@ -39,7 +41,7 @@ export const LandingNavbar = () => {
               </span>
             </Link>
 
-            <div className="hidden md:flex items-center gap-4">
+            <div className="flex items-center gap-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -54,79 +56,32 @@ export const LandingNavbar = () => {
               ))}
             </div>
 
-            <div className="hidden md:flex items-center gap-2">
-              <SignedOut>
-                <SignInButton mode="modal">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-xs px-3 py-1"
-                  >
-                    Sign In
-                  </Button>
-                </SignInButton>
-                <SignUpButton mode="modal">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 font-semibold px-3 py-1 rounded-lg text-xs"
-                  >
-                    <Sparkles className="w-3 h-3 mr-1" />
-                    Get Started
-                  </Button>
-                </SignUpButton>
-              </SignedOut>
-              <SignedIn>
+            <div className="flex items-center gap-2">
+              <ClerkLoading>
                 <Button
-                  asChild
+                  variant="ghost"
                   size="sm"
-                  className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 font-semibold px-3 py-1 rounded-lg text-xs"
+                  disabled
+                  className="text-neutral-400 text-xs px-3 py-1"
                 >
-                  <Link href="/dashboard">Dashboard</Link>
+                  Sign In
                 </Button>
-                <UserControl />
-              </SignedIn>
-            </div>
-
-            <button
-              className="md:hidden p-1.5 rounded-lg text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)]"
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            >
-              {isMobileMenuOpen ? (
-                <X className="w-4 h-4" />
-              ) : (
-                <Menu className="w-4 h-4" />
-              )}
-            </button>
-          </div>
-        </div>
-
-        {isMobileMenuOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="md:hidden glass border-t border-[rgba(251,191,36,0.12)] backdrop-blur-xl rounded-b-2xl"
-          >
-            <div className="px-4 py-4 space-y-3">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block px-3 py-2 rounded-lg text-neutral-400 hover:text-[#ffc107] hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
-                  onClick={() => setIsMobileMenuOpen(false)}
+                <Button
+                  size="sm"
+                  disabled
+                  className="bg-neutral-800 text-black font-semibold px-3 py-1 rounded-lg text-xs"
                 >
-                  {link.label}
-                </Link>
-              ))}
-
-              <div className="pt-3 border-t border-[rgba(251,191,36,0.12)] space-y-2">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Get Started
+                </Button>
+              </ClerkLoading>
+              <ClerkLoaded>
                 <SignedOut>
                   <SignInButton mode="modal">
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="w-full justify-start text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-sm"
+                      className="text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-xs px-3 py-1"
                     >
                       Sign In
                     </Button>
@@ -134,29 +89,17 @@ export const LandingNavbar = () => {
                   <SignUpButton mode="modal">
                     <Button
                       size="sm"
-                      className="w-full bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 font-semibold text-sm"
+                      className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 font-semibold px-3 py-1 rounded-lg text-xs"
                     >
-                      <Sparkles className="w-4 h-4 mr-2" />
+                      <Sparkles className="w-3 h-3 mr-1" />
                       Get Started
                     </Button>
                   </SignUpButton>
                 </SignedOut>
-                <SignedIn>
-                  <Button
-                    asChild
-                    size="sm"
-                    className="w-full bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 font-semibold text-sm"
-                  >
-                    <Link href="/dashboard">Dashboard</Link>
-                  </Button>
-                  <div className="px-3">
-                    <UserControl />
-                  </div>
-                </SignedIn>
-              </div>
+              </ClerkLoaded>
             </div>
-          </motion.div>
-        )}
+          </div>
+        </div>
       </motion.nav>
     </>
   );

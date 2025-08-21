@@ -32,26 +32,17 @@ export const codeAgentFunction = inngest.createFunction(
 
   const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
-  const createProgress = async (content: string) =>
-      prisma.message.create({
-        data: {
-          projectId: event.data.projectId,
-      content: `<progress>${content}</progress>`,
-          role: "ASSISTANT",
-          type: "RESULT",
-        },
-      });
+  // Progress messages disabled: keep as no-op to avoid DB writes and UI pop-ins
+  const createProgress = async () => Promise.resolve();
 
     // Guard: API key must be present (no point trying fallbacks without a key)
     if (!openRouterApiKey) {
-      await createProgress(
-        "Missing OpenRouter API key. Please set OPENROUTER_API_KEY and try again."
-      );
+  await createProgress();
       throw new Error("Missing OPENROUTER_API_KEY");
     }
 
     await step.run("progress:start", async () => {
-      await createProgress("Preparing environment...");
+  await createProgress();
     });
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
@@ -61,7 +52,7 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     await step.run("progress:sandbox-ready", async () => {
-      await createProgress("Sandbox created. Booting dev server...");
+  await createProgress();
     });
 
     const previousMessages = await step.run(
@@ -212,7 +203,7 @@ export const codeAgentFunction = inngest.createFunction(
 
         
         await step.run("progress:agent-start", async () => {
-          await createProgress(`Using model: ${model}. Generating files...`);
+          await createProgress();
         });
 
         const result = (await network.run(event.data.value, {
@@ -223,15 +214,11 @@ export const codeAgentFunction = inngest.createFunction(
         if (n > 0) {
           runResult = result;
           await step.run("progress:files-created", async () => {
-            await createProgress(
-              `Created ${n} file${n === 1 ? "" : "s"}. Starting dev server...`
-            );
+            await createProgress();
           });
           break;
         } else {
-          await createProgress(
-            `Model ${model} produced no files. Falling back to next model...`
-          );
+          await createProgress();
           continue;
         }
       } catch (error: unknown) {
@@ -243,17 +230,11 @@ export const codeAgentFunction = inngest.createFunction(
           typeof status === "undefined"; // network or unknown error
 
         if (shouldFallback) {
-          await createProgress(
-            `Model ${model} failed${
-              status ? ` (status ${status})` : ""
-            }. Trying next model...`
-          );
+          await createProgress();
           continue;
         }
         // Non-retriable errors (e.g., 401/403) – surface immediately
-        await createProgress(
-          `Model ${model} failed with a non-retriable error. Aborting.`
-        );
+  await createProgress();
         throw error;
       }
     }
@@ -336,7 +317,7 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     await step.run("progress:url", async () => {
-      await createProgress(`Sandbox is live: ${sandboxUrl}`);
+  await createProgress();
     });
 
     const files = runResult.state.data.files || {};

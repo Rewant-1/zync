@@ -15,7 +15,6 @@ interface Props {
 export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment }: Props) => {
     const trpc = useTRPC();
     const bottomRef = useRef<HTMLDivElement>(null);
-    const lastAssistantMessageIdRef = useRef<string | null>(null);
 
     const { data: messages } = useSuspenseQuery(
         trpc.messages.getMany.queryOptions(
@@ -30,15 +29,16 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
         }
     }, [messages]);
 
-    useEffect(() => {
-        const lastAssistantMessage = [...messages].reverse().find((message) => message.role === "ASSISTANT");
-        if (lastAssistantMessage?.fragment && lastAssistantMessage.id !== lastAssistantMessageIdRef.current) {
-            lastAssistantMessageIdRef.current = lastAssistantMessage.id;
-            setActiveFragment(lastAssistantMessage.fragment);
-        } else if (!lastAssistantMessage) {
-            setActiveFragment(null);
-        }
-    }, [messages, setActiveFragment]);
+    // Disable automatic fragment activation to avoid real-time switching while sandbox loads
+    // useEffect(() => {
+    //     const lastAssistantMessage = [...messages].reverse().find((message) => message.role === "ASSISTANT");
+    //     if (lastAssistantMessage?.fragment && lastAssistantMessage.id !== lastAssistantMessageIdRef.current) {
+    //         lastAssistantMessageIdRef.current = lastAssistantMessage.id;
+    //         setActiveFragment(lastAssistantMessage.fragment);
+    //     } else if (!lastAssistantMessage) {
+    //         setActiveFragment(null);
+    //     }
+    // }, [messages, setActiveFragment]);
 
     const lastMessage = messages[messages.length - 1];
     const isLastMessageUser = lastMessage?.role === "USER";

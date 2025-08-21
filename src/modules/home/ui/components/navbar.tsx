@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { SignedIn } from "@clerk/nextjs";
 import { UserControl } from "@/components/user-control";
 import { useScroll } from "@/hooks/use-scroll";
 import { cn } from "@/lib/utils";
@@ -18,13 +17,12 @@ export const Navbar = () => {
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
       className={cn(
-        "fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b border-transparent backdrop-blur-md",
-        isScrolled &&
-          "glass border-[rgba(251,191,36,0.12)] shadow-xl shadow-[#fbbf24]/10"
+        "fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 border border-transparent backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl glass",
+        isScrolled && "border-[rgba(251,191,36,0.12)] shadow-xl shadow-[#fbbf24]/10"
       )}
     >
-      <div className="max-w-3xl md:max-w-4xl lg:max-w-4xl xl:max-w-5xl 2xl:max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-14">
+      <div className="px-4 sm:px-6">
+        <div className="flex justify-between items-center h-12">
           
           <Link href="/dashboard" className="flex items-center gap-3 group">
             <div className="relative">
@@ -42,27 +40,6 @@ export const Navbar = () => {
             </span>
           </Link>
           <div className="flex items-center gap-4">
-            <SignedOut>
-              <div className="flex gap-2">
-                <SignUpButton mode="modal">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-[rgba(251,191,36,0.12)] text-[#fbbf24] hover:bg-[#fbbf24]/10 hover:text-[#fbbf24] transition-all duration-300"
-                  >
-                    Sign Up
-                  </Button>
-                </SignUpButton>
-                <SignInButton mode="modal">
-                  <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-[#fbbf24] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#fbbf24] shadow-lg shadow-[#00fff0]/40 hover:shadow-[#fbbf24]/60 transition-all duration-300 font-semibold"
-                  >
-                    Sign In
-                  </Button>
-                </SignInButton>
-              </div>
-            </SignedOut>
             <SignedIn>
               <div className="flex items-center gap-4">
                 <Link

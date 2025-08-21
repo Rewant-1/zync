@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { FileCode2, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export const OpenSource = () => {
   return (
@@ -75,24 +76,42 @@ export const OpenSource = () => {
                   3. Customize prompts
                 </div>
                 <pre className="text-xs md:text-sm text-muted-foreground overflow-auto">
-                  {
-                  }
-                  <br />
-                  {
-                  }
+                  {`// src/prompts.ts
+export const SYSTEM_PROMPT = 'You are Zync, an expert AI web dev. Prefer TypeScript, Tailwind, and accessible UI. Respond with concise, actionable steps.';
+
+// Tweak defaults
+export const DEFAULT_STACK = ['nextjs', 'react', 'tailwind'];
+// ...add your own tools or guidance here`}
                 </pre>
               </div>
             </div>
-            <div className="mt-6 flex justify-center">
-              <Link
-                href="https://github.com/Rewant-1/zync"
-                className="flex items-center gap-4 bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg px-6 py-3 rounded-lg transition-all duration-300"
+            <div className="mt-6 flex justify-center gap-3">
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
               >
-                <FileCode2 className="w-5 h-5" />
-                <span>View Repository</span>
-                <Star className="w-5 h-5" />
-                <span>Star us on GitHub</span>
-              </Link>
+                <Link href="https://github.com/Rewant-1/zync" target="_blank" rel="noopener noreferrer">
+                  <span className="inline-flex items-center">
+                    <FileCode2 className="mr-2 w-5 h-5" />
+                    View Repository
+                  </span>
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
+              >
+                <Link href="https://github.com/Rewant-1/zync" target="_blank" rel="noopener noreferrer">
+                  <span className="inline-flex items-center">
+                    <Star className="mr-2 w-5 h-5" />
+                    Star us on GitHub
+                  </span>
+                </Link>
+              </Button>
             </div>
           </CardContent>
         </Card>

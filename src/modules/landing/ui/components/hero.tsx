@@ -113,17 +113,15 @@ export const Hero = () => {
             AI-driven code generation and sandboxed execution environments.
           </p>
 
-          <motion.div
-            initial={{ opacity: 1, y: 0 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.2 }}
+          <div
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
             <ClerkLoading>
               <Button
                 asChild
+                variant="outline"
                 size="lg"
-                className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black px-10 py-6 text-lg font-semibold hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2"
+                className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
               >
                 <Link href="/sign-up">Start Building Free</Link>
               </Button>
@@ -131,8 +129,9 @@ export const Hero = () => {
             <SignedOut>
               <SignUpButton mode="modal">
                 <Button
+                  variant="outline"
                   size="lg"
-                  className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black px-10 py-6 text-lg font-semibold hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2"
+                  className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
                 >
                   Start Building Free
                   <ArrowRight className="ml-2 w-5 h-5" />
@@ -142,8 +141,9 @@ export const Hero = () => {
             <SignedIn>
               <Button
                 asChild
+                variant="outline"
                 size="lg"
-                className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black px-10 py-6 text-lg font-semibold hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00fff0] focus:ring-offset-2"
+                className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
               >
                 <Link href="/dashboard">
                   Go to Dashboard
@@ -167,12 +167,9 @@ export const Hero = () => {
                 Star us on GitHub
               </Link>
             </Button>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+          <div
             className="mt-16 flex flex-col items-center gap-4"
           >
             <p className="text-sm text-gray-400">
@@ -186,7 +183,7 @@ export const Hero = () => {
               </div>
               <div className="text-2xl font-bold text-[#00fff0]">Tailwind</div>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 

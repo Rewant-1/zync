@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 
 const LOADING_MESSAGES = [
   "Thinking...",
@@ -26,10 +29,19 @@ const ShimmerMessages = () => {
   }, []);
 
   return (
-    <div className="flex items-center gap-2">
-      <span className="text-muted-foreground text-base animate-pulse">
-        {LOADING_MESSAGES[currentMessageIndex]}
-      </span>
+    <div className="flex items-center gap-2 min-h-6">
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.span
+          key={currentMessageIndex}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.2 }}
+          className="text-muted-foreground text-base"
+        >
+          {LOADING_MESSAGES[currentMessageIndex]}
+        </motion.span>
+      </AnimatePresence>
     </div>
   );
 };

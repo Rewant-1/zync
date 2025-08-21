@@ -1,40 +1,16 @@
-"use client";
+import Prism from "prismjs";
+import { useEffect } from "react";
 
-import { useEffect, useMemo, useState } from "react";
-import "./code-view/code-theme.css";
-
-type PrismType = typeof import("prismjs");
-type PrismGrammar = import("prismjs").Grammar;
-let prismPromise: Promise<PrismType> | null = null;
-
-const languageLoaders: Record<string, () => Promise<unknown>> = {
-  javascript: () => import("prismjs/components/prism-javascript"),
-  typescript: () => import("prismjs/components/prism-typescript"),
-  jsx: () => import("prismjs/components/prism-jsx"),
-  tsx: () => import("prismjs/components/prism-tsx"),
-  css: () => import("prismjs/components/prism-css"),
-  json: () => import("prismjs/components/prism-json"),
-  python: () => import("prismjs/components/prism-python"),
-  bash: () => import("prismjs/components/prism-bash"),
-  markdown: () => import("prismjs/components/prism-markdown"),
-  yaml: () => import("prismjs/components/prism-yaml"),
-};
-
-async function loadPrismAndLanguage(lang: string): Promise<PrismType> {
-  if (!prismPromise) {
-    prismPromise = import("prismjs");
-  }
-  const Prism = await prismPromise;
-  const loader = languageLoaders[lang];
-  if (loader) {
-    try {
-      await loader();
-    } catch {
-      // best-effort — ignore missing language module
-    }
-  }
-  return Prism;
-}
+import "prismjs/components/prism-javascript";
+import "prismjs/components/prism-typescript";
+import "prismjs/components/prism-jsx";
+import "prismjs/components/prism-tsx";
+import "prismjs/components/prism-css";
+import "prismjs/components/prism-json";
+import "prismjs/components/prism-python";
+import "prismjs/components/prism-bash";
+import "prismjs/components/prism-markdown";
+import "prismjs/components/prism-yaml";
 
 interface Props {
   code: string;
@@ -42,10 +18,13 @@ interface Props {
 }
 
 export const CodeView = ({ code, lang }: Props) => {
-  const [html, setHtml] = useState<string>("");
-
-  const normalized = useMemo(() => {
-    const map: Record<string, string> = {
+  useEffect(() => {
+    setTimeout(() => {
+      Prism.highlightAll();
+    }, 0);
+  }, [code, lang]);
+  const getLanguage = (lang: string) => {
+    const langMap: { [key: string]: string } = {
       js: "javascript",
       ts: "typescript",
       py: "python",
@@ -53,42 +32,21 @@ export const CodeView = ({ code, lang }: Props) => {
       yml: "yaml",
       md: "markdown",
     };
-    const l = (lang || "").toLowerCase();
-    return map[l] || l || "text";
-  }, [lang]);
-
-  useEffect(() => {
-    let cancelled = false;
-    // Only run on client
-    if (typeof window === "undefined") return;
-    loadPrismAndLanguage(normalized).then((Prism) => {
-      if (cancelled) return;
-      try {
-  const languages = Prism.languages as unknown as Record<string, PrismGrammar>;
-        const grammar = languages[normalized];
-        const highlighted = grammar
-          ? Prism.highlight(code, grammar, normalized)
-          : code;
-        setHtml(highlighted);
-      } catch {
-        setHtml("");
-      }
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [code, normalized]);
-
+    return langMap[lang] || lang;
+  };
+  const language = getLanguage(lang);
   return (
     <pre className="p-4 bg-transparent border-none rounded-none m-0 text-sm overflow-auto h-full">
-      {html ? (
-        <code
-          className={`language-${normalized}`}
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      ) : (
-        <code className={`language-${normalized}`}>{code}</code>
-      )}
+      <code
+        className={`language-${language}`}
+        dangerouslySetInnerHTML={{
+          __html: Prism.highlight(
+            code,
+            Prism.languages[language] || Prism.languages.text,
+            language
+          ),
+        }}
+      />
     </pre>
   );
 };

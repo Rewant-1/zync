@@ -29,7 +29,6 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
         }
     }, [messages]);
 
-    // Auto-activate latest assistant fragment (final result) to show preview without clicking
     const lastAssistantMessageIdRef = useRef<string | null>(null);
     useEffect(() => {
         const lastAssistantWithFragment = [...messages]
@@ -47,7 +46,6 @@ export const MessagesContainer = ({ projectId, activeFragment, setActiveFragment
         }
     }, [messages, activeFragment, setActiveFragment]);
 
-    // Show loader while waiting for an assistant RESULT after the latest user message
     const lastUserIndex = [...messages]
         .map((m, i) => ({ m, i }))
         .reverse()

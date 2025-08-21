@@ -32,18 +32,11 @@ export const codeAgentFunction = inngest.createFunction(
 
   const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
-  // Progress messages disabled: keep as no-op to avoid DB writes and UI pop-ins
-  const createProgress = async () => Promise.resolve();
-
     // Guard: API key must be present (no point trying fallbacks without a key)
     if (!openRouterApiKey) {
-  await createProgress();
       throw new Error("Missing OPENROUTER_API_KEY");
     }
 
-    await step.run("progress:start", async () => {
-  await createProgress();
-    });
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
@@ -51,9 +44,7 @@ export const codeAgentFunction = inngest.createFunction(
       return sandbox.sandboxId;
     });
 
-    await step.run("progress:sandbox-ready", async () => {
-  await createProgress();
-    });
+    
 
     const previousMessages = await step.run(
       "get-previous-messages",
@@ -90,13 +81,44 @@ export const codeAgentFunction = inngest.createFunction(
       }
     );
 
-  // 2. Try models in order with fallback on retriable errors and empty results.
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
+    // Idle-timeout per model: if there's no activity for N ms, fall back.
+    const MODEL_IDLE_TIMEOUT_MS = Number(process.env.MODEL_IDLE_TIMEOUT_MS ?? 8000);
+    const withIdleTimeout = <T>(
+      promise: Promise<T>,
+      getLastActivity: () => number,
+      idleMs: number,
+      label: string
+    ) =>
+      new Promise<T>((resolve, reject) => {
+        let settled = false;
+        const intervalMs = Math.max(250, Math.min(1000, Math.floor(idleMs / 4)));
+        const interval = setInterval(() => {
+          const idleFor = Date.now() - getLastActivity();
+          if (idleFor > idleMs) {
+            clearInterval(interval);
+            if (!settled) reject(new Error(`Idle timeout for ${label} after ${idleFor}ms`));
+          }
+        }, intervalMs);
+        promise
+          .then((val) => {
+            settled = true;
+            clearInterval(interval);
+            resolve(val);
+          })
+          .catch((err) => {
+            settled = true;
+            clearInterval(interval);
+            reject(err);
+          });
+      });
+
   for (const model of modelsToTry) {
       try {
-        const codeAgent = createAgent<AgentState>({
+  let lastActivity = Date.now();
+  const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",
           system: PROMPT,
@@ -126,12 +148,15 @@ export const codeAgentFunction = inngest.createFunction(
                 { files },
                 { step, network }: Tool.Options<AgentState>
               ) => {
+    // mark activity at tool start
+    lastActivity = Date.now();
                 const res = await step?.run("createFiles", async () => {
                   try {
                     const sandbox = await getSandbox(sandboxId);
                     const updatedFiles = { ...network.state.data.files };
 
                     for (const file of files) {
+          lastActivity = Date.now();
                       await sandbox.files.write(file.path, file.content);
                       updatedFiles[file.path] = file.content;
                     }
@@ -164,6 +189,8 @@ export const codeAgentFunction = inngest.createFunction(
           ],
           lifecycle: {
             onResponse: async ({ result, network }) => {
+        // any model output is activity
+        lastActivity = Date.now();
               const lastAssistantMessageText =
                 lastAssistantTextMessageContent(result);
 
@@ -189,7 +216,7 @@ export const codeAgentFunction = inngest.createFunction(
         const network = createNetwork<AgentState>({
           name: "coding-agent-network",
           agents: [codeAgent],
-          maxIter: 6,
+          maxIter: 1,
           defaultState: state,
           router: async ({ network }) => {
             const currentFiles = Object.keys(network.state.data.files || {});
@@ -202,23 +229,21 @@ export const codeAgentFunction = inngest.createFunction(
         });
 
         
-        await step.run("progress:agent-start", async () => {
-          await createProgress();
-        });
+        
 
-        const result = (await network.run(event.data.value, {
-          state,
-        })) as unknown as MinimalRunResult;
+        const result = (await withIdleTimeout(
+          network.run(event.data.value, { state }) as Promise<unknown>,
+          () => lastActivity,
+          MODEL_IDLE_TIMEOUT_MS,
+          `model ${model}`
+        )) as MinimalRunResult;
 
         const n = Object.keys(result.state.data.files || {}).length;
         if (n > 0) {
           runResult = result;
-          await step.run("progress:files-created", async () => {
-            await createProgress();
-          });
+          
           break;
         } else {
-          await createProgress();
           continue;
         }
       } catch (error: unknown) {
@@ -230,11 +255,9 @@ export const codeAgentFunction = inngest.createFunction(
           typeof status === "undefined"; // network or unknown error
 
         if (shouldFallback) {
-          await createProgress();
           continue;
         }
         // Non-retriable errors (e.g., 401/403) – surface immediately
-  await createProgress();
         throw error;
       }
     }
@@ -316,9 +339,7 @@ export const codeAgentFunction = inngest.createFunction(
       return `${protocol}://${host}`;
     });
 
-    await step.run("progress:url", async () => {
-  await createProgress();
-    });
+    
 
     const files = runResult.state.data.files || {};
     const fileCount = Object.keys(files).length;

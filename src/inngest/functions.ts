@@ -30,7 +30,7 @@ export const codeAgentFunction = inngest.createFunction(
       "z-ai/glm-4.5-air:free",
     ];
 
-    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+  const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
   const createProgress = async (content: string) =>
       prisma.message.create({
@@ -41,6 +41,14 @@ export const codeAgentFunction = inngest.createFunction(
           type: "RESULT",
         },
       });
+
+    // Guard: API key must be present (no point trying fallbacks without a key)
+    if (!openRouterApiKey) {
+      await createProgress(
+        "Missing OpenRouter API key. Please set OPENROUTER_API_KEY and try again."
+      );
+      throw new Error("Missing OPENROUTER_API_KEY");
+    }
 
     await step.run("progress:start", async () => {
       await createProgress("Preparing environment...");
@@ -91,11 +99,11 @@ export const codeAgentFunction = inngest.createFunction(
       }
     );
 
-    // 2. Try models in order with simple fallback on 429.
+  // 2. Try models in order with fallback on retriable errors and empty results.
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
-    for (const model of modelsToTry) {
+  for (const model of modelsToTry) {
       try {
         const codeAgent = createAgent<AgentState>({
           name: "code-agent",
@@ -207,25 +215,45 @@ export const codeAgentFunction = inngest.createFunction(
           await createProgress(`Using model: ${model}. Generating files...`);
         });
 
-        runResult = (await network.run(event.data.value, {
+        const result = (await network.run(event.data.value, {
           state,
         })) as unknown as MinimalRunResult;
 
-        await step.run("progress:files-created", async () => {
-          const n = Object.keys(runResult!.state.data.files || {}).length;
-          if (n > 0) {
+        const n = Object.keys(result.state.data.files || {}).length;
+        if (n > 0) {
+          runResult = result;
+          await step.run("progress:files-created", async () => {
             await createProgress(
               `Created ${n} file${n === 1 ? "" : "s"}. Starting dev server...`
             );
-          }
-        });
-        break;
-      } catch (error: unknown) {
-        const status = (error as { cause?: { status?: number } })?.cause
-          ?.status;
-        if (status === 429) {
+          });
+          break;
+        } else {
+          await createProgress(
+            `Model ${model} produced no files. Falling back to next model...`
+          );
           continue;
         }
+      } catch (error: unknown) {
+        const status = (error as { cause?: { status?: number } })?.cause?.status;
+        const shouldFallback =
+          status === 429 ||
+          status === 408 ||
+          (typeof status === "number" && status >= 500 && status < 600) ||
+          typeof status === "undefined"; // network or unknown error
+
+        if (shouldFallback) {
+          await createProgress(
+            `Model ${model} failed${
+              status ? ` (status ${status})` : ""
+            }. Trying next model...`
+          );
+          continue;
+        }
+        // Non-retriable errors (e.g., 401/403) – surface immediately
+        await createProgress(
+          `Model ${model} failed with a non-retriable error. Aborting.`
+        );
         throw error;
       }
     }

@@ -24,7 +24,7 @@ const ShimmerMessages = () => {
       setCurrentMessageIndex(
         (prevIndex) => (prevIndex + 1) % LOADING_MESSAGES.length
       );
-    }, 2000);
+  }, 3500);
     return () => clearInterval(interval);
   }, []);
 

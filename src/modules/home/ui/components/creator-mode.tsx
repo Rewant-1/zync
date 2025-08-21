@@ -236,7 +236,6 @@ export const CreatorMode = () => {
   };
 
   const onSubmit = async (values: FormData) => {
-    // Use the enhanced description directly as value for agent generation
     const finalPrompt = `${values.description}\n\nProject Configuration:\n- Name: ${values.projectName}\n- Type: ${APP_TYPES.find((t) => t.id === values.appType)?.label}\n- Tech Stack: ${TECH_STACKS.find((t) => t.id === values.techStack)?.tech}\n- Theme: ${THEMES.find((t) => t.id === values.theme)?.label}`;
 
     try {

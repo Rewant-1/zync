@@ -112,7 +112,7 @@ export const projectsRouter = createTRPCRouter({
 
       const content = `Project Name: ${input.projectName}\nApp Type: ${input.appType}\nTech Stack: ${input.techStack}\n\nUser Description:\n${input.description}\n\nReturn only the enhanced specification. Do not include headers like 'Enhanced:'`;
       const { output } = await agent.run(content);
-      // Normalize output to string
+      
       let enhanced = "";
       try {
         if (output?.[0]?.type === "text") {

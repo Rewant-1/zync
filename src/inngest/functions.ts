@@ -283,7 +283,6 @@ export const codeAgentFunction = inngest.createFunction(
           return Array.isArray(content) ? content.join(" ") : content || "React Component";
         }
       } catch {
-        // Error logging removed as requested
       }
       return "React Component";
     };
@@ -295,7 +294,6 @@ export const codeAgentFunction = inngest.createFunction(
           return Array.isArray(content) ? content.join(" ") : content || "Built your React component successfully!";
         }
       } catch {
-        // Error logging removed as requested
       }
       return "Built your React component successfully!";
     };

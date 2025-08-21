@@ -25,18 +25,35 @@ export const codeAgentFunction = inngest.createFunction(
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const modelsToTry = [
-      "deepseek/deepseek-chat-v3-0324:free",
+      "qwen/qwen3-coder:free",
       "moonshotai/kimi-k2:free",
       "z-ai/glm-4.5-air:free",
-      
     ];
 
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+
+  const createProgress = async (content: string) =>
+      prisma.message.create({
+        data: {
+          projectId: event.data.projectId,
+      content: `<progress>${content}</progress>`,
+          role: "ASSISTANT",
+          type: "RESULT",
+        },
+      });
+
+    await step.run("progress:start", async () => {
+      await createProgress("Preparing environment...");
+    });
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
       await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
       return sandbox.sandboxId;
+    });
+
+    await step.run("progress:sandbox-ready", async () => {
+      await createProgress("Sandbox created. Booting dev server...");
     });
 
     const previousMessages = await step.run(
@@ -50,7 +67,7 @@ export const codeAgentFunction = inngest.createFunction(
           orderBy: {
             createdAt: "desc",
           },
-          take: 4, 
+          take: 4,
         });
 
         for (const message of messages) {
@@ -75,12 +92,11 @@ export const codeAgentFunction = inngest.createFunction(
     );
 
     // 2. Try models in order with simple fallback on 429.
-  type MinimalRunResult = { state: { data: AgentState } };
-  let runResult: MinimalRunResult | null = null;
+    type MinimalRunResult = { state: { data: AgentState } };
+    let runResult: MinimalRunResult | null = null;
 
     for (const model of modelsToTry) {
-  try {
-
+      try {
         const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",
@@ -186,13 +202,27 @@ export const codeAgentFunction = inngest.createFunction(
           },
         });
 
-        // Run with the current model
+        
+        await step.run("progress:agent-start", async () => {
+          await createProgress(`Using model: ${model}. Generating files...`);
+        });
+
         runResult = (await network.run(event.data.value, {
           state,
         })) as unknown as MinimalRunResult;
+
+        await step.run("progress:files-created", async () => {
+          const n = Object.keys(runResult!.state.data.files || {}).length;
+          if (n > 0) {
+            await createProgress(
+              `Created ${n} file${n === 1 ? "" : "s"}. Starting dev server...`
+            );
+          }
+        });
         break;
       } catch (error: unknown) {
-        const status = (error as { cause?: { status?: number } })?.cause?.status;
+        const status = (error as { cause?: { status?: number } })?.cause
+          ?.status;
         if (status === 429) {
           continue;
         }
@@ -219,7 +249,6 @@ export const codeAgentFunction = inngest.createFunction(
         Object.keys(runResult.state.data.files || {}).length
       } files: ${Object.keys(runResult.state.data.files || {}).join(", ")}`;
 
-    
     const fragmentTitleGenerator = createAgent({
       name: "fragment-title-generator",
       description: "Generate a concise title for the code fragment",
@@ -273,15 +302,19 @@ export const codeAgentFunction = inngest.createFunction(
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
-      const host = sandbox.getHost(5173); 
+      const host = sandbox.getHost(5173);
       const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
       return `${protocol}://${host}`;
     });
 
-  const files = runResult.state.data.files || {};
+    await step.run("progress:url", async () => {
+      await createProgress(`Sandbox is live: ${sandboxUrl}`);
+    });
+
+    const files = runResult.state.data.files || {};
     const fileCount = Object.keys(files).length;
     const hasFiles = fileCount > 0;
-  const summary = runResult.state.data.summary || "";
+    const summary = runResult.state.data.summary || "";
     const hasSummary = summary.length > 0;
 
     await step.run("save-result", async () => {

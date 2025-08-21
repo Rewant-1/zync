@@ -7,6 +7,51 @@ import { z } from "zod";
 import { consumeCredits } from "@/lib/usage";
 import { createAgent, gemini } from "@inngest/agent-kit";
 export const projectsRouter = createTRPCRouter({
+  getProgress: protectedProcedure
+    .input(
+      z.object({
+        projectId: z.string().min(1),
+        since: z.string().optional(), 
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const proj = await prisma.project.findFirst({
+        where: { id: input.projectId, userId: ctx.auth.userId },
+        select: { id: true },
+      });
+      if (!proj) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
+      }
+      const sinceDate = input.since ? new Date(input.since) : undefined;
+      const messages = await prisma.message.findMany({
+        where: {
+          projectId: input.projectId,
+          content: { contains: "<progress>" },
+          ...(sinceDate ? { createdAt: { gt: sinceDate } } : {}),
+        },
+        orderBy: { createdAt: "asc" },
+      });
+      return messages.map((m) => ({
+        id: m.id,
+        content: m.content.replace(/^<progress>|<\/progress>$/g, ""),
+        createdAt: m.createdAt,
+      }));
+    }),
+  clearProgress: protectedProcedure
+    .input(z.object({ projectId: z.string().min(1) }))
+    .mutation(async ({ input, ctx }) => {
+      const proj = await prisma.project.findFirst({
+        where: { id: input.projectId, userId: ctx.auth.userId },
+        select: { id: true },
+      });
+      if (!proj) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Project not found" });
+      }
+      await prisma.message.deleteMany({
+        where: { projectId: input.projectId, content: { contains: "<progress>" } },
+      });
+      return { ok: true };
+    }),
   getOne: protectedProcedure
     .input(
       z.object({

@@ -259,7 +259,7 @@ export const CreatorMode = () => {
                 Give your project a memorable name
               </p>
             </div>
-            <div className="space-y-4">
+      <div className="space-y-4">
               <Label htmlFor="projectName" className="text-white text-lg">
                 Project Name
               </Label>
@@ -267,7 +267,7 @@ export const CreatorMode = () => {
                 id="projectName"
                 {...form.register("projectName")}
                 placeholder="e.g., My Awesome App"
-                className="bg-[rgba(251,191,36,0.05)] border-[rgba(251,191,36,0.2)] text-white placeholder:text-neutral-500 rounded-lg p-4"
+        className="bg-transparent border border-[rgba(251,191,36,0.12)] text-white placeholder:text-neutral-500 rounded-2xl p-4 glass focus:border-[rgba(251,191,36,0.3)] transition-all"
               />
               {form.formState.errors.projectName && (
                 <p className="text-red-400 text-sm">
@@ -294,14 +294,14 @@ export const CreatorMode = () => {
                 <Card
                   key={type.id}
                   className={cn(
-                    "cursor-pointer transition-all duration-300 border-[rgba(251,191,36,0.2)] bg-[rgba(251,191,36,0.05)] hover:bg-[rgba(251,191,36,0.1)]",
+                    "cursor-pointer transition-all duration-300 border border-[rgba(251,191,36,0.12)] bg-transparent hover:bg-[rgba(251,191,36,0.06)] rounded-2xl glass",
                     form.watch("appType") === type.id &&
-                      "border-[#fbbf24] bg-[rgba(251,191,36,0.2)]"
+                      "border-[#fbbf24] shadow-lg shadow-[#fbbf24]/10"
                   )}
                   onClick={() => form.setValue("appType", type.id)}
                 >
-                  <CardContent className="p-4 flex items-start gap-3">
-                    <type.icon className="w-6 h-6 text-[#fbbf24] mt-1" />
+                  <CardContent className="p-5 flex items-start gap-3">
+                    <type.icon className="w-6 h-6 text-[#00fff0] mt-1" />
                     <div>
                       <h4 className="font-semibold text-white">{type.label}</h4>
                       <p className="text-sm text-neutral-400">
@@ -331,15 +331,15 @@ export const CreatorMode = () => {
                 <Card
                   key={stack.id}
                   className={cn(
-                    "cursor-pointer transition-all duration-300 border-[rgba(251,191,36,0.2)] bg-[rgba(251,191,36,0.05)] hover:bg-[rgba(251,191,36,0.1)]",
+                    "cursor-pointer transition-all duration-300 border border-[rgba(251,191,36,0.12)] bg-transparent hover:bg-[rgba(251,191,36,0.06)] rounded-2xl glass",
                     form.watch("techStack") === stack.id &&
-                      "border-[#fbbf24] bg-[rgba(251,191,36,0.2)]"
+                      "border-[#fbbf24] shadow-lg shadow-[#00fff0]/10"
                   )}
                   onClick={() => form.setValue("techStack", stack.id)}
                 >
-                  <CardContent className="p-4 flex items-center justify-between">
+                  <CardContent className="p-5 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Code2 className="w-5 h-5 text-[#fbbf24]" />
+                      <Code2 className="w-5 h-5 text-[#00fff0]" />
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="font-semibold text-white">
@@ -375,11 +375,11 @@ export const CreatorMode = () => {
                 <Label htmlFor="description" className="text-white">
                   Project Description
                 </Label>
-                <div className="relative border border-[rgba(251,191,36,0.2)] rounded-lg bg-[rgba(251,191,36,0.05)] p-4">
+        <div className="relative border border-[rgba(251,191,36,0.12)] rounded-2xl bg-transparent p-4 glass">
                   <TextareaAutosize
                     {...form.register("description")}
                     placeholder="Describe what you want to build, key features, design preferences..."
-                    className="w-full resize-none bg-transparent outline-none text-white placeholder:text-neutral-500"
+          className="w-full resize-none bg-transparent outline-none text-white placeholder:text-neutral-500 text-lg"
                     minRows={4}
                     maxRows={8}
                   />
@@ -395,7 +395,7 @@ export const CreatorMode = () => {
                 variant="outline"
                 onClick={enhanceDescription}
                 disabled={isEnhancing || !form.watch("description")?.trim()}
-                className="w-full bg-[rgba(251,191,36,0.05)] border-[rgba(251,191,36,0.2)] text-white hover:bg-[rgba(251,191,36,0.1)]"
+                className="w-full text-black bg-gradient-to-r from-[#fbbf24] to-[#00fff0] hover:from-[#00fff0] hover:to-[#fbbf24] border-0 shadow-lg shadow-[#00fff0]/20 hover:shadow-[#fbbf24]/30 rounded-2xl"
               >
                 {isEnhancing ? (
                   <Loader2Icon className="w-4 h-4 mr-2 animate-spin" />
@@ -422,9 +422,9 @@ export const CreatorMode = () => {
                 <Card
                   key={theme.id}
                   className={cn(
-                    "cursor-pointer transition-all duration-300 border-[rgba(251,191,36,0.2)] bg-[rgba(251,191,36,0.05)] hover:bg-[rgba(251,191,36,0.1)] rounded-lg p-6",
+                    "cursor-pointer transition-all duration-300 border border-[rgba(251,191,36,0.12)] bg-transparent hover:bg-[rgba(251,191,36,0.06)] rounded-2xl p-6 glass",
                     form.watch("theme") === theme.id &&
-                      "border-[#fbbf24] bg-[rgba(251,191,36,0.2)]"
+                      "border-[#fbbf24] shadow-lg shadow-[#fbbf24]/10"
                   )}
                   onClick={() => form.setValue("theme", theme.id)}
                 >
@@ -467,8 +467,8 @@ export const CreatorMode = () => {
   );
 
   return (
-    <div className="space-y-12 p-8">
-      <div className="w-full bg-[rgba(251,191,36,0.1)] rounded-full h-3">
+    <div className="space-y-10 p-8 max-w-4xl mx-auto w-full">
+      <div className="w-full bg-[rgba(251,191,36,0.08)] rounded-full h-3">
         <div
           className={cn(
             "bg-gradient-to-r from-[#fbbf24] to-[#00fff0] h-3 rounded-full transition-all duration-500",
@@ -483,8 +483,8 @@ export const CreatorMode = () => {
         </span>
       </div>
 
-      <Card className="border-[rgba(251,191,36,0.12)] bg-[rgba(251,191,36,0.05)] min-h-[400px] rounded-lg shadow-lg">
-        <CardContent className="p-12">{renderStep()}</CardContent>
+      <Card className="border border-[rgba(251,191,36,0.12)] bg-transparent min-h-[400px] rounded-2xl shadow-lg glass transition-all">
+        <CardContent className="p-10">{renderStep()}</CardContent>
       </Card>
 
       <div className="flex justify-between items-center">
@@ -515,11 +515,11 @@ export const CreatorMode = () => {
           ))}
         </div>
 
-        {currentStep === 5 ? (
+    {currentStep === 5 ? (
           <Button
             onClick={form.handleSubmit(onSubmit)}
             disabled={!canProceed() || createProject.isPending}
-            className="bg-[#00fff0] text-black hover:bg-[#00fff0]/90 shadow-lg shadow-[#00fff0]/20 text-lg"
+      className="bg-[#00fff0] text-black hover:bg-[#00fff0]/90 shadow-lg shadow-[#00fff0]/20 text-lg rounded-full px-6"
           >
             {createProject.isPending ? (
               <Loader2Icon className="w-5 h-5 mr-2 animate-spin" />
@@ -533,7 +533,7 @@ export const CreatorMode = () => {
             type="button"
             onClick={nextStep}
             disabled={!canProceed()}
-            className="bg-[#fbbf24] text-black hover:bg-[#fbbf24]/90 text-lg"
+      className="bg-[#fbbf24] text-black hover:bg-[#fbbf24]/90 text-lg rounded-full px-6 shadow-lg shadow-[#fbbf24]/10"
           >
             Next
             <ChevronRight className="w-5 h-5 ml-2" />

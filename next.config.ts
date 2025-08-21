@@ -50,7 +50,7 @@ const nextConfig: NextConfig = {
     config.cache = {
       type: 'filesystem',
       buildDependencies: {
-        config: [__filename],
+        config: [require.resolve('./next.config.ts')],
       },
       maxAge: 1000 * 60 * 60 * 24 * 7,
     };

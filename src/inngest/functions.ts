@@ -29,7 +29,7 @@ export const codeAgentFunction = inngest.createFunction(
   async ({ event, step }) => {
     const modelsToTry = [
       "moonshotai/kimi-k2:free", 
-      "qwen/qwen3-coder:free",
+      
       "z-ai/glm-4.5-air:free",
     ];
 
@@ -120,13 +120,12 @@ export const codeAgentFunction = inngest.createFunction(
                     const sandbox = await getSandbox(sandboxId);
                     const updatedFiles = { ...network.state.data.files };
 
-                    await Promise.all(
-                      files.map(async (file) => {
-                        await sandbox.files.write(file.path, file.content);
-                        updatedFiles[file.path] = file.content;
-                      })
-                    );
+                    for (const file of files) {
+                      await sandbox.files.write(file.path, file.content);
+                      updatedFiles[file.path] = file.content;
+                    }
 
+                    // Start dev server in background after all files are written
                     sandbox.commands.run(
                       "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
                       { background: true }

@@ -83,6 +83,8 @@ export const codeAgentFunction = inngest.createFunction(
 
   for (const model of modelsToTry) {
       try {
+        console.log(`🤖 Trying model: ${model}`);
+        
         const codeAgent = createAgent<AgentState>({
           name: "code-agent",
           description: "An expert React coding agent",
@@ -195,23 +197,45 @@ export const codeAgentFunction = inngest.createFunction(
 
         const n = Object.keys(result.state.data.files || {}).length;
         if (n > 0) {
+          console.log(`✅ Model ${model} succeeded with ${n} files`);
           runResult = result;
           break; 
         } else {
+          console.log(`⚠️ Model ${model} returned no files, trying next model`);
           continue;
         }
       } catch (error: unknown) {
-        const status = (error as { cause?: { status?: number } })?.cause?.status;
-        const shouldFallback =
-          status === 429 ||
-          status === 408 ||
-          (typeof status === "number" && status >= 500 && status < 600) ||
-          typeof status === "undefined"; 
+        console.log(`❌ Model ${model} failed:`, error);
+        
+        // More comprehensive error checking for different error formats
+        const errorObj = error as {
+          status?: number;
+          cause?: { status?: number };
+          response?: { status?: number };
+          error?: { status?: number };
+          message?: string;
+        };
+        
+        const status = 
+          errorObj?.status || 
+          errorObj?.cause?.status || 
+          errorObj?.response?.status ||
+          errorObj?.error?.status;
 
-        if (shouldFallback) {
-          continue;
+        // Only stop trying models if it's an API key authentication error
+        // Everything else should fall back to the next model
+        const isApiKeyError = (status === 401 || status === 403) && 
+                             (errorObj?.message?.includes?.('api') || 
+                              errorObj?.message?.includes?.('auth') || 
+                              errorObj?.message?.includes?.('key'));
+        
+        if (isApiKeyError) {
+          console.log(`� API key authentication error, stopping all attempts`);
+          throw error;
         }
-        throw error;
+        
+        console.log(`� Model ${model} failed (status: ${status}), trying next model...`);
+        continue;
       }
     }
 

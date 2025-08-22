@@ -21,43 +21,31 @@ interface AgentState {
 }
 
 export const codeAgentFunction = inngest.createFunction(
-  { id: "code-agent" },
+  { 
+    id: "code-agent",
+    concurrency: { limit: 10 }, 
+  },
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const modelsToTry = [
+      "moonshotai/kimi-k2:free", 
       "qwen/qwen3-coder:free",
-      "moonshotai/kimi-k2:free",
       "z-ai/glm-4.5-air:free",
     ];
 
-  const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+    const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
-  // Progress messages disabled: keep as no-op to avoid DB writes and UI pop-ins
-  const createProgress = async () => Promise.resolve();
-
-    // Guard: API key must be present (no point trying fallbacks without a key)
     if (!openRouterApiKey) {
-  await createProgress();
       throw new Error("Missing OPENROUTER_API_KEY");
     }
 
-    await step.run("progress:start", async () => {
-  await createProgress();
-    });
-
-    const sandboxId = await step.run("get-sandbox-id", async () => {
-      const sandbox = await Sandbox.create("zyncreacted");
-      await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
-      return sandbox.sandboxId;
-    });
-
-    await step.run("progress:sandbox-ready", async () => {
-  await createProgress();
-    });
-
-    const previousMessages = await step.run(
-      "get-previous-messages",
-      async () => {
+    const [sandboxId, previousMessages] = await Promise.all([
+      step.run("get-sandbox-id", async () => {
+        const sandbox = await Sandbox.create("zyncreacted");
+        await sandbox.setTimeout(60_000 * 15); // Reduced from 30 to 15 minutes
+        return sandbox.sandboxId;
+      }),
+      step.run("get-previous-messages", async () => {
         const formattedMessages: Message[] = [];
         const messages = await prisma.message.findMany({
           where: {
@@ -77,8 +65,8 @@ export const codeAgentFunction = inngest.createFunction(
           });
         }
         return formattedMessages.reverse();
-      }
-    );
+      })
+    ]);
 
     const state = createState<AgentState>(
       {
@@ -90,7 +78,6 @@ export const codeAgentFunction = inngest.createFunction(
       }
     );
 
-  // 2. Try models in order with fallback on retriable errors and empty results.
     type MinimalRunResult = { state: { data: AgentState } };
     let runResult: MinimalRunResult | null = null;
 
@@ -131,17 +118,17 @@ export const codeAgentFunction = inngest.createFunction(
                     const sandbox = await getSandbox(sandboxId);
                     const updatedFiles = { ...network.state.data.files };
 
-                    for (const file of files) {
-                      await sandbox.files.write(file.path, file.content);
-                      updatedFiles[file.path] = file.content;
-                    }
-
-                    await sandbox.commands.run(
-                      "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
-                      {
-                        background: true,
-                      }
+                    await Promise.all(
+                      files.map(async (file) => {
+                        await sandbox.files.write(file.path, file.content);
+                        updatedFiles[file.path] = file.content;
+                      })
                     );
+
+                    sandbox.commands.run(
+                      "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
+                      { background: true }
+                    ).catch(() => {}); 
 
                     return updatedFiles;
                   } catch (e) {
@@ -189,7 +176,7 @@ export const codeAgentFunction = inngest.createFunction(
         const network = createNetwork<AgentState>({
           name: "coding-agent-network",
           agents: [codeAgent],
-          maxIter: 6,
+          maxIter: 2, 
           defaultState: state,
           router: async ({ network }) => {
             const currentFiles = Object.keys(network.state.data.files || {});
@@ -202,10 +189,6 @@ export const codeAgentFunction = inngest.createFunction(
         });
 
         
-        await step.run("progress:agent-start", async () => {
-          await createProgress();
-        });
-
         const result = (await network.run(event.data.value, {
           state,
         })) as unknown as MinimalRunResult;
@@ -213,12 +196,8 @@ export const codeAgentFunction = inngest.createFunction(
         const n = Object.keys(result.state.data.files || {}).length;
         if (n > 0) {
           runResult = result;
-          await step.run("progress:files-created", async () => {
-            await createProgress();
-          });
-          break;
+          break; 
         } else {
-          await createProgress();
           continue;
         }
       } catch (error: unknown) {
@@ -227,14 +206,11 @@ export const codeAgentFunction = inngest.createFunction(
           status === 429 ||
           status === 408 ||
           (typeof status === "number" && status >= 500 && status < 600) ||
-          typeof status === "undefined"; // network or unknown error
+          typeof status === "undefined"; 
 
         if (shouldFallback) {
-          await createProgress();
           continue;
         }
-        // Non-retriable errors (e.g., 401/403) – surface immediately
-  await createProgress();
         throw error;
       }
     }
@@ -258,26 +234,32 @@ export const codeAgentFunction = inngest.createFunction(
         Object.keys(runResult.state.data.files || {}).length
       } files: ${Object.keys(runResult.state.data.files || {}).join(", ")}`;
 
-    const fragmentTitleGenerator = createAgent({
-      name: "fragment-title-generator",
-      description: "Generate a concise title for the code fragment",
-      system: FRAGMENT_TITLE_PROMPT,
-      model: gemini({ model: "gemini-2.0-flash" }),
-    });
-
-    const responseGenerator = createAgent({
-      name: "response-generator",
-      description: "Generate a user-friendly response",
-      system: RESPONSE_PROMPT,
-      model: gemini({ model: "gemini-2.0-flash" }),
-    });
-
-    const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(
-      summaryForGeneration
-    );
-    const { output: responseOutput } = await responseGenerator.run(
-      summaryForGeneration
-    );
+    const [
+      { output: fragmentTitleOutput },
+      { output: responseOutput },
+      sandboxUrl
+    ] = await Promise.all([
+      createAgent({
+        name: "fragment-title-generator",
+        description: "Generate a concise title for the code fragment",
+        system: FRAGMENT_TITLE_PROMPT,
+        model: gemini({ model: "gemini-2.0-flash" }),
+      }).run(summaryForGeneration),
+      
+      createAgent({
+        name: "response-generator", 
+        description: "Generate a user-friendly response",
+        system: RESPONSE_PROMPT,
+        model: gemini({ model: "gemini-2.0-flash" }),
+      }).run(summaryForGeneration),
+      
+      step.run("get-sandbox-url", async () => {
+        const sandbox = await getSandbox(sandboxId);
+        const host = sandbox.getHost(5173);
+        const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
+        return `${protocol}://${host}`;
+      })
+    ]);
 
     const generateFragmentTitle = () => {
       try {
@@ -288,8 +270,8 @@ export const codeAgentFunction = inngest.createFunction(
           }
           return content || "React Component";
         }
-      } catch (e) {
-        console.error("Error generating title:", e);
+      } catch {
+        
       }
       return "React Component";
     };
@@ -303,22 +285,11 @@ export const codeAgentFunction = inngest.createFunction(
           }
           return content || "Built your React component successfully!";
         }
-      } catch (e) {
-        console.error("Error generating response:", e);
+      } catch {
+        
       }
       return "Built your React component successfully!";
     };
-
-    const sandboxUrl = await step.run("get-sandbox-url", async () => {
-      const sandbox = await getSandbox(sandboxId);
-      const host = sandbox.getHost(5173);
-      const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
-      return `${protocol}://${host}`;
-    });
-
-    await step.run("progress:url", async () => {
-  await createProgress();
-    });
 
     const files = runResult.state.data.files || {};
     const fileCount = Object.keys(files).length;

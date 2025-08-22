@@ -24,45 +24,35 @@ export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
+  // start
+
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
     if (!openRouterApiKey) {
       throw new Error("OPENROUTER_API_KEY is required");
     }
 
-    const [sandboxId, previousMessages] = await Promise.all([
-      step.run("get-sandbox-id", async () => {
-        const sandbox = await Sandbox.create("zyncreacted");
-        await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
-        return sandbox.sandboxId;
-      }),
-
-      step.run("get-previous-messages", async () => {
-        const formattedMessages: Message[] = [];
-        
-        const messages = await prisma.message.findMany({
-          where: {
-            projectId: event.data.projectId,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-          take: 3, 
-          select: {
-            role: true,
-            content: true,
-          },
+    const sandboxId = await step.run("get-sandbox-id", async () => {
+      const sandbox = await Sandbox.create("zyncreacted");
+      await sandbox.setTimeout(60_000 * 10 * 3);
+      return sandbox.sandboxId;
+    });
+    const previousMessages = await step.run("get-previous-messages", async () => {
+      const list: Message[] = [];
+      const rows = await prisma.message.findMany({
+        where: { projectId: event.data.projectId },
+        orderBy: { createdAt: "desc" },
+        take: 3,
+        select: { role: true, content: true },
+      });
+      for (const row of rows) {
+        list.push({
+          role: row.role === "ASSISTANT" ? "assistant" : "user",
+          content: row.content,
+          type: "text",
         });
-
-        for (const message of messages) {
-          formattedMessages.push({
-            role: message.role === "ASSISTANT" ? "assistant" : "user",
-            content: message.content,
-            type: "text",
-          });
-        }
-        return formattedMessages.reverse();
-      }),
-    ]);
+      }
+      return list.reverse();
+    });
 
     const state = createState<AgentState>(
       {
@@ -111,19 +101,16 @@ export const codeAgentFunction = inngest.createFunction(
               try {
                 const sandbox = await getSandbox(sandboxId);
                 const updatedFiles = { ...network.state.data.files };
-
-                console.log(`� Writing ${files.length} files...`);
+                console.log(`📝 Writing ${files.length} files...`);
                 for (const file of files) {
                   await sandbox.files.write(file.path, file.content);
                   updatedFiles[file.path] = file.content;
                 }
-
                 console.log("🚀 Starting Vite dev server...");
                 sandbox.commands.run(
                   "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
                   { background: true }
-                ).catch(() => {}); 
-
+                ).catch(() => {});
                 console.log(`✅ Created ${files.length} files successfully`);
                 return updatedFiles;
               } catch (e) {
@@ -179,7 +166,7 @@ export const codeAgentFunction = inngest.createFunction(
       },
     });
 
-    const network = createNetwork<AgentState>({
+  const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codeAgent],
       maxIter: 4,
@@ -197,7 +184,31 @@ export const codeAgentFunction = inngest.createFunction(
     });
 
     console.log("🚀 Starting agent network...");
-    const result = await network.run(event.data.value, { state });
+    const result = await network.run(event.data.value, { state }) as { state: { data: AgentState } };
+
+    // Early abort: no files produced
+    if (!result.state.data.files || Object.keys(result.state.data.files).length === 0) {
+      await step.run("save-empty-result", async () => {
+        await prisma.message.create({
+          data: {
+            projectId: event.data.projectId,
+            content: "Failed to create any files. The agent needs to use the createFiles tool to build your app. Please try again with a clearer request.",
+            role: "ASSISTANT",
+            type: "ERROR"
+          }
+        });
+      });
+      return {
+        url: null,
+        title: null,
+        files: {},
+        summary: "",
+        fileCount: 0,
+        hasFiles: false,
+        hasSummary: false,
+        success: false
+      };
+    }
 
     console.log("🏁 Agent network completed:", {
       summary: result.state.data.summary,

@@ -24,8 +24,6 @@ export const codeAgentFunction = inngest.createFunction(
   { id: "code-agent" },
   { event: "code-agent/run" },
   async ({ event, step }) => {
-  // start
-
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
     if (!openRouterApiKey) {
       throw new Error("OPENROUTER_API_KEY is required");
@@ -33,26 +31,34 @@ export const codeAgentFunction = inngest.createFunction(
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
-      await sandbox.setTimeout(60_000 * 10 * 3);
+      await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
       return sandbox.sandboxId;
     });
-    const previousMessages = await step.run("get-previous-messages", async () => {
-      const list: Message[] = [];
-      const rows = await prisma.message.findMany({
-        where: { projectId: event.data.projectId },
-        orderBy: { createdAt: "desc" },
-        take: 3,
-        select: { role: true, content: true },
-      });
-      for (const row of rows) {
-        list.push({
-          role: row.role === "ASSISTANT" ? "assistant" : "user",
-          content: row.content,
-          type: "text",
+
+    const previousMessages = await step.run(
+      "get-previous-messages",
+      async () => {
+        const formattedMessages: Message[] = [];
+        const messages = await prisma.message.findMany({
+          where: {
+            projectId: event.data.projectId,
+          },
+          orderBy: {
+            createdAt: "desc",
+          },
+          take: 4, 
         });
+
+        for (const message of messages) {
+          formattedMessages.push({
+            role: message.role === "ASSISTANT" ? "assistant" : "user",
+            content: message.content,
+            type: "text",
+          });
+        }
+        return formattedMessages.reverse();
       }
-      return list.reverse();
-    });
+    );
 
     const state = createState<AgentState>(
       {
@@ -101,17 +107,28 @@ export const codeAgentFunction = inngest.createFunction(
               try {
                 const sandbox = await getSandbox(sandboxId);
                 const updatedFiles = { ...network.state.data.files };
-                console.log(`📝 Writing ${files.length} files...`);
+
                 for (const file of files) {
+                  console.log(
+                    `📄 Writing file: ${file.path} (${file.content.length} chars)`
+                  );
                   await sandbox.files.write(file.path, file.content);
                   updatedFiles[file.path] = file.content;
                 }
+
                 console.log("🚀 Starting Vite dev server...");
-                sandbox.commands.run(
+                const startResult = await sandbox.commands.run(
                   "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
-                  { background: true }
-                ).catch(() => {});
-                console.log(`✅ Created ${files.length} files successfully`);
+                  {
+                    background: true,
+                  }
+                );
+                console.log("✅ Vite server started:", startResult);
+
+                console.log(
+                  "✅ Files created successfully:",
+                  Object.keys(updatedFiles)
+                );
                 return updatedFiles;
               } catch (e) {
                 console.error("❌ Error creating files:", e);
@@ -143,7 +160,7 @@ export const codeAgentFunction = inngest.createFunction(
             lastAssistantTextMessageContent(result);
 
           if (lastAssistantMessageText && network) {
-            // Extract task summary
+            
             if (
               lastAssistantMessageText.includes("<task_summary>") &&
               lastAssistantMessageText.includes("</task_summary>")
@@ -166,49 +183,35 @@ export const codeAgentFunction = inngest.createFunction(
       },
     });
 
-  const network = createNetwork<AgentState>({
+    const network = createNetwork<AgentState>({
       name: "coding-agent-network",
       agents: [codeAgent],
-      maxIter: 4,
+      maxIter: 6,
       defaultState: state,
       router: async ({ network }) => {
+        const currentSummary = network.state.data.summary;
         const currentFiles = Object.keys(network.state.data.files || {});
+
+        console.log("🔄 Router check:", {
+          hasSummary: !!currentSummary,
+          summaryLength: currentSummary?.length || 0,
+          fileCount: currentFiles.length,
+          files: currentFiles,
+        });
         const hasFiles = currentFiles.length > 0;
 
         if (hasFiles) {
+          console.log("✅ Task completed - has files:", currentFiles);
           return undefined;
         }
 
+        console.log("🔄 Continuing - need files");
         return codeAgent;
       },
     });
 
     console.log("🚀 Starting agent network...");
-    const result = await network.run(event.data.value, { state }) as { state: { data: AgentState } };
-
-    // Early abort: no files produced
-    if (!result.state.data.files || Object.keys(result.state.data.files).length === 0) {
-      await step.run("save-empty-result", async () => {
-        await prisma.message.create({
-          data: {
-            projectId: event.data.projectId,
-            content: "Failed to create any files. The agent needs to use the createFiles tool to build your app. Please try again with a clearer request.",
-            role: "ASSISTANT",
-            type: "ERROR"
-          }
-        });
-      });
-      return {
-        url: null,
-        title: null,
-        files: {},
-        summary: "",
-        fileCount: 0,
-        hasFiles: false,
-        hasSummary: false,
-        success: false
-      };
-    }
+    const result = await network.run(event.data.value, { state });
 
     console.log("🏁 Agent network completed:", {
       summary: result.state.data.summary,
@@ -222,26 +225,31 @@ export const codeAgentFunction = inngest.createFunction(
         Object.keys(result.state.data.files || {}).length
       } files: ${Object.keys(result.state.data.files || {}).join(", ")}`;
 
-    const [fragmentTitleOutput, responseOutput] = await Promise.all([
-      createAgent({
-        name: "fragment-title-generator",
-        description: "Generate a concise title for the code fragment",
-        system: FRAGMENT_TITLE_PROMPT,
-        model: gemini({ model: "gemini-2.0-flash" }),
-      }).run(summaryForGeneration),
-      
-      createAgent({
-        name: "response-generator",
-        description: "Generate a user-friendly response",
-        system: RESPONSE_PROMPT,
-        model: gemini({ model: "gemini-2.0-flash" }),
-      }).run(summaryForGeneration),
-    ]);
+    const fragmentTitleGenerator = createAgent({
+      name: "fragment-title-generator",
+      description: "Generate a concise title for the code fragment",
+      system: FRAGMENT_TITLE_PROMPT,
+      model: gemini({ model: "gemini-2.0-flash" }),
+    });
+
+    const responseGenerator = createAgent({
+      name: "response-generator",
+      description: "Generate a user-friendly response",
+      system: RESPONSE_PROMPT,
+      model: gemini({ model: "gemini-2.0-flash" }),
+    });
+
+    const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(
+      summaryForGeneration
+    );
+    const { output: responseOutput } = await responseGenerator.run(
+      summaryForGeneration
+    );
 
     const generateFragmentTitle = () => {
       try {
-        if (fragmentTitleOutput?.output?.[0]?.type === "text") {
-          const content = fragmentTitleOutput.output[0].content;
+        if (fragmentTitleOutput?.[0]?.type === "text") {
+          const content = fragmentTitleOutput[0].content;
           if (Array.isArray(content)) {
             return content.join(" ");
           }
@@ -255,8 +263,8 @@ export const codeAgentFunction = inngest.createFunction(
 
     const generateResponse = () => {
       try {
-        if (responseOutput?.output?.[0]?.type === "text") {
-          const content = responseOutput.output[0].content;
+        if (responseOutput?.[0]?.type === "text") {
+          const content = responseOutput[0].content;
           if (Array.isArray(content)) {
             return content.join(" ");
           }

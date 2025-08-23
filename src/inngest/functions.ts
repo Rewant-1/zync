@@ -75,7 +75,7 @@ export const codeAgentFunction = inngest.createFunction(
       description: "An expert React coding agent",
       system: PROMPT,
       model: openai({
-        model: "qwen/qwen3-235b-a22b:free",
+        model: "qwen/qwen3-4b:free",
         baseUrl: "https://openrouter.ai/api/v1",
         apiKey: openRouterApiKey,
       }),

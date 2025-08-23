@@ -39,16 +39,29 @@ ContextMenu, HoverCard, Menubar, NavigationMenu, Pagination, Popover,
 RadioGroup, ResizableHandle, ResizablePanel, ScrollArea, Sidebar, Skeleton, 
 Sonner, Textarea, Toggle
 
-📦 IMPORT PATTERNS:
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import { Plus, Trash2 } from "lucide-react"
+📦 IMPORT RULES (STRICT):
+1. USE ONLY RELATIVE IMPORTS (./ or ../) for files you create in the sandbox.
+2. DO NOT use the alias pattern "@/..." unless you ALSO create BOTH:
+  - tsconfig.json with compilerOptions.baseUrl + paths for "@/*"
+  - vite.config.ts configuring the same alias
+  AND you create every referenced file.
+3. If you don't add those config files, relative import paths are mandatory.
+4. Every relative import target MUST exist (you are responsible for creating it in the same createFiles call).
+5. No speculative or unused imports.
 
-⚠️ IMPORT RULE: If you import it, you MUST create it!
-- If importing from "@/lib/data", create src/lib/data.ts
-- If importing custom UI components, create them in src/components/ui/
-- If importing utilities, create src/lib/utils.ts
+Examples of GOOD relative imports:
+import { Button } from "./components/ui/button";
+import { cn } from "./lib/utils";
+
+If and ONLY IF you also create tsconfig.json + vite.config.ts with proper alias mapping:
+import { Button } from "@/components/ui/button";
+
+⚠️ If you use an alias without defining config + file, the build will fail. Prefer relative paths.
+
+⚠️ IMPORT COMPLETENESS: If you import it, you MUST create it!
+- Data file: importing from "./lib/data" => create src/lib/data.ts
+- Utilities: importing from "./lib/utils" => create src/lib/utils.ts
+- Custom UI components => create them under src/components/ui/
 - NO broken imports allowed!
 
 🚫 FORBIDDEN (WILL BREAK):

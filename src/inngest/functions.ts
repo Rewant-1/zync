@@ -1,23 +1,23 @@
 import { inngest } from "./client";
+import { prisma } from "@/lib/db";
+import { PROMPT, RESPONSE_PROMPT, FRAGMENT_TITLE_PROMPT } from "@/prompts";
 import {
-  gemini,
-  openai,
   createAgent,
-  createTool,
   createNetwork,
-  type Tool,
-  type Message,
   createState,
+  createTool,
+  gemini,
+  Message,
+  openai,
+  Tool,
 } from "@inngest/agent-kit";
+import { z } from "zod";
 import { Sandbox } from "@e2b/code-interpreter";
 import { getSandbox, lastAssistantTextMessageContent } from "./utils";
-import { z } from "zod";
-import { FRAGMENT_TITLE_PROMPT, PROMPT, RESPONSE_PROMPT } from "@/prompts";
-import { prisma } from "@/lib/db";
 
 interface AgentState {
   summary: string;
-  files: { [path: string]: string };
+  files: Record<string, string>;
 }
 
 export const codeAgentFunction = inngest.createFunction(
@@ -25,336 +25,293 @@ export const codeAgentFunction = inngest.createFunction(
   { event: "code-agent/run" },
   async ({ event, step }) => {
     const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-    if (!openRouterApiKey) {
-      throw new Error("OPENROUTER_API_KEY is required");
-    }
+    if (!openRouterApiKey) throw new Error("OPENROUTER_API_KEY is required");
 
     const sandboxId = await step.run("get-sandbox-id", async () => {
       const sandbox = await Sandbox.create("zyncreacted");
-      await sandbox.setTimeout(60_000 * 10 * 3); // 30 minutes
+      await sandbox.setTimeout(60_000 * 30); // 30 minutes
       return sandbox.sandboxId;
     });
 
     const previousMessages = await step.run(
       "get-previous-messages",
       async () => {
-        const formattedMessages: Message[] = [];
-        const messages = await prisma.message.findMany({
-          where: {
-            projectId: event.data.projectId,
-          },
-          orderBy: {
-            createdAt: "desc",
-          },
-          take: 4, 
+        const formatted: Message[] = [];
+        const msgs = await prisma.message.findMany({
+          where: { projectId: event.data.projectId },
+          orderBy: { createdAt: "desc" },
+          take: 4,
         });
-
-        for (const message of messages) {
-          formattedMessages.push({
-            role: message.role === "ASSISTANT" ? "assistant" : "user",
-            content: message.content,
+        for (const m of msgs) {
+          formatted.push({
+            role: m.role === "ASSISTANT" ? "assistant" : "user",
+            content: m.content,
             type: "text",
           });
         }
-        return formattedMessages.reverse();
+        return formatted.reverse();
       }
     );
 
-    const state = createState<AgentState>(
-      {
-        summary: "",
-        files: {},
-      },
-      {
-        messages: previousMessages,
-      }
-    );
+    const evData = event.data as {
+      models?: string[];
+      projectId: string;
+      value: string;
+    };
+    const modelCandidates: string[] = (
+      Array.isArray(evData.models) && evData.models.length
+        ? evData.models
+        : process.env.OPENROUTER_FALLBACK_MODELS
+        ? process.env.OPENROUTER_FALLBACK_MODELS.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean)
+        : [
+            "deepseek/deepseek-chat-v3-0324:free",
+            "google/gemini-2.0-flash-exp:free",
+            "qwen/qwen3-coder:free",
+            "z-ai/glm-4.5-air:free",
+          ]
+    ).slice(0, 6);
+    console.log("🎯 Model fallback list:", modelCandidates);
 
-    const codeAgent = createAgent<AgentState>({
-      name: "code-agent",
-      description: "An expert React coding agent",
-      system: PROMPT,
-      model: openai({
-        model: "moonshotai/kimi-k2:free",
-        baseUrl: "https://openrouter.ai/api/v1",
-        apiKey: openRouterApiKey,
-      }),
-      tools: [
-        createTool({
-          name: "createFiles",
-          description:
-            "Create files in the sandbox - MUST be used to build the app",
-          parameters: z.object({
-            files: z
-              .array(
-                z.object({
-                  path: z.string().describe("File path relative to /home/user"),
-                  content: z.string().describe("Complete file content"),
-                })
-              )
-              .min(1, "Must create at least one file"),
+    type RunResult = { state: { data: AgentState } };
+    let runResult: RunResult | null = null;
+    let usedModel: string | null = null;
+
+    for (const modelName of modelCandidates) {
+      console.log(`\n🚀 Attempting model: ${modelName}`);
+      const attemptStart = Date.now();
+      try {
+        const attemptState = createState<AgentState>(
+          { summary: "", files: {} },
+          { messages: previousMessages }
+        );
+
+        const attemptAgent = createAgent<AgentState>({
+          name: `code-agent-${modelName}`,
+          description: "An expert React coding agent",
+          system: PROMPT,
+          model: openai({
+            model: modelName,
+            baseUrl: "https://openrouter.ai/api/v1",
+            apiKey: openRouterApiKey,
           }),
-          handler: async (
-            { files },
-            { step, network }: Tool.Options<AgentState>
-          ) => {
-            console.log(
-              "🔨 Creating files:",
-              files.map((f) => f.path)
-            );
-
-            const result = await step?.run("createFiles", async () => {
-              try {
-                const sandbox = await getSandbox(sandboxId);
-                const updatedFiles = { ...network.state.data.files };
-
-                for (const file of files) {
-                  console.log(
-                    `📄 Writing file: ${file.path} (${file.content.length} chars)`
-                  );
-                  await sandbox.files.write(file.path, file.content);
-                  updatedFiles[file.path] = file.content;
-                }
-
-                console.log("🚀 Starting Vite dev server...");
-                const startResult = await sandbox.commands.run(
-                  "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
-                  {
-                    background: true,
+          tools: [
+            createTool({
+              name: "createFiles",
+              description:
+                "Create files in the sandbox - MUST be used to build the app",
+              parameters: z.object({
+                files: z
+                  .array(
+                    z.object({
+                      path: z
+                        .string()
+                        .describe("File path relative to /home/user"),
+                      content: z.string().describe("Complete file content"),
+                    })
+                  )
+                  .min(1, "Must create at least one file"),
+              }),
+              handler: async (
+                { files },
+                { step, network }: Tool.Options<AgentState>
+              ) => {
+                const res = await step?.run("createFiles", async () => {
+                  try {
+                    const sandbox = await getSandbox(sandboxId);
+                    const updated = { ...network.state.data.files };
+                    for (const f of files) {
+                      await sandbox.files.write(f.path, f.content);
+                      updated[f.path] = f.content;
+                    }
+                    sandbox.commands
+                      .run(
+                        "cd /home/user && npm run dev -- --host 0.0.0.0 --port 5173",
+                        { background: true }
+                      )
+                      .catch(() => {});
+                    return updated;
+                  } catch (e) {
+                    return `Error creating files: ${e}`;
                   }
-                );
-                console.log("✅ Vite server started:", startResult);
-
-                console.log(
-                  "✅ Files created successfully:",
-                  Object.keys(updatedFiles)
-                );
-                return updatedFiles;
-              } catch (e) {
-                console.error("❌ Error creating files:", e);
-                return `Error creating files: ${e}`;
+                });
+                if (res && typeof res === "object") {
+                  network.state.data.files = res as Record<string, string>;
+                  return `Created ${files.length} files.`;
+                }
+                return res || "Failed to create files";
+              },
+            }),
+          ],
+          lifecycle: {
+            onResponse: async ({ result, network }) => {
+              const txt = lastAssistantTextMessageContent(result);
+              if (
+                txt &&
+                txt.includes("<task_summary>") &&
+                txt.includes("</task_summary>")
+              ) {
+                const m = txt.match(/<task_summary>([\s\S]*?)<\/task_summary>/);
+                if (m && network) network.state.data.summary = m[1].trim();
               }
-            });
-
-            if (typeof result === "object" && result !== null) {
-              network.state.data.files = result;
-              console.log(
-                "📊 Updated agent state with files:",
-                Object.keys(result)
-              );
-              return `Successfully created ${
-                files.length
-              } files and started dev server: ${files
-                .map((f) => f.path)
-                .join(", ")}`;
-            } else {
-              console.error("❌ File creation failed:", result);
-              return result || "Failed to create files";
-            }
+              return result;
+            },
           },
-        }),
-      ],
-      lifecycle: {
-        onResponse: async ({ result, network }) => {
-          const lastAssistantMessageText =
-            lastAssistantTextMessageContent(result);
-
-          if (lastAssistantMessageText && network) {
-            
-            if (
-              lastAssistantMessageText.includes("<task_summary>") &&
-              lastAssistantMessageText.includes("</task_summary>")
-            ) {
-              const summaryMatch = lastAssistantMessageText.match(
-                /<task_summary>([\s\S]*?)<\/task_summary>/
-              );
-              if (summaryMatch) {
-                network.state.data.summary = summaryMatch[1].trim();
-                console.log(
-                  "📝 Extracted summary:",
-                  network.state.data.summary
-                );
-              }
-            }
-          }
-
-          return result;
-        },
-      },
-    });
-
-    const network = createNetwork<AgentState>({
-      name: "coding-agent-network",
-      agents: [codeAgent],
-      maxIter: 6,
-      defaultState: state,
-      router: async ({ network }) => {
-        const currentSummary = network.state.data.summary;
-        const currentFiles = Object.keys(network.state.data.files || {});
-
-        console.log("🔄 Router check:", {
-          hasSummary: !!currentSummary,
-          summaryLength: currentSummary?.length || 0,
-          fileCount: currentFiles.length,
-          files: currentFiles,
         });
-        const hasFiles = currentFiles.length > 0;
 
-        if (hasFiles) {
-          console.log("✅ Task completed - has files:", currentFiles);
-          return undefined;
+        const attemptNetwork = createNetwork<AgentState>({
+          name: `coding-agent-network-${modelName}`,
+          agents: [attemptAgent],
+          maxIter: 6,
+          defaultState: attemptState,
+          router: async ({ network }) => {
+            if (Object.keys(network.state.data.files || {}).length > 0)
+              return undefined;
+            return attemptAgent;
+          },
+        });
+
+        const r = (await attemptNetwork.run(event.data.value, {
+          state: attemptState,
+        })) as unknown as RunResult;
+        const produced = Object.keys(r.state.data.files || {}).length;
+        console.log(`📊 Model ${modelName} produced ${produced} files`);
+        if (produced > 0) {
+          runResult = r;
+          usedModel = modelName;
+          console.log(
+            `✅ Success with ${modelName} in ${Date.now() - attemptStart}ms`
+          );
+          break;
         }
+        console.log("⚠️ No files produced, trying next model");
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.log(`❌ Failure for ${modelName}: ${msg}`);
+        if (/rate limit|429/i.test(msg))
+          console.log("⏳ Rate limit -> switching immediately");
+      }
+    }
 
-        console.log("🔄 Continuing - need files");
-        return codeAgent;
-      },
-    });
+    if (!runResult) {
+      await prisma.message.create({
+        data: {
+          projectId: event.data.projectId,
+          content: `All models failed or rate-limited. Tried: ${modelCandidates.join(
+            ", "
+          )}`,
+          role: "ASSISTANT",
+          type: "ERROR",
+        },
+      });
+      return {
+        success: false,
+        triedModels: modelCandidates,
+        error: "All models failed",
+      };
+    }
 
-    console.log("🚀 Starting agent network...");
-    const result = await network.run(event.data.value, { state });
-
-    console.log("🏁 Agent network completed:", {
-      summary: result.state.data.summary,
-      fileCount: Object.keys(result.state.data.files || {}).length,
-      files: Object.keys(result.state.data.files || {}),
-    });
-
+    const result = runResult;
     const summaryForGeneration =
       result.state.data.summary ||
-      `Built a React application with ${
+      `Built a React app with ${
         Object.keys(result.state.data.files || {}).length
-      } files: ${Object.keys(result.state.data.files || {}).join(", ")}`;
+      } files.`;
 
-    const fragmentTitleGenerator = createAgent({
+    const titleAgent = createAgent({
       name: "fragment-title-generator",
-      description: "Generate a concise title for the code fragment",
       system: FRAGMENT_TITLE_PROMPT,
       model: gemini({ model: "gemini-2.0-flash" }),
     });
-
-    const responseGenerator = createAgent({
+    const responseAgent = createAgent({
       name: "response-generator",
-      description: "Generate a user-friendly response",
       system: RESPONSE_PROMPT,
       model: gemini({ model: "gemini-2.0-flash" }),
     });
+    const [{ output: titleOut }, { output: respOut }] = await Promise.all([
+      titleAgent.run(summaryForGeneration),
+      responseAgent.run(summaryForGeneration),
+    ]);
 
-    const { output: fragmentTitleOutput } = await fragmentTitleGenerator.run(
-      summaryForGeneration
-    );
-    const { output: responseOutput } = await responseGenerator.run(
-      summaryForGeneration
-    );
-
-    const generateFragmentTitle = () => {
+    interface TextChunk {
+      type: string;
+      content: string | string[];
+    }
+    const extractText = (out: unknown, fallback: string): string => {
       try {
-        if (fragmentTitleOutput?.[0]?.type === "text") {
-          const content = fragmentTitleOutput[0].content;
-          if (Array.isArray(content)) {
-            return content.join(" ");
+        if (Array.isArray(out)) {
+          const first = out[0] as TextChunk | undefined;
+          if (first?.type === "text") {
+            const c = first.content;
+            return Array.isArray(c) ? c.join(" ") : c ?? fallback;
           }
-          return content || "React Component";
         }
-      } catch (e) {
-        console.error("Error generating title:", e);
+      } catch {
+        /* ignore */
       }
-      return "React Component";
+      return fallback;
     };
+    const fragmentTitle: string = extractText(titleOut, "React Component");
+    const responseText: string = extractText(
+      respOut,
+      "Built your React component successfully!"
+    );
 
-    const generateResponse = () => {
-      try {
-        if (responseOutput?.[0]?.type === "text") {
-          const content = responseOutput[0].content;
-          if (Array.isArray(content)) {
-            return content.join(" ");
-          }
-          return content || "Built your React component successfully!";
-        }
-      } catch (e) {
-        console.error("Error generating response:", e);
-      }
-      return "Built your React component successfully!";
-    };
-
-    // Get sandbox URL
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
       const sandbox = await getSandbox(sandboxId);
-      const host = sandbox.getHost(5173); // Changed to Vite's port
-      // Force HTTPS for deployed environments to avoid mixed content issues
+      const host = sandbox.getHost(5173);
       const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
       return `${protocol}://${host}`;
     });
 
     const files = result.state.data.files || {};
+    const summary = result.state.data.summary || "";
     const fileCount = Object.keys(files).length;
     const hasFiles = fileCount > 0;
-    const summary = result.state.data.summary || "";
     const hasSummary = summary.length > 0;
-
-    console.log("💾 Saving to database:", {
-      fileCount,
-      hasFiles,
-      hasSummary,
-      summaryLength: summary.length,
-      success: hasFiles && hasSummary,
-    });
 
     const savedMessage = await step.run("save-result", async () => {
       if (!hasFiles) {
-        console.log("❌ No files created - saving error message");
-        return await prisma.message.create({
+        return prisma.message.create({
           data: {
             projectId: event.data.projectId,
             content:
-              "Failed to create any files. The agent needs to use the createFiles tool to build your app. Please try again with a clearer request.",
+              "Failed to create any files. Please try again with a clearer request.",
             role: "ASSISTANT",
             type: "ERROR",
           },
         });
       }
-
-      console.log(
-        "✅ Files created successfully - saving result with fragment"
-      );
-      return await prisma.message.create({
+      return prisma.message.create({
         data: {
           projectId: event.data.projectId,
-          content: generateResponse(),
+          content: responseText,
           role: "ASSISTANT",
           type: "RESULT",
-          fragment: {
-            create: {
-              sandboxUrl: sandboxUrl,
-              title: generateFragmentTitle(),
-              files: files,
-            },
-          },
+          fragment: { create: { sandboxUrl, title: fragmentTitle, files } },
         },
-        include: {
-          fragment: true,
-        },
+        include: { fragment: true },
       });
     });
 
-    console.log("🎉 Function completed:", {
+    console.log("🎉 Function completed", {
       messageId: savedMessage.id,
-      url: sandboxUrl,
+      usedModel,
       fileCount,
-
-      success: hasFiles,
-      title: generateFragmentTitle(),
     });
 
     return {
       url: sandboxUrl,
-      title: generateFragmentTitle(),
-      files: files,
-      summary: summary,
+      title: fragmentTitle,
+      files,
+      summary,
       fileCount,
-
       hasFiles,
       hasSummary,
       success: hasFiles,
+      usedModel,
+      triedModels: modelCandidates,
     };
   }
 );

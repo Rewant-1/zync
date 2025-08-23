@@ -40,34 +40,42 @@ export const codeAgentFunction = inngest.createFunction(
       return sandbox.sandboxId;
     });
 
-    const previousMessages = await step.run("get-previous-messages", async () => {
-      const formatted: Message[] = [];
-      const msgs = await prisma.message.findMany({
-        where: { projectId: (event.data as CodeAgentEventData).projectId },
-        orderBy: { createdAt: "desc" },
-        take: 4,
-      });
-      for (const m of msgs) {
-        if (m.role === "ASSISTANT") {
-          formatted.push({ role: "assistant", type: "text", content: m.content });
-        } else if (m.role === "USER") {
-          formatted.push({ role: "user", type: "text", content: m.content });
+    const previousMessages = await step.run(
+      "get-previous-messages",
+      async () => {
+        const formatted: Message[] = [];
+        const msgs = await prisma.message.findMany({
+          where: { projectId: (event.data as CodeAgentEventData).projectId },
+          orderBy: { createdAt: "desc" },
+          take: 4,
+        });
+        for (const m of msgs) {
+          if (m.role === "ASSISTANT") {
+            formatted.push({
+              role: "assistant",
+              type: "text",
+              content: m.content,
+            });
+          } else if (m.role === "USER") {
+            formatted.push({ role: "user", type: "text", content: m.content });
+          }
         }
+        return formatted.reverse();
       }
-      return formatted.reverse();
-    });
+    );
 
     const ed = event.data as CodeAgentEventData;
     const modelCandidates: string[] = (
       Array.isArray(ed.models)
         ? ed.models
-        : (process.env.MODEL_CANDIDATES?.split(",") ?? [])
+        : process.env.MODEL_CANDIDATES?.split(",") ?? []
     ).filter((m): m is string => typeof m === "string" && !!m);
     if (modelCandidates.length === 0) {
       modelCandidates.push(
-        "anthropic/claude-3.5-sonnet",
-        "google/gemini-2.0-flash",
-        "openai/gpt-4o-mini"
+        "deepseek/deepseek-chat-v3-0324:free",
+        "google/gemini-2.0-flash-exp:free",
+        "qwen/qwen3-coder:free",
+        "z-ai/glm-4.5-air:free"
       );
     }
     console.log("Model candidates:", modelCandidates);
@@ -77,7 +85,10 @@ export const codeAgentFunction = inngest.createFunction(
     let usedModel: string | null = null;
     const maxRetriesPerModel = Math.max(
       1,
-      Number((ed.modelRetries ?? (process.env.MODEL_RETRIES ? Number(process.env.MODEL_RETRIES) : 1)))
+      Number(
+        ed.modelRetries ??
+          (process.env.MODEL_RETRIES ? Number(process.env.MODEL_RETRIES) : 1)
+      )
     );
 
     const buildAgent = (modelName: string, attempt: number) =>
@@ -87,24 +98,30 @@ export const codeAgentFunction = inngest.createFunction(
         system: PROMPT,
         model: openai({
           model: modelName,
-            baseUrl: "https://openrouter.ai/api/v1",
-            apiKey: openRouterApiKey,
+          baseUrl: "https://openrouter.ai/api/v1",
+          apiKey: openRouterApiKey,
         }),
         tools: [
           createTool({
             name: "createFiles",
-            description: "Create files in the sandbox - MUST be used to build the app",
+            description:
+              "Create files in the sandbox - MUST be used to build the app",
             parameters: z.object({
               files: z
                 .array(
                   z.object({
-                    path: z.string().describe("File path relative to /home/user"),
+                    path: z
+                      .string()
+                      .describe("File path relative to /home/user"),
                     content: z.string().describe("Complete file content"),
                   })
                 )
                 .min(1, "Must create at least one file"),
             }),
-            handler: async ({ files }, { step, network }: Tool.Options<AgentState>) => {
+            handler: async (
+              { files },
+              { step, network }: Tool.Options<AgentState>
+            ) => {
               const res = await step?.run("createFiles", async () => {
                 try {
                   const sandbox = await getSandbox(sandboxId);
@@ -114,7 +131,7 @@ export const codeAgentFunction = inngest.createFunction(
                     updated[f.path] = f.content;
                   }
                   console.log("🗂️ Created files:", Object.keys(updated));
-                  
+
                   const missing: { file: string; import: string }[] = [];
                   const pathSet = new Set(Object.keys(updated));
                   const importRegex = /import\s+[^"']*['\"]([^'\"]+)['\"]/g;
@@ -125,7 +142,9 @@ export const codeAgentFunction = inngest.createFunction(
                       const spec = m[1];
                       if (spec.startsWith(".") || spec.startsWith("../")) {
                         const baseDir = p.split("/").slice(0, -1).join("/");
-                        const full = (baseDir ? baseDir + "/" : "") + spec.replace(/^\.\//, "");
+                        const full =
+                          (baseDir ? baseDir + "/" : "") +
+                          spec.replace(/^\.\//, "");
                         const candidates = [
                           full,
                           full + ".ts",
@@ -140,7 +159,9 @@ export const codeAgentFunction = inngest.createFunction(
                         }
                       } else if (spec.startsWith("@/")) {
                         const hasTsconfig = pathSet.has("tsconfig.json");
-                        const hasVite = pathSet.has("vite.config.ts") || pathSet.has("vite.config.js");
+                        const hasVite =
+                          pathSet.has("vite.config.ts") ||
+                          pathSet.has("vite.config.js");
                         if (!hasTsconfig || !hasVite) {
                           missing.push({
                             file: p,
@@ -151,9 +172,14 @@ export const codeAgentFunction = inngest.createFunction(
                     }
                   }
                   if (missing.length) {
-                    console.warn("⚠️ Missing import targets detected:", missing);
+                    console.warn(
+                      "⚠️ Missing import targets detected:",
+                      missing
+                    );
                   } else {
-                    console.log("✅ Import validation passed (all relative imports resolved)");
+                    console.log(
+                      "✅ Import validation passed (all relative imports resolved)"
+                    );
                   }
                   getSandbox(sandboxId)
                     .then((s) =>
@@ -181,7 +207,11 @@ export const codeAgentFunction = inngest.createFunction(
         lifecycle: {
           onResponse: async ({ result, network }) => {
             const txt = lastAssistantTextMessageContent(result);
-            if (txt && txt.includes("<task_summary>") && txt.includes("</task_summary>")) {
+            if (
+              txt &&
+              txt.includes("<task_summary>") &&
+              txt.includes("</task_summary>")
+            ) {
               const m = txt.match(/<task_summary>([\s\S]*?)<\/task_summary>/);
               if (m && network) network.state.data.summary = m[1].trim();
             }
@@ -192,10 +222,15 @@ export const codeAgentFunction = inngest.createFunction(
 
     outer: for (const modelName of modelCandidates) {
       for (let attempt = 1; attempt <= maxRetriesPerModel; attempt++) {
-        console.log(`\n🚀 Model ${modelName} attempt ${attempt}/${maxRetriesPerModel}`);
+        console.log(
+          `\n🚀 Model ${modelName} attempt ${attempt}/${maxRetriesPerModel}`
+        );
         const attemptStart = Date.now();
         try {
-          const attemptState = createState<AgentState>({ summary: "", files: {} }, { messages: previousMessages || [] });
+          const attemptState = createState<AgentState>(
+            { summary: "", files: {} },
+            { messages: previousMessages || [] }
+          );
           const agent = buildAgent(modelName, attempt);
           const network = createNetwork<AgentState>({
             name: `coding-agent-network-${modelName}-r${attempt}`,
@@ -203,24 +238,35 @@ export const codeAgentFunction = inngest.createFunction(
             maxIter: 6,
             defaultState: attemptState,
             router: async ({ network }) => {
-              if (Object.keys(network.state.data.files || {}).length > 0) return undefined;
+              if (Object.keys(network.state.data.files || {}).length > 0)
+                return undefined;
               return agent;
             },
           });
-          const r = (await network.run(ed.value, { state: attemptState })) as unknown as RunResult;
+          const r = (await network.run(ed.value, {
+            state: attemptState,
+          })) as unknown as RunResult;
           const produced = Object.keys(r.state.data.files || {}).length;
-          console.log(`📊 Model ${modelName} attempt ${attempt} produced ${produced} files`);
-            if (produced > 0) {
+          console.log(
+            `📊 Model ${modelName} attempt ${attempt} produced ${produced} files`
+          );
+          if (produced > 0) {
             runResult = r;
             usedModel = modelName;
-            console.log(`✅ Success with ${modelName} attempt ${attempt} in ${Date.now() - attemptStart}ms`);
+            console.log(
+              `✅ Success with ${modelName} attempt ${attempt} in ${
+                Date.now() - attemptStart
+              }ms`
+            );
             break outer;
           }
           console.log("⚠️ No files produced this attempt");
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
           const rateLimited = /rate limit|429/i.test(msg);
-          console.log(`❌ Failure for ${modelName} attempt ${attempt}/${maxRetriesPerModel}: ${msg}`);
+          console.log(
+            `❌ Failure for ${modelName} attempt ${attempt}/${maxRetriesPerModel}: ${msg}`
+          );
           if (rateLimited && attempt < maxRetriesPerModel) {
             const delay = Math.min(4000, 500 * 2 ** (attempt - 1));
             console.log(`⏳ Rate limited; retrying after ${delay}ms`);
@@ -231,21 +277,29 @@ export const codeAgentFunction = inngest.createFunction(
     }
 
     if (!runResult) {
-    await prisma.message.create({
+      await prisma.message.create({
         data: {
-      projectId: ed.projectId,
-          content: `All models failed or rate-limited. Tried: ${modelCandidates.join(", ")}`,
+          projectId: ed.projectId,
+          content: `All models failed or rate-limited. Tried: ${modelCandidates.join(
+            ", "
+          )}`,
           role: "ASSISTANT",
           type: "ERROR",
         },
       });
-      return { success: false, triedModels: modelCandidates, error: "All models failed" };
+      return {
+        success: false,
+        triedModels: modelCandidates,
+        error: "All models failed",
+      };
     }
 
     const result = runResult;
     const preliminarySummary =
       result.state.data.summary ||
-      `Built a React app with ${Object.keys(result.state.data.files || {}).length} files: ${Object.keys(result.state.data.files || {})
+      `Built a React app with ${
+        Object.keys(result.state.data.files || {}).length
+      } files: ${Object.keys(result.state.data.files || {})
         .slice(0, 8)
         .join(", ")}`;
     const summarizer = createAgent({
@@ -258,8 +312,11 @@ export const codeAgentFunction = inngest.createFunction(
     try {
       const { output } = await summarizer.run(preliminarySummary);
       if (Array.isArray(output) && output[0]?.type === "text") {
-  const first = output[0] as { type: string; content?: string | string[] };
-  const c = first.content;
+        const first = output[0] as {
+          type: string;
+          content?: string | string[];
+        };
+        const c = first.content;
         finalSummary = Array.isArray(c) ? c.join(" ") : c || preliminarySummary;
       }
     } catch {}
@@ -301,7 +358,7 @@ export const codeAgentFunction = inngest.createFunction(
     );
 
     const sandboxUrl = await step.run("get-sandbox-url", async () => {
-  const sandbox = await getSandbox(sandboxId);
+      const sandbox = await getSandbox(sandboxId);
       const host = sandbox.getHost(5173);
       const protocol = process.env.NODE_ENV === "production" ? "https" : "http";
       return `${protocol}://${host}`;

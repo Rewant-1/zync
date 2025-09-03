@@ -2,6 +2,7 @@ import { type TreeItem } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -16,6 +17,7 @@ export function convertFilesToTreeItems(files: {
   const tree: TreeNode = {};
   const sortedPaths = Object.keys(files).sort();
 
+  // Build tree structure from file paths
   for (const path of sortedPaths) {
     if (!path || path.trim() === "") continue;
 
@@ -24,6 +26,7 @@ export function convertFilesToTreeItems(files: {
 
     let current = tree;
 
+    // Navigate/create directory structure
     for (let i = 0; i < parts.length - 1; i++) {
       const part = parts[i];
       if (!current[part]) {
@@ -32,6 +35,7 @@ export function convertFilesToTreeItems(files: {
       current = current[part] as TreeNode;
     }
 
+    // Add file as leaf node
     const fileName = parts[parts.length - 1];
     current[fileName] = null;
   }
@@ -42,8 +46,10 @@ export function convertFilesToTreeItems(files: {
 
     for (const [key, value] of entries) {
       if (value === null) {
+        // Leaf node (file)
         children.push(key);
       } else {
+        // Directory node with children
         const subTree = convertNode(value);
         children.push([key, subTree]);
       }

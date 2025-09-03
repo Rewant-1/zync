@@ -29,6 +29,7 @@ const DashboardPage = () => {
             </p>
           </div>
 
+          {/* Mode Toggle Pills */}
           <div className="flex items-center p-1.5 bg-[rgba(255,193,7,0.05)] border border-[rgba(255,193,7,0.2)] rounded-full max-w-md mx-auto">
             <Button
               variant="ghost"
@@ -59,11 +60,13 @@ const DashboardPage = () => {
           </div>
         </div>
 
+        {/* Dynamic Form Content */}
         <div className="max-w-4xl mx-auto w-full">
           {mode === "quick" ? <ProjectForm /> : <CreatorMode />}
         </div>
       </section>
 
+      {/* Recent Projects Section */}
       <div className="pb-16">
         <ProjectsList />
       </div>

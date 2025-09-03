@@ -1,9 +1,8 @@
-/**
- * Utility functions for handling sandbox embedding issues
- */
-
 export function getIframeSandboxAttributes() {
+  // Core security permissions
   const baseAttributes = "allow-scripts allow-same-origin allow-forms";
+  
+  // Extended permissions for full app functionality
   const extendedAttributes =
     "allow-popups allow-popups-to-escape-sandbox allow-top-navigation-by-user-activation";
 
@@ -28,6 +27,7 @@ export function getAlternativeDisplayMessage() {
 export function fixMixedContentUrl(url: string): string {
   if (typeof window === "undefined") return url;
 
+  // Convert HTTP to HTTPS if parent page is secure
   if (window.location.protocol === "https:" && url.startsWith("http:")) {
     return url.replace("http:", "https:");
   }

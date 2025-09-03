@@ -6,7 +6,7 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
+  output   = "../src/generated/prisma"  // Generate client in src for better imports
 }
 
 datasource db {
@@ -14,49 +14,86 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Project{
-  id String @id @default(uuid())
-  name String
-  userId String
+/**
+ * Represents a user's project - essentially a conversation thread with the AI.
+ * Each project has a unique generated name and contains multiple messages.
+ */
+model Project {
+  id        String   @id @default(uuid())
+  name      String   // Auto-generated slug like "purple-elephant"
+  userId    String   // Clerk user ID for ownership
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  messages Message[]
+  // Relationships
+  messages Message[] // All conversation messages in this project
 }
 
-enum MessageRole{
+/**
+ * Message Roles
+ * - USER: Messages from the human user
+ * - ASSISTANT: Responses from AI agents
+ */
+enum MessageRole {
   USER
   ASSISTANT
 }
+
+/**
+ * Message Types  
+ * - RESULT: Successful completion (may have generated code)
+ * - ERROR: Failed generation or system error
+ */
 enum MessageType {
   RESULT
   ERROR
 }
+
+/**
+ * Message Model
+ * 
+ * Stores the conversation between user and AI agents.
+ * Messages can optionally have fragments (generated code) attached.
+ */
 model Message {
-  id String @id @default(uuid())
-  content String
-  role MessageRole
-  type MessageType
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-projectId String
-project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  id        String      @id @default(uuid())
+  content   String      // The actual message content
+  role      MessageRole // Who sent this message
+  type      MessageType // Success or error
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Foreign key relationships
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  // Optional: generated code fragment
   fragment Fragment?
 }
 
-model Fragment{
-  id String @id @default(uuid())
-  messageId String @unique
-  message Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
-sandboxUrl String
-title String
-files Json
- createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+/**
+ * Represents generated code with live preview capabilities.
+ * Created when AI successfully generates a working application.
+ */
+model Fragment {
+  id         String @id @default(uuid())
+  messageId  String @unique // One-to-one with message
+  message    Message @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  
+  sandboxUrl String // Live preview URL from E2B sandbox
+  title      String // Short descriptive title (e.g., "Todo App")
+  files      Json   // Generated file contents as JSON object
+  
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
-model Usage{
-  key String @id
-  points Int
-  expire DateTime?
 
+/**
+ * Credit-based rate limiting storage used by rate-limiter-flexible.
+ * Tracks user consumption with automatic expiration.
+ */
+model Usage {
+  key    String    @id      // User ID or rate limit key
+  points Int                // Credits consumed
+  expire DateTime?          // When credits reset (30-day rolling window)
 }

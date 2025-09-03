@@ -16,6 +16,7 @@ import { useRouter } from "next/navigation";
 import { PROJECT_TEMPLATES } from "../../constants";
 import { useClerk } from "@clerk/nextjs";
 
+// Form validation schema
 const formSchema = z.object({
   value: z
     .string()

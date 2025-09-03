@@ -66,9 +66,11 @@ Generated files are written into an E2B sandbox and a dev server is started:
 ```bash
 npm run dev -- --host 0.0.0.0 --port 5173
 ```
+
 The sandbox host is then exposed and saved with the generated fragment, enabling immediate preview.
 
 ### Post Processing
+
 Gemini (flash) models summarize the generated code, produce a concise human response, and generate a short title.
 
 ### Event Payload Shape
@@ -101,6 +103,7 @@ MODEL_RETRIES=2
 ### Overriding Models Programmatically
 
 When dispatching the Inngest event you can override the model order & retries:
+
 ```ts
 await inngest.send({
    name: "code-agent/run",
@@ -288,7 +291,6 @@ src/
 3. Commit your changes: `git commit -m 'Add amazing feature'`
 4. Push to the branch: `git push origin feature/amazing-feature`
 5. Open a Pull Request
-
 
 ## 🙏 Acknowledgments
 

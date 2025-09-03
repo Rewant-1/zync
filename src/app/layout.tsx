@@ -6,6 +6,7 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 
+// Load Inter font with optimal display strategy
 const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
@@ -38,18 +39,20 @@ export default function RootLayout({
   return (
     <ClerkProvider
       appearance={{
+        // Custom dark theme that matches Zync's cyber aesthetic
         variables: {
-          colorPrimary: "#ffc107",
-          colorBackground: "#0a0a0a",
-          colorInputBackground: "#1a1a1a",
-          colorInputText: "#ffffff",
-          colorText: "#ffffff",
-          colorTextSecondary: "#a1a1aa",
-          colorSuccess: "#00fff0",
-          borderRadius: "0.75rem",
-          fontFamily: "var(--font-inter)",
+          colorPrimary: "#ffc107",           // Amber primary
+          colorBackground: "#0a0a0a",       // Deep black background
+          colorInputBackground: "#1a1a1a",  // Dark input fields
+          colorInputText: "#ffffff",        // White text
+          colorText: "#ffffff",             // Primary text color
+          colorTextSecondary: "#a1a1aa",    // Muted gray text
+          colorSuccess: "#00fff0",          // Cyan success color
+          borderRadius: "0.75rem",          // Rounded corners
+          fontFamily: "var(--font-inter)",  // Match app font
         },
         elements: {
+          // Auth modal styling to match app design
           card: {
             backgroundColor: "#0a0a0a",
             border: "1px solid rgba(255, 193, 7, 0.12)",
@@ -64,6 +67,7 @@ export default function RootLayout({
           headerSubtitle: {
             color: "#a1a1aa",
           },
+          // Gradient button effect
           formButtonPrimary: {
             background: "linear-gradient(135deg, #ffc107 0%, #00fff0 100%)",
             color: "#000000",
@@ -107,6 +111,7 @@ export default function RootLayout({
       <TRPCReactProvider>
         <html lang="en" suppressHydrationWarning>
           <head>
+            {/* Preload fonts for better performance */}
             <link rel="preconnect" href="https://fonts.googleapis.com" />
             <link
               rel="preconnect"
@@ -121,6 +126,7 @@ export default function RootLayout({
               enableSystem
               disableTransitionOnChange
             >
+              {/* Global toast notifications */}
               <Toaster />
               {children}
             </ThemeProvider>

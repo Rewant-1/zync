@@ -1,3 +1,4 @@
+// Utility functions for the application
 import { type TreeItem } from "@/types";
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
@@ -10,6 +11,7 @@ export function cn(...inputs: ClassValue[]) {
 export function convertFilesToTreeItems(files: {
   [path: string]: string;
 }): TreeItem[] {
+  // Converts a flat file structure to a hierarchical tree structure
   interface TreeNode {
     [key: string]: TreeNode | null;
   }

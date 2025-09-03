@@ -1,3 +1,4 @@
+// Dashboard page with mode toggle between quick and creator modes
 "use client";
 
 import { useState } from "react";
@@ -9,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Zap, Palette } from "lucide-react";
 
 const DashboardPage = () => {
+  // Main dashboard component displaying project creation and list
   const [mode, setMode] = useState<"quick" | "creator">("quick");
 
   return (

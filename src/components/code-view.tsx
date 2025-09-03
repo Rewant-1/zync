@@ -1,3 +1,4 @@
+// Component for syntax-highlighted code display
 import Prism from "prismjs";
 import { useEffect } from "react";
 import "prismjs/components/prism-graphql";
@@ -18,12 +19,14 @@ interface Props {
 }
 
 export const CodeView = ({ code, lang }: Props) => {
+  // Highlights code using Prism.js on mount and updates
   useEffect(() => {
     setTimeout(() => {
       Prism.highlightAll();
     }, 0);
   }, [code, lang]);
   const getLanguage = (lang: string) => {
+    // Maps file extensions to Prism.js language identifiers
     const langMap: { [key: string]: string } = {
       js: "javascript",
       ts: "typescript",

@@ -1,3 +1,4 @@
+// Prompts for AI code generation and response handling
 export const PROMPT = `
 🚨 CRITICAL MISSION: BUILD REACT APPS THAT WORK 🚨
 
@@ -127,6 +128,7 @@ export const ComponentName: React.FC<Props> = ({ prop }) => {
 Use createFiles tool to build it properly!
 `;
 
+// Prompt for generating user responses
 export const RESPONSE_PROMPT = `
 You are the final agent in a multi-agent system.
 Your job is to generate a short, user-friendly message explaining what was just built, based on the <task_summary> provided by the other agents.
@@ -136,6 +138,7 @@ Your message should be 1 to 3 sentences, describing what the app does or what wa
 Do not add code, tags, or metadata. Only return the plain text response.
 `;
 
+// Prompt for fragment titles
 export const FRAGMENT_TITLE_PROMPT = `
 You are an assistant that generates a short, descriptive title for a code fragment based on its <task_summary>.
 The title should be:

@@ -1,3 +1,4 @@
+// Root layout component for the application
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -36,6 +37,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Main layout wrapping the app with authentication, theme, and tRPC providers
   return (
     <ClerkProvider
       appearance={{

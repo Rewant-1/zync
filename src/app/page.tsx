@@ -1,3 +1,4 @@
+// Landing page component, redirects authenticated users to dashboard
 import { Hero } from "@/modules/landing/ui/components/hero";
 import { Features } from "@/modules/landing/ui/components/features";
 import { Testimonials } from "@/modules/landing/ui/components/testimonials";
@@ -9,6 +10,7 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 
 export default async function LandingPage() {
+  // Renders the landing page with various sections
   const { userId } = await auth();
 
   if (userId) {

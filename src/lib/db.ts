@@ -1,3 +1,4 @@
+// Database client setup with Prisma
 import { PrismaClient } from "@/generated/prisma";
 
 const globalForPrisma = global as unknown as {

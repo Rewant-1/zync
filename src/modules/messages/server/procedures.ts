@@ -1,3 +1,4 @@
+// tRPC router for message-related operations
 import { createTRPCRouter, protectedProcedure} from '@/trpc/init';
 import {prisma} from '@/lib/db';
 import {inngest} from '@/inngest/client';
@@ -7,6 +8,7 @@ import { consumeCredits } from '@/lib/usage';
 
 export const messagesRouter=createTRPCRouter({
     getMany:protectedProcedure
+    // Query to fetch messages for a project
     .input(
     z.object({
         
@@ -32,6 +34,7 @@ export const messagesRouter=createTRPCRouter({
         return messages
     }),
 create: protectedProcedure
+// Mutation to create a new message and trigger AI processing
 .input(
     z.object({
         value:z.string()

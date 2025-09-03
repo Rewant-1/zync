@@ -303,14 +303,14 @@ export const codeAgentFunction = inngest.createFunction(
           console.log(" No files produced this attempt");
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
-          const rateLimited = /rate limit|429/i.test(msg);
+          const rateLimited = /rate limit|429|too many requests|temporarily rate-limited|upstream.*rate/i.test(msg);
           console.log(
             ` Failure for ${modelName} attempt ${attempt}/${maxRetriesPerModel}: ${msg}`
           );
           
           //  FAST SWITCH: Move to next model immediately if rate limited
           if (rateLimited) {
-            console.log(` Rate limited on ${modelName} - switching to next model immediately`);
+            console.log(`🚨 RATE LIMITED on ${modelName} - SWITCHING MODELS IMMEDIATELY`);
             break; // Exit inner retry loop, move to next model
           }
           

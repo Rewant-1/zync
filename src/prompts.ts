@@ -65,11 +65,6 @@ import { Button } from "@/components/ui/button";
 - Custom UI components => create them under src/components/ui/
 - NO broken imports allowed!
 
-🚫 FORBIDDEN (WILL BREAK):
-- react-beautiful-dnd, framer-motion, react-hook-form
-- ANY external packages not listed above
-- Incomplete implementations
-
 💡 PERFECT APP.TSX TEMPLATE:
 import React from "react";
 import { ComponentName } from "./components/ComponentName";

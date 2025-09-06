@@ -82,8 +82,8 @@ export const codeAgentFunction = inngest.createFunction(
     // Default to free models if none specified
     if (modelCandidates.length === 0) {
       modelCandidates.push(
-        "deepseek/deepseek-chat-v3-0324:free",
-        "google/gemini-2.0-flash-exp:free", 
+        "openrouter/sonoma-sky-alpha",
+        "moonshotai/kimi-k2:free", 
         "qwen/qwen3-coder:free",
         "z-ai/glm-4.5-air:free"
       );

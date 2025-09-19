@@ -42,28 +42,45 @@ Sonner, Textarea, Toggle
 
 📦 IMPORT RULES (STRICT):
 1. USE ONLY RELATIVE IMPORTS (./ or ../) for files you create in the sandbox.
-2. DO NOT use the alias pattern "@/..." unless you ALSO create BOTH:
-  - tsconfig.json with compilerOptions.baseUrl + paths for "@/*"
-  - vite.config.ts configuring the same alias
-  AND you create every referenced file.
-3. If you don't add those config files, relative import paths are mandatory.
-4. Every relative import target MUST exist (you are responsible for creating it in the same createFiles call).
-5. No speculative or unused imports.
+2. For UI components, use EXACT relative paths: "./components/ui/button", not "@/components/ui/button"
+3. Every relative import target MUST exist (you are responsible for creating it in the same createFiles call).
+4. ONLY use these pre-installed packages (DO NOT import any others):
+   - react & react-dom (built-in)
+   - @radix-ui/react-* (dialog, slot, separator, label, select, checkbox, switch, tooltip, dropdown-menu, tabs)
+   - lucide-react (for icons)
+   - clsx & tailwind-merge (for styling)
+   - class-variance-authority (for variants)
+5. NO external packages: no axios, react-router, next, prisma, firebase, or any other npm packages
+6. If you need routing, use basic useState for navigation
+7. If you need data fetching, use fake/mock data
+8. If you need state management, use basic useState/useReducer
 
-Examples of GOOD relative imports:
+✅ CORRECT imports (use these patterns):
 import { Button } from "./components/ui/button";
+import { Card, CardContent } from "./components/ui/card";  
 import { cn } from "./lib/utils";
+import { useState } from "react";
+import { Plus, X, Check } from "lucide-react";
 
-If and ONLY IF you also create tsconfig.json + vite.config.ts with proper alias mapping:
-import { Button } from "@/components/ui/button";
-
-⚠️ If you use an alias without defining config + file, the build will fail. Prefer relative paths.
+❌ FORBIDDEN imports (will cause build failures):
+import { Button } from "@/components/ui/button";  // NO alias without config
+import axios from "axios";  // NOT installed
+import { useRouter } from "next/router";  // NOT available
+import { supabase } from "./lib/supabase";  // External service
 
 ⚠️ IMPORT COMPLETENESS: If you import it, you MUST create it!
-- Data file: importing from "./lib/data" => create src/lib/data.ts
-- Utilities: importing from "./lib/utils" => create src/lib/utils.ts
-- Custom UI components => create them under src/components/ui/
+- UI component: importing "./components/ui/button" => create src/components/ui/button.tsx
+- Data file: importing "./lib/data" => create src/lib/data.ts  
+- Utilities: importing "./lib/utils" => create src/lib/utils.ts
+- Custom components: importing "./components/TaskList" => create src/components/TaskList.tsx
 - NO broken imports allowed!
+
+🔒 SANDBOX PACKAGE RESTRICTIONS:
+- ONLY use packages that are pre-installed in the sandbox
+- DO NOT import any packages not in the allowed list
+- Use mock data instead of external APIs
+- Use local state instead of external state management
+- Build everything from the available components
 
 💡 PERFECT APP.TSX TEMPLATE:
 import React from "react";

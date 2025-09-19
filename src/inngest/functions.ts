@@ -195,18 +195,43 @@ export const codeAgentFunction = inngest.createFunction(
                           });
                         }
                       }
+                      // Check for potentially problematic npm packages
+                      else if (!spec.startsWith(".") && !spec.startsWith("react")) {
+                        // Common packages that cause issues
+                        const problematicPackages = [
+                          "axios", "react-router-dom", "next", "express", 
+                          "prisma", "@supabase/supabase-js", "firebase", 
+                          "three", "@types/node", "framer-motion"
+                        ];
+                        
+                        if (problematicPackages.some(pkg => spec.startsWith(pkg))) {
+                          missing.push({
+                            file: p,
+                            import: spec + " (package likely not available in sandbox)",
+                          });
+                        }
+                      }
                     }
                   }
                   
                   // Log validation results
                   if (missing.length) {
                     console.warn(
-                      " Missing import targets detected:",
+                      "❌ Import issues detected:",
                       missing
                     );
+                    
+                    // If there are critical missing imports, warn but don't fail
+                    const hasPackageIssues = missing.some(m => 
+                      m.import.includes("(package likely not available)")
+                    );
+                    
+                    if (hasPackageIssues) {
+                      console.warn("⚠️ Warning: Some packages may not be available in sandbox");
+                    }
                   } else {
                     console.log(
-                      " Import validation passed (all relative imports resolved)"
+                      "✅ Import validation passed (all imports look good)"
                     );
                   }
                   

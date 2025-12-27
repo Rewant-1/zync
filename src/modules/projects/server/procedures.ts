@@ -134,7 +134,7 @@ export const projectsRouter = createTRPCRouter({
           "Enhance a user description into a high quality generation brief",
         system:
           "You enhance user ideas into concise, structured briefs for a React app generator. Keep it actionable, 6-12 bullet points max, avoid boilerplate. Prefer clear requirements, UX details, features, constraints, and success criteria.",
-        model: gemini({ model: "gemini-2.0-flash" }),
+        model: gemini({ model: "gemini-2.5-flash" }),
       });
 
       const content = `Project Name: ${input.projectName}\nApp Type: ${input.appType}\nTech Stack: ${input.techStack}\n\nUser Description:\n${input.description}\n\nReturn only the enhanced specification. Do not include headers like 'Enhanced:'`;

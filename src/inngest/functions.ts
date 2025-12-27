@@ -396,7 +396,7 @@ export const codeAgentFunction = inngest.createFunction(
       name: "fragment-summarizer",
       system:
         "You receive a rough description of code that was generated. Return one concise sentence (<=28 words) summarizing the app. No prefixes.",
-      model: gemini({ model: "gemini-2.0-flash" }),
+      model: gemini({ model: "gemini-2.5-flash" }),
     });
     
     let finalSummary = preliminarySummary;
@@ -416,13 +416,13 @@ export const codeAgentFunction = inngest.createFunction(
     const titleAgent = createAgent({
       name: "fragment-title-generator",
       system: FRAGMENT_TITLE_PROMPT,
-      model: gemini({ model: "gemini-2.0-flash" }),
+      model: gemini({ model: "gemini-2.5-flash" }),
     });
     
     const responseAgent = createAgent({
       name: "response-generator",
       system: RESPONSE_PROMPT,
-      model: gemini({ model: "gemini-2.0-flash" }),
+      model: gemini({ model: "gemini-2.5-flash" }),
     });
     
     const [{ output: titleOut }, { output: respOut }] = await Promise.all([

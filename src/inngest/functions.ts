@@ -82,10 +82,11 @@ export const codeAgentFunction = inngest.createFunction(
     // Default to free models if none specified
     if (modelCandidates.length === 0) {
       modelCandidates.push(
-        "openrouter/sonoma-sky-alpha",
-        "moonshotai/kimi-k2:free", 
+        "openai/gpt-oss-120b:free",
         "qwen/qwen3-coder:free",
-        "z-ai/glm-4.5-air:free"
+        "kwaipilot/kat-coder-pro:free", 
+        "qwen/qwen3-4b:free",
+        
       );
     }
     console.log("Model candidates:", modelCandidates);

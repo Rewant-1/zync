@@ -2,9 +2,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { TRPCReactProvider } from "@/trpc/client";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
 import { ClerkProvider } from "@clerk/nextjs";
 
 // Load Inter font with optimal display strategy
@@ -17,17 +15,33 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://zync-ashen.vercel.app/"),
-  title: "zync - Build Web Apps with AI",
+  title: {
+    default: "zync - Build Web Apps with AI",
+    template: "%s | zync",
+  },
   description:
     "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
+  applicationName: "zync",
+  robots: {
+    index: true,
+    follow: true,
+  },
   icons: {
     icon: [{ url: "/logo.png", type: "image/png" }],
   },
+  manifest: "/site.webmanifest",
   openGraph: {
     title: "zync - Build Web Apps with AI",
     description:
       "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
     type: "website",
+    images: ["/logo.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "zync - Build Web Apps with AI",
+    description:
+      "Transform your ideas into fully functional web applications with AI-driven code generation and sandboxed execution environments.",
     images: ["/logo.png"],
   },
 };
@@ -110,31 +124,18 @@ export default function RootLayout({
         },
       }}
     >
-      <TRPCReactProvider>
-        <html lang="en" suppressHydrationWarning>
-          <head>
-            {/* Preload fonts for better performance */}
-            <link rel="preconnect" href="https://fonts.googleapis.com" />
-            <link
-              rel="preconnect"
-              href="https://fonts.gstatic.com"
-              crossOrigin="anonymous"
-            />
-          </head>
-          <body className={`${inter.variable} antialiased`}>
-            <ThemeProvider
-              attribute="class"
-              defaultTheme="system"
-              enableSystem
-              disableTransitionOnChange
-            >
-              {/* Global toast notifications */}
-              <Toaster />
-              {children}
-            </ThemeProvider>
-          </body>
-        </html>
-      </TRPCReactProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body className={`${inter.variable} antialiased`}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            {children}
+          </ThemeProvider>
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

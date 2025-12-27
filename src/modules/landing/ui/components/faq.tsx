@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Collapsible,
@@ -55,13 +55,14 @@ export const FAQ = () => {
   };
 
   return (
-    <section id="faq" className="relative py-24 overflow-hidden">
+    <LazyMotion features={domAnimation}>
+      <section id="faq" className="relative py-24 overflow-hidden">
       
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(186,85,255,0.02),transparent_70%)]" />
 
       <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
@@ -77,11 +78,11 @@ export const FAQ = () => {
           <p className="text-xl text-muted-foreground">
             Everything you need to know about zync.
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="space-y-4">
           {faqs.map((faq, index) => (
-            <motion.div
+            <m.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -117,10 +118,11 @@ export const FAQ = () => {
                   </CollapsibleContent>
                 </Collapsible>
               </Card>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>
-    </section>
+      </section>
+    </LazyMotion>
   );
 };

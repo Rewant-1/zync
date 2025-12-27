@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Check, X } from "lucide-react";
@@ -66,12 +66,13 @@ const plans = [
 
 export const Pricing = () => {
 	return (
-		<section id="pricing" className="relative py-24 overflow-hidden">
+		<LazyMotion features={domAnimation}>
+			<section id="pricing" className="relative py-24 overflow-hidden">
 			<div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/70 to-black/80" />
 			<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(251,191,36,0.03),transparent_70%)]" />
 			<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(0,255,240,0.02),transparent_60%)]" />
 			<div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 z-auto">
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
@@ -89,12 +90,12 @@ export const Pricing = () => {
 						Choose the perfect plan for your needs. Start free and scale as you
 						grow.
 					</p>
-				</motion.div>
+				</m.div>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 relative">
 					{plans.map((plan, index) => {
 						const isPopular = plan.popular;
 						return (
-							<motion.div
+							<m.div
 								key={plan.name}
 								initial={{ opacity: 0, y: 30 }}
 								whileInView={{ opacity: 1, y: 0 }}
@@ -192,11 +193,12 @@ export const Pricing = () => {
 										</div>
 									</CardContent>
 								</Card>
-							</motion.div>
+							</m.div>
 						);
 					})}
 				</div>
 			</div>
-		</section>
+			</section>
+		</LazyMotion>
 	);
 };

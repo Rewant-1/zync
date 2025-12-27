@@ -12,7 +12,7 @@ const ChromeGrid = dynamic(
   }
 );
 
-import { motion, useMotionValue, useTransform } from "framer-motion";
+import { LazyMotion, domAnimation, m, useMotionValue, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles, Star } from "lucide-react";
 import Link from "next/link";
 import { SignUpButton, SignedOut, SignedIn, ClerkLoading } from "@clerk/nextjs";
@@ -78,10 +78,11 @@ export const Hero = () => {
   };
 
   return (
-    <section
-      ref={ref}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden"
-    >
+    <LazyMotion features={domAnimation}>
+      <section
+        ref={ref}
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      >
       <div className="absolute inset-0">
         {showGrid ? <ChromeGrid /> : <div className="w-full h-full bg-black" />}
       </div>
@@ -89,7 +90,7 @@ export const Hero = () => {
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <div className="max-w-4xl mx-auto">
          
-          <motion.div
+          <m.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.25 }}
@@ -99,7 +100,7 @@ export const Hero = () => {
             <span className="text-base font-semibold text-white">
               AI-Powered Web Development
             </span>
-          </motion.div>
+          </m.div>
 
           <h1 className="text-4xl md:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 text-white">
             Build{" "}
@@ -187,34 +188,35 @@ export const Hero = () => {
         </div>
       </div>
 
-      <motion.div
+      <m.div
         style={float1}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 1.5 }}
         className="absolute top-1/4 left-1/4 w-8 h-8 bg-gradient-to-r from-[#ffc107] to-[#00fff0] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
-      <motion.div
+      <m.div
         style={float2}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 1.7 }}
         className="absolute top-1/3 right-1/4 w-6 h-6 bg-gradient-to-r from-[#00fff0] to-[#ffc107] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
-      <motion.div
+      <m.div
         style={float3}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 1.9 }}
         className="absolute bottom-1/3 left-1/3 w-10 h-10 bg-gradient-to-r from-[#fff] to-[#ffc107] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
-      <motion.div
+      <m.div
         style={float4}
         initial={{ opacity: 0, scale: 0 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 1, delay: 2.1 }}
         className="absolute top-2/3 right-1/3 w-5 h-5 bg-gradient-to-r from-[#ffc107] to-[#fff] rounded-full animate-pulse shadow-2xl blur-[2px] opacity-60"
       />
-    </section>
+      </section>
+    </LazyMotion>
   );
 };

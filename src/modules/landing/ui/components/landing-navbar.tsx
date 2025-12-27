@@ -10,7 +10,7 @@ import {
   ClerkLoaded,
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
 const navLinks = [
@@ -21,8 +21,8 @@ const navLinks = [
 
 export const LandingNavbar = () => {
   return (
-    <>
-      <motion.nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl">
+    <LazyMotion features={domAnimation}>
+      <m.nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl">
         <div className="px-4 sm:px-6">
           <div className="flex justify-between items-center h-12">
             <Link href="/" className="flex items-center gap-2 group">
@@ -100,7 +100,7 @@ export const LandingNavbar = () => {
             </div>
           </div>
         </div>
-      </motion.nav>
-    </>
+      </m.nav>
+    </LazyMotion>
   );
 };

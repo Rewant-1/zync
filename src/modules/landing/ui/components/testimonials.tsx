@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Star } from "lucide-react";
@@ -65,7 +65,8 @@ const testimonials = [
 
 export const Testimonials = () => {
 	return (
-		<section className="relative py-24 overflow-hidden">
+		<LazyMotion features={domAnimation}>
+			<section className="relative py-24 overflow-hidden">
 			{/* Gradient transition from hero */}
 			<div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/60 to-black/80" />
 			<div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(251,191,36,0.08),transparent_50%)]" />
@@ -73,7 +74,7 @@ export const Testimonials = () => {
 			{/* Content Overlay */}
 			<div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				{/* Testimonials Section */}
-				<motion.div
+				<m.div
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}
 					transition={{ duration: 0.8 }}
@@ -90,11 +91,11 @@ export const Testimonials = () => {
 						Join thousands of developers who are building faster and smarter
 						with zync.
 					</p>
-				</motion.div>
+				</m.div>
 
 				<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
 					{testimonials.map((testimonial, index) => (
-						<motion.div
+						<m.div
 							key={testimonial.name}
 							initial={{ opacity: 0, y: 30 }}
 							whileInView={{ opacity: 1, y: 0 }}
@@ -142,13 +143,14 @@ export const Testimonials = () => {
 									</div>
 								</CardContent>
 							</Card>
-						</motion.div>
+						</m.div>
 					))}
 				</div>
 
 				{/* Open Source Section */}
 				<OpenSource />
 			</div>
-		</section>
+			</section>
+		</LazyMotion>
 	);
 };

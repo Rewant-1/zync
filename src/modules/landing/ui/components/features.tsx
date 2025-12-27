@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { LazyMotion, domAnimation, m } from "framer-motion";
 import {
   Card,
   CardContent,
@@ -57,13 +57,14 @@ const features = [
 
 export const Features = () => {
   return (
-    <section id="features" className="relative py-24 overflow-hidden">
+    <LazyMotion features={domAnimation}>
+      <section id="features" className="relative py-24 overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/50 to-black/70" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,193,7,0.05),transparent_70%)]" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(0,255,240,0.03),transparent_60%)]" />
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -80,13 +81,13 @@ export const Features = () => {
             Powerful features designed to streamline your development workflow
             and accelerate your time to market.
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {features.map((feature) => {
             const Icon = feature.icon;
             return (
-              <motion.div
+              <m.div
                 key={feature.title}
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -112,11 +113,12 @@ export const Features = () => {
                     </CardDescription>
                   </CardContent>
                 </Card>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>
       </div>
-    </section>
+      </section>
+    </LazyMotion>
   );
 };

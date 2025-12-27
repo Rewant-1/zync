@@ -7,7 +7,13 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "bench:health": "npx autocannon -c 20 -d 15 http://localhost:3000/api/health",
+    "bench:health:prod": "node ./scripts/run-autocannon.mjs",
+    "lighthouse:desktop": "npx lighthouse http://localhost:3000 --preset=desktop --only-categories=performance,accessibility,best-practices,seo --output html --output-path lighthouse-desktop.html",
     "postinstall": "prisma generate"
+  },
+  "config": {
+    "prodUrl": "https://zync-ashen.vercel.app"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.23.3",

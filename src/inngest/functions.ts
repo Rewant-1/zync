@@ -297,7 +297,7 @@ export const codeAgentFunction = inngest.createFunction(
           const network = createNetwork<AgentState>({
             name: `coding-agent-network-${modelName}-r${attempt}`,
             agents: [agent],
-            maxIter: 6, // Allow up to 6 iterations for complex apps
+            maxIter: 3, // Allow up to 6 iterations for complex apps
             defaultState: attemptState,
             router: async ({ network }) => {
               // Stop if we've successfully created files
@@ -330,6 +330,10 @@ export const codeAgentFunction = inngest.createFunction(
         } catch (err) {
           const msg = err instanceof Error ? err.message : String(err);
           const rateLimited = /rate limit|429|too many requests|temporarily rate-limited|upstream.*rate/i.test(msg);
+          const dataPolicyBlocked =
+            /no endpoints found matching your data policy|free model publication|openrouter\.ai\/settings\/privacy/i.test(
+              msg
+            );
           console.log(
             ` Failure for ${modelName} attempt ${attempt}/${maxRetriesPerModel}: ${msg}`
           );
@@ -337,6 +341,14 @@ export const codeAgentFunction = inngest.createFunction(
           //  FAST SWITCH: Move to next model immediately if rate limited
           if (rateLimited) {
             console.log(`🚨 RATE LIMITED on ${modelName} - SWITCHING MODELS IMMEDIATELY`);
+            break; // Exit inner retry loop, move to next model
+          }
+
+          // FAST SWITCH: This model is blocked by the OpenRouter account privacy/data policy
+          if (dataPolicyBlocked) {
+            console.log(
+              `🚫 DATA POLICY BLOCK on ${modelName} - check https://openrouter.ai/settings/privacy (then retry)`
+            );
             break; // Exit inner retry loop, move to next model
           }
           
@@ -355,9 +367,9 @@ export const codeAgentFunction = inngest.createFunction(
       await prisma.message.create({
         data: {
           projectId: ed.projectId,
-          content: `All models failed or rate-limited. Tried: ${modelCandidates.join(
-            ", "
-          )}`,
+          content:
+            `All models failed. Tried: ${modelCandidates.join(", ")}. ` +
+            `If you're using OpenRouter free models, enable the required privacy/data setting at https://openrouter.ai/settings/privacy ("Free model publication"), or switch to non-free models.`,
           role: "ASSISTANT",
           type: "ERROR",
         },

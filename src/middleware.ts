@@ -8,6 +8,8 @@ const isPublicRoute = createRouteMatcher([
   '/sign-in(.*)',        // Clerk sign-in pages
   "/sign-up(.*)",        // Clerk sign-up pages
   "/api(.*)",            // API routes (tRPC handles auth internally)
+  "/robots.txt",         // SEO
+  "/sitemap.xml",        // SEO
   "/#(.*)",              // Hash routes on landing page
 ])
 

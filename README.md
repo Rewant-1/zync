@@ -1,306 +1,313 @@
-# Zync - AI-Powered Code Generation Platform
+<div align="center">
+  <h1>⚡ Zync</h1>
+  <p><strong>AI-Powered Web App Builder — Describe it, Build it, Ship it.</strong></p>
+  
+  <a href="https://zync-ashen.vercel.app">Live Demo</a> •
+  <a href="#-features">Features</a> •
+  <a href="#-architecture">Architecture</a> •
+  <a href="#-getting-started">Get Started</a>
+  
+  <br/><br/>
+  
+  ![Next.js](https://img.shields.io/badge/Next.js-15-black?style=flat-square&logo=next.js)
+  ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=flat-square&logo=typescript)
+  ![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?style=flat-square&logo=prisma)
+  ![Vercel](https://img.shields.io/badge/Deployed-Vercel-black?style=flat-square&logo=vercel)
+  
+</div>
 
-A modern, production-ready web application built with Next.js 15, featuring AI-powered code generation, real-time collaboration, and advanced performance optimizations.
+---
+
+## 📸 Demo
+
+> Transform natural language descriptions into fully functional React applications with live sandbox previews.
+
+**Live:** [zync-ashen.vercel.app](https://zync-ashen.vercel.app)
+
+---
+
+## 🎯 Problem Statement
+
+Developers often spend hours setting up boilerplate code for simple React applications. Non-developers struggle to prototype ideas without coding knowledge. **Zync bridges this gap** by letting anyone describe a web app in plain English and receive working code with a live preview in seconds.
+
+---
 
 ## 🚀 Features
 
-- **AI Code Generation**: Intelligent multi-model code generation with automatic fallback & retry (rate‑limit/backoff aware)
-- **Real-time Execution**: Secure code execution environment with E2B integration
-- **Modern UI/UX**: Beautiful, responsive interface built with Radix UI and Tailwind CSS
-- **Type Safety**: Full TypeScript support with strict type checking
-- **Database Integration**: Prisma ORM with PostgreSQL for robust data management
-- **Authentication**: Secure user authentication with Clerk
-- **Performance Optimized**: Advanced webpack configuration and code splitting
+| Feature | Description |
+|---------|-------------|
+| **AI Code Generation** | Multi-model orchestration with intelligent fallback chain (Claude → Gemini → GPT) |
+| **Live Sandbox Preview** | E2B-powered isolated execution environment with instant preview URLs |
+| **Smart Rate Limiting** | Credit-based system with 30-day rolling window using Prisma-backed storage |
+| **Conversation Memory** | Context-aware generation using last 4 messages for iterative refinement |
+| **Import Validation** | Static analysis detects broken imports before execution |
+| **Exponential Backoff** | Automatic retry with 429/rate-limit handling and model switching |
 
-## 🛠 Tech Stack
-
-### Core Technologies
-
-- **Framework**: Next.js 15.3.4 (App Router)
-- **Language**: TypeScript 5
-- **Styling**: Tailwind CSS 3.x
-- **Database**: PostgreSQL with Prisma ORM
-- **Authentication**: Clerk
-- **Code Execution**: E2B Sandbox Environment
-
-### UI Components
-
-- **Component Library**: Radix UI primitives
-- **Icons**: Lucide React
-- **Animations**: Framer Motion
-- **Notifications**: Sonner (toast notifications)
-- **Date Handling**: date-fns
-
-### Development & Build Tools
-
-- **Bundler**: Webpack with advanced optimizations
-- **Linting**: ESLint with Next.js configuration
-- **Code Formatting**: Prettier (via ESLint)
-- **Type Checking**: TypeScript compiler
-- **Package Manager**: npm
-
-## 🤖 AI Code Generation Engine
-
-The core generation workflow is orchestrated by an Inngest function `code-agent/run` implemented in `src/inngest/functions.ts`.
-
-### Model Fallback & Retry
-
-The engine tries a prioritized list of models until one successfully produces files:
-
-1. A custom `models` array provided in the event payload (highest precedence)
-2. `MODEL_CANDIDATES` environment variable (comma‑separated)
-3. Built-in defaults: `anthropic/claude-3.5-sonnet`, `google/gemini-2.0-flash`, `openai/gpt-4o-mini`
-
-Per model, it will retry up to `modelRetries` (event payload) or `MODEL_RETRIES` (env) times using exponential backoff (starting 500ms, capped at 4s) when encountering rate limits (HTTP 429 / rate limit phrases). The first model attempt that creates one or more files is accepted and short‑circuits the rest.
-
-### Import Safety & Enforcement
-
-- The agent is instructed to use **only relative imports**.
-- Using `@/` alias requires it to also generate the necessary alias config (`tsconfig.json` paths + `vite.config.*` or equivalent). If missing, a warning is logged.
-- After each `createFiles` tool execution, a static scan detects unresolved relative imports (handles extensions `.ts`, `.tsx`, `.js`, `.jsx`, plus `index.*` fallbacks) and logs warnings before continuing.
-
-### Sandbox Execution
-
-Generated files are written into an E2B sandbox and a dev server is started:
-
-```bash
-npm run dev -- --host 0.0.0.0 --port 5173
-```
-
-The sandbox host is then exposed and saved with the generated fragment, enabling immediate preview.
-
-### Post Processing
-
-Gemini (flash) models summarize the generated code, produce a concise human response, and generate a short title.
-
-### Event Payload Shape
-
-```ts
-{
-   value: string;        // user prompt / brief
-   projectId: string;    // associated project
-   models?: string[];    // optional ordered override list
-   modelRetries?: number;// optional per‑model retry count
-}
-```
-
-### Environment Variables (AI Engine)
-
-| Variable | Purpose |
-|----------|---------|
-| `OPENROUTER_API_KEY` | Required for OpenRouter model access |
-| `MODEL_CANDIDATES` | Comma list fallback models if event omits `models` |
-| `MODEL_RETRIES` | Default per‑model retry attempts (overridden by event) |
-
-Add these (plus existing ones) to `.env` as needed:
-
-```env
-OPENROUTER_API_KEY=sk-...
-MODEL_CANDIDATES=anthropic/claude-3.5-sonnet,google/gemini-2.0-flash,openai/gpt-4o-mini
-MODEL_RETRIES=2
-```
-
-### Overriding Models Programmatically
-
-When dispatching the Inngest event you can override the model order & retries:
-
-```ts
-await inngest.send({
-   name: "code-agent/run",
-   data: {
-      value: userPrompt,
-      projectId,
-      models: [
-         "deepseek/deepseek-chat-v3-0324:free",
-        "google/gemini-2.0-flash-exp:free",
-        "qwen/qwen3-coder:free",
-        "z-ai/glm-4.5-air:free"
-      ],
-      modelRetries: 1,
-   }
-});
-```
-
-## 📦 Performance Optimizations
-
-### Bundle Optimization
-
-- **Code Splitting**: Strategic component lazy loading
-- **Webpack Configuration**: Custom chunk splitting with priority-based caching
-- **Tree Shaking**: Optimized imports for reduced bundle size
-- **Dynamic Imports**: Non-critical components loaded on demand
-
-### Build Performance
-
-- **Filesystem Caching**: Enabled for faster rebuilds
-- **Incremental Builds**: Smart build optimization
-- **Bundle Analysis**: Integrated webpack bundle analyzer
-- **CSS Optimization**: Tailwind purging with precise content paths
-
-### Runtime Performance
-
-- **React Optimizations**: Optimized useEffect dependencies
-- **Image Optimization**: Next.js Image component integration
-- **Font Optimization**: Web font loading strategies
-- **Compression**: Gzip compression enabled
+---
 
 ## 🏗 Architecture
 
-### Project Structure
-
-```txt
-src/
-├── app/                    # Next.js App Router pages
-├── components/             # Reusable UI components
-│   ├── ui/                # Radix UI components
-│   └── ...                # Custom components
-├── modules/               # Feature-based modules
-│   ├── projects/          # Project management
-│   ├── messages/          # Message handling
-│   └── usage/             # Usage tracking
-├── lib/                   # Utility libraries
-├── hooks/                 # Custom React hooks
-├── trpc/                  # tRPC configuration
-└── inngest/               # Background job processing
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│                           CLIENT (Next.js 15)                        │
+├─────────────────────────────────────────────────────────────────────┤
+│  Landing Page  │  Dashboard  │  Project View  │  Live Preview       │
+│    (Hero/FAQ)  │  (Projects) │   (Chat UI)    │   (iframe/E2B)      │
+└────────────────┴─────────────┴────────────────┴─────────────────────┘
+                                    │
+                                    ▼
+┌─────────────────────────────────────────────────────────────────────┐
+│                          tRPC API Layer                              │
+├─────────────────────────────────────────────────────────────────────┤
+│  projects.create  │  messages.create  │  usage.status  │  auth      │
+└───────────────────┴───────────────────┴────────────────┴────────────┘
+                                    │
+                    ┌───────────────┴───────────────┐
+                    ▼                               ▼
+┌───────────────────────────────┐   ┌─────────────────────────────────┐
+│         PostgreSQL            │   │        Inngest (Background)      │
+│  • Projects, Messages         │   │  • code-agent/run function       │
+│  • Fragments (generated code) │   │  • Multi-model fallback          │
+│  • Usage tracking             │   │  • E2B sandbox orchestration     │
+└───────────────────────────────┘   └─────────────────────────────────┘
+                                                    │
+                                                    ▼
+                                    ┌─────────────────────────────────┐
+                                    │      E2B Code Interpreter        │
+                                    │  • Isolated React environment    │
+                                    │  • Vite dev server (port 5173)   │
+                                    │  • 30-min sandbox timeout        │
+                                    └─────────────────────────────────┘
 ```
 
-### Database Schema
+### Module Structure (Feature-Based)
 
-- **Users**: User profiles and authentication data
-- **Projects**: Project metadata and configurations
-- **Messages**: Communication and chat history
-- **Usage**: Resource usage tracking
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── (landing)/          # Public marketing pages
+│   ├── dashboard/          # Authenticated dashboard
+│   └── projects/[id]/      # Dynamic project views
+├── modules/                # Domain-driven feature modules
+│   ├── projects/           # Project CRUD + AI trigger
+│   │   ├── server/         # tRPC procedures
+│   │   └── ui/             # React components
+│   ├── messages/           # Chat message handling
+│   └── usage/              # Credit tracking
+├── inngest/                # Background job processing
+│   ├── functions.ts        # Code generation workflow (523 LOC)
+│   └── utils.ts            # Sandbox helpers
+├── trpc/                   # End-to-end type-safe API
+└── lib/                    # Shared utilities
+```
+
+---
+
+## 🛠 Tech Stack
+
+| Layer | Technology | Why |
+|-------|------------|-----|
+| **Framework** | Next.js 15 (App Router) | Server components, streaming, edge-ready |
+| **Language** | TypeScript 5 | Type safety across full stack |
+| **API** | tRPC v11 | End-to-end type safety, no codegen |
+| **Database** | PostgreSQL + Prisma | Type-safe ORM with migrations |
+| **Auth** | Clerk | Production-ready auth with minimal setup |
+| **AI Models** | OpenRouter (Claude/Gemini/GPT) | Multi-provider access, fallback support |
+| **Sandbox** | E2B Code Interpreter | Secure isolated code execution |
+| **Background Jobs** | Inngest | Reliable function execution with retries |
+| **UI** | Radix + Tailwind + Framer Motion | Accessible, beautiful, animated |
+
+---
+
+## 🤖 AI Generation Engine
+
+The core of Zync is the `code-agent/run` Inngest function — a 500+ line orchestration system that:
+
+### Model Fallback Chain
+
+```
+Claude 3.5 Sonnet → Gemini 2.0 Flash → GPT-4o Mini → Free Models
+         ↓                 ↓                ↓
+    (rate limited?)   (rate limited?)   (success!)
+```
+
+1. Tries models in priority order from `models[]` payload or `MODEL_CANDIDATES` env
+2. Retries each model `N` times with exponential backoff (500ms → 1s → 2s → 4s cap)
+3. **Fast-switches** on 429/rate-limit errors (no wasted retries)
+4. Handles OpenRouter data-policy blocks gracefully
+
+### Import Safety System
+
+Before executing generated code, the engine:
+- Scans all `.ts/.tsx/.js/.jsx` files for imports
+- Validates relative imports resolve to created files
+- Warns on `@/` alias usage without config
+- Flags problematic npm packages (axios, react-router, etc.)
+
+### Sandbox Lifecycle
+
+```mermaid
+sequenceDiagram
+    User->>tRPC: Create project/message
+    tRPC->>Inngest: Trigger code-agent/run
+    Inngest->>E2B: Create sandbox (30min TTL)
+    Inngest->>OpenRouter: Generate code (with fallback)
+    OpenRouter-->>Inngest: Files + summary
+    Inngest->>E2B: Write files + start dev server
+    Inngest->>Gemini: Generate title + response
+    Inngest->>PostgreSQL: Save fragment with preview URL
+    Inngest-->>User: Real-time update via polling
+```
+
+---
+
+## 📊 Performance
+
+### Lighthouse Scores (Desktop)
+
+| Metric | Score | Value |
+|--------|-------|-------|
+| **First Contentful Paint** | 99 | 0.6s |
+| **Largest Contentful Paint** | 84 | 1.4s |
+| **Cumulative Layout Shift** | 100 | ~0 |
+| **Total Blocking Time** | - | 4.3s* |
+
+*TBT is high due to Three.js 3D background on landing page — core app pages are fast.
+
+### Load Testing (Autocannon)
+
+```bash
+# Health endpoint benchmark (Vercel serverless, 20 concurrent connections)
+npm run bench:health:prod
+
+# Results across 4 test runs:
+┌─────────────────┬─────────────────────────────────────┐
+│ Metric          │ Value                               │
+├─────────────────┼─────────────────────────────────────┤
+│ Avg Latency     │ 265ms (p99: 462ms)                  │
+│ Throughput      │ 75 req/sec                          │
+│ Total Requests  │ ~1000 requests in 15s               │
+│ Consistency     │ Stdev 28-34ms (stable response)     │
+└─────────────────┴─────────────────────────────────────┘
+```
+
+> **Note**: Latency includes Vercel cold starts and network round-trip from India to US-East. Local benchmarks show ~5ms latency.
+
+---
+
+## 🔐 Security
+
+- **CSP Headers**: Strict frame-src allowing only E2B and Inngest
+- **X-Frame-Options**: DENY (prevents clickjacking)
+- **Clerk Auth**: Session-based authentication with middleware protection
+- **tRPC Protected Procedures**: User isolation at API level
+- **Sandbox Isolation**: E2B containers are ephemeral and isolated
+
+---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL database
-- npm or yarn package manager
+- PostgreSQL database (local or Neon/Supabase)
+- API keys for: Clerk, E2B, OpenRouter, Inngest
 
-### Installation
+### Quick Start
 
-1. **Clone the repository**
+```bash
+# Clone and install
+git clone https://github.com/Rewant-1/zync.git
+cd zync
+npm install
 
-   ```bash
-   git clone https://github.com/Rewant-1/zync.git
-   cd zync
-   ```
+# Setup environment
+cp .env.example .env
+# Fill in your API keys
 
-2. **Install dependencies**
+# Database setup
+npx prisma migrate dev
+npx prisma generate
 
-   ```bash
-   npm install
-   ```
+# Start development
+npm run dev
+```
 
-3. **Environment Setup**
+### Environment Variables
 
-   ```bash
-   cp .env.example .env
-   ```
+```env
+# Database
+DATABASE_URL="postgresql://..."
 
-   Configure your environment variables:
+# Auth (Clerk)
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="pk_..."
+CLERK_SECRET_KEY="sk_..."
 
-   ```env
-   DATABASE_URL="postgresql://username:password@localhost:5432/zync"
-   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY="your_clerk_key"
-   CLERK_SECRET_KEY="your_clerk_secret"
-   E2B_API_KEY="your_e2b_api_key"
-   ```
+# AI (OpenRouter)
+OPENROUTER_API_KEY="sk-or-..."
+MODEL_CANDIDATES="anthropic/claude-3.5-sonnet,google/gemini-2.0-flash"
 
-4. **Database Setup**
+# Sandbox (E2B)
+E2B_API_KEY="e2b_..."
 
-   ```bash
-   npx prisma migrate dev
-   npx prisma generate
-   ```
-
-5. **Start Development Server**
-
-   ```bash
-   npm run dev
-   ```
-
-   Open [http://localhost:3000](http://localhost:3000) in your browser.
-
-## 📜 Available Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Create production build
-- `npm run start` - Start production server
-- `npm run lint` - Run ESLint code checking
-
-## 🔧 Configuration
-
-### Next.js Configuration
-
-- **App Router**: Modern routing with server components
-- **Image Optimization**: Automatic image optimization
-- **Compression**: Gzip compression enabled
-- **Security Headers**: CSP and security headers configured
-- **Bundle Analysis**: Webpack bundle analyzer integration
-
-### Prisma Configuration
-
-- **Auto-generation**: Prisma client auto-generated on install
-- **Type Safety**: Full TypeScript integration
-- **Migration System**: Database schema versioning
-
-### Tailwind Configuration
-
-- **JIT Mode**: Just-in-time compilation
-- **Dark Mode**: Class-based dark mode support
-- **Custom Theme**: Extended color palette and design tokens
-- **Responsive Design**: Mobile-first responsive utilities
-
-## 🛡 Security Features
-
-- **Content Security Policy**: Strict CSP headers
-- **XSS Protection**: Built-in XSS prevention
-- **CSRF Protection**: Cross-site request forgery protection
-- **Secure Headers**: Comprehensive security header configuration
-- **Environment Variables**: Secure environment variable handling
-
-## 📊 Monitoring & Analytics
-
-- **Error Tracking**: Built-in error boundary components
-- **Performance Monitoring**: Web Vitals tracking
-- **Usage Analytics**: User behavior and feature usage tracking
-- **Build Analytics**: Bundle size and performance metrics
-
-## 🚀 Deployment
-
-### Vercel (Recommended)
-
-1. Connect your GitHub repository to Vercel
-2. Configure environment variables in Vercel dashboard
-3. Deploy automatically on push to main branch
-
-### Manual Deployment
-
-1. Build the application: `npm run build`
-2. Start the production server: `npm run start`
-3. Ensure PostgreSQL database is accessible
-4. Configure environment variables on hosting platform
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch: `git checkout -b feature/amazing-feature`
-3. Commit your changes: `git commit -m 'Add amazing feature'`
-4. Push to the branch: `git push origin feature/amazing-feature`
-5. Open a Pull Request
-
-## 🙏 Acknowledgments
-
-- **Next.js Team** - Amazing React framework
-- **Vercel** - Hosting and deployment platform
-- **Radix UI** - Unstyled, accessible UI components
-- **Tailwind CSS** - Utility-first CSS framework
-- **Prisma** - Next-generation ORM
-- **Clerk** - User authentication and management
+# Background Jobs (Inngest)
+INNGEST_EVENT_KEY="..."
+INNGEST_SIGNING_KEY="..."
+```
 
 ---
 
-**Built with ❤️ by [Rewant-1](https://github.com/Rewant-1)**
+## 📜 Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run lint` | ESLint check |
+| `npm run bench:health` | Load test health endpoint (local) |
+| `npm run bench:health:prod` | Load test health endpoint (production) |
+| `npm run lighthouse:desktop` | Generate Lighthouse report |
+
+---
+
+## 📁 Key Files
+
+| File | Purpose |
+|------|---------|
+| [src/inngest/functions.ts](src/inngest/functions.ts) | Core AI generation engine (523 LOC) |
+| [src/prompts.ts](src/prompts.ts) | System prompts for code generation |
+| [src/lib/usage.ts](src/lib/usage.ts) | Credit-based rate limiting |
+| [src/trpc/init.ts](src/trpc/init.ts) | tRPC setup with auth middleware |
+| [src/middleware.ts](src/middleware.ts) | Route protection with Clerk |
+| [prisma/schema.prisma](prisma/schema.prisma) | Database models |
+
+---
+
+## 🗺 Roadmap
+
+- [ ] Pro subscription with Stripe
+- [ ] Export generated code as ZIP
+- [ ] GitHub integration (push to repo)
+- [ ] Template library
+- [ ] Collaborative editing
+
+---
+
+## 🙏 Acknowledgments
+
+- [Next.js](https://nextjs.org) — React framework
+- [tRPC](https://trpc.io) — Type-safe APIs
+- [Prisma](https://prisma.io) — Database toolkit
+- [Clerk](https://clerk.com) — Authentication
+- [E2B](https://e2b.dev) — Code sandboxing
+- [Inngest](https://inngest.com) — Background jobs
+- [OpenRouter](https://openrouter.ai) — AI model access
+- [Radix UI](https://radix-ui.com) — Accessible components
+
+---
+
+<div align="center">
+  <strong>Built with ❤️ by <a href="https://github.com/Rewant-1">Rewant</a></strong>
+  <br/>
+  <sub>If you found this useful, give it a ⭐!</sub>
+</div>

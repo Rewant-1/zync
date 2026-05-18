@@ -163,15 +163,14 @@ export const Pricing = () => {
                     {/* CTA */}
                     <div className="mt-auto">
                       <SignedOut>
-                        <SignUpButton mode="modal" asChild>
+                        <SignUpButton mode="modal">
                           <AuthButton
-                            className={cn(buttonVariants({ size: "default" }), `w-full h-12 text-sm font-semibold rounded-2xl transition-all duration-500 group relative overflow-hidden ${
+                            className={cn(buttonVariants({ size: "default" }), `inner-shimmer w-full h-12 text-sm font-semibold rounded-2xl transition-all duration-500 group relative overflow-hidden ${
                               isPopular
                                 ? "bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.02]"
                                 : "bg-white/[0.03] text-white hover:bg-white/[0.08] border border-white/[0.05]"
                             }`)}
                           >
-                            {isPopular && <div className="absolute inset-0 animate-shimmer" />}
                             <span className="relative z-10">{plan.cta}</span>
                           </AuthButton>
                         </SignUpButton>
@@ -179,13 +178,12 @@ export const Pricing = () => {
                       <SignedIn>
                         <Link
                           href="/dashboard"
-                          className={cn(buttonVariants({ size: "default" }), `w-full h-12 text-sm font-semibold rounded-2xl transition-all duration-500 group relative overflow-hidden ${
+                          className={cn(buttonVariants({ size: "default" }), `inner-shimmer w-full h-12 text-sm font-semibold rounded-2xl transition-all duration-500 group relative overflow-hidden ${
                             isPopular
                                 ? "bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.02]"
                               : "bg-white/[0.03] text-white hover:bg-white/[0.08] border border-white/[0.05]"
                           }`)}
                         >
-                          {isPopular && <div className="absolute inset-0 animate-shimmer" />}
                           <span className="relative z-10">Go to Dashboard</span>
                         </Link>
                       </SignedIn>

@@ -101,18 +101,17 @@ export const LandingNavbar = () => {
               </ClerkLoading>
               <ClerkLoaded>
                 <SignedOut>
-                  <SignInButton mode="modal" asChild>
+                  <SignInButton mode="modal">
                     <GhostAuthButton
-                      className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-neutral-400 hover:text-white text-xs px-3 h-8")}
+                      className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "inner-shimmer text-neutral-400 hover:text-white text-xs px-3 h-8")}
                     >
                       Sign In
                     </GhostAuthButton>
                   </SignInButton>
-                  <SignUpButton mode="modal" asChild>
+                  <SignUpButton mode="modal">
                     <ShimmerAuthButton
-                      className={cn(buttonVariants({ size: "sm" }), "group relative overflow-hidden bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] font-medium px-5 h-9 rounded-xl text-xs transition-all duration-500 hover:bg-white/[0.02]")}
+                      className={cn(buttonVariants({ size: "sm" }), "inner-shimmer group relative overflow-hidden bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] font-medium px-5 h-9 rounded-xl text-xs transition-all duration-500 hover:bg-white/[0.02]")}
                     >
-                      <div className="absolute inset-0 animate-shimmer" />
                       <span className="relative z-10 flex items-center">
                         Get Started
                         <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-0.5" />
@@ -158,18 +157,17 @@ export const LandingNavbar = () => {
                 <div className="pt-2 border-t border-white/[0.06] flex gap-2">
                   <ClerkLoaded>
                     <SignedOut>
-                      <SignInButton mode="modal" asChild>
+                      <SignInButton mode="modal">
                         <GhostAuthButton
-                          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex-1 text-neutral-400 text-xs h-9 hover:text-white")}
+                          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "inner-shimmer flex-1 text-neutral-400 text-xs h-9 hover:text-white")}
                         >
                           Sign In
                         </GhostAuthButton>
                       </SignInButton>
-                      <SignUpButton mode="modal" asChild>
+                      <SignUpButton mode="modal">
                         <ShimmerAuthButton
-                          className={cn(buttonVariants({ size: "sm" }), "group relative overflow-hidden flex-1 bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] font-medium text-xs h-10 rounded-xl transition-all duration-500 hover:bg-white/[0.02]")}
+                          className={cn(buttonVariants({ size: "sm" }), "inner-shimmer group relative overflow-hidden flex-1 bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] font-medium text-xs h-10 rounded-xl transition-all duration-500 hover:bg-white/[0.02]")}
                         >
-                          <div className="absolute inset-0 animate-shimmer" />
                           <span className="relative z-10">Get Started</span>
                         </ShimmerAuthButton>
                       </SignUpButton>

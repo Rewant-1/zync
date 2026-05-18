@@ -47,8 +47,8 @@ const Box = ({
             bevelEnabled: true,
             bevelThickness: 0.05,
             bevelSize: 0.05,
-            bevelSegments: 20,
-            curveSegments: 20
+            bevelSegments: 4,
+            curveSegments: 8
         };
 
         const geometry = new ExtrudeGeometry(shape, extrudeSettings);
@@ -85,7 +85,7 @@ const Box = ({
                 }
             }
             
-            const lerpFactor = 0.1;
+            const lerpFactor = 0.25;
             const newScale = currentScale + (targetScale - currentScale) * lerpFactor;
             setCurrentScale(newScale);
             

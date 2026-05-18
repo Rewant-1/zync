@@ -206,42 +206,108 @@
    Custom Animations & Utilities
    ═══════════════════════════════════════════ */
 
-@keyframes gradient-move {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-.animate-gradient {
-  background-image: linear-gradient(90deg, #fbbf24, #00fff0, #22d3ee, #f59e0b, #fbbf24);
-  background-size: 300% 300%;
-  animation: gradient-move 3s linear infinite;
+@keyframes shimmer-border {
+  0% { background-position: 0% 0%; }
+  100% { background-position: 200% 0%; }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
+.glimmer-button {
+  position: relative;
+  background: transparent !important;
+  border: none !important;
+  overflow: hidden;
 }
-.animate-shimmer {
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+
+.glimmer-button::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px; /* border width */
+  background: linear-gradient(90deg, rgba(255,255,255,0.05), rgba(255,255,255,0.4), rgba(255,255,255,0.05));
   background-size: 200% 100%;
-  animation: shimmer 2.5s infinite;
+  animation: shimmer-border 3s infinite linear;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
 }
 
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 20px 4px rgba(251, 191, 36, 0.25), 0 0 40px 8px rgba(0, 255, 240, 0.15);
-  }
-  50% {
-    box-shadow: 0 0 40px 8px rgba(251, 191, 36, 0.4), 0 0 60px 12px rgba(0, 255, 240, 0.3);
-  }
+@keyframes inner-glimmer {
+  0% { left: 150%; }
+  100% { left: -100%; }
 }
-.animate-glow { animation: glow 2s ease-in-out infinite; }
 
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+.inner-shimmer {
+  position: relative;
+  overflow: hidden;
 }
-.animate-blink { animation: blink 0.8s step-end infinite; }
+
+.inner-shimmer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.4), transparent);
+  transform: skewX(-20deg);
+  animation: inner-glimmer 4s infinite cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+@keyframes rotate-border {
+  100% { transform: rotate(360deg); }
+}
+
+.cyclic-border {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cyclic-border::before {
+  content: "";
+  position: absolute;
+  top: -100%; left: -100%; width: 300%; height: 300%;
+  background: conic-gradient(transparent, rgba(255,255,255,0.4), transparent 30%);
+  animation: rotate-border 6s linear infinite;
+  z-index: -2;
+}
+
+.cyclic-border::after {
+  content: "";
+  position: absolute;
+  inset: 1px; /* border width */
+  background: #050505;
+  border-radius: inherit;
+  z-index: -1;
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.1; transform: scale(0.8); }
+  50% { opacity: 0.8; transform: scale(1.2); }
+}
+
+.star-glow {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 15px 3px rgba(255,255,255,0.6);
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+.star-glow:nth-child(odd) {
+  animation-duration: 5s;
+  animation-delay: 1s;
+}
+
+.star-glow:nth-child(even) {
+  animation-duration: 6s;
+  animation-delay: 2s;
+}
 
 @keyframes marquee {
   0% { transform: translateX(0); }
@@ -250,78 +316,29 @@
 .animate-marquee { animation: marquee 35s linear infinite; }
 .animate-marquee-reverse { animation: marquee 35s linear infinite reverse; }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-8px) rotate(1deg); }
-  66% { transform: translateY(4px) rotate(-1deg); }
-}
-.animate-float { animation: float 6s ease-in-out infinite; }
-
-@keyframes pulse-border {
-  0%, 100% {
-    border-color: rgba(0, 255, 240, 0.3);
-    box-shadow: 0 0 15px rgba(0, 255, 240, 0.1);
-  }
-  50% {
-    border-color: rgba(251, 191, 36, 0.5);
-    box-shadow: 0 0 25px rgba(251, 191, 36, 0.15);
-  }
-}
-.animate-pulse-border { animation: pulse-border 3s ease-in-out infinite; }
-
-@keyframes gradient-shift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
 /* ═══════════════════════════════════════════
-   Glassmorphism & Section Styles
+   Refined Section Styles
    ═══════════════════════════════════════════ */
-
-.glass {
-  background: rgba(15, 15, 35, 0.8);
-  -webkit-backdrop-filter: blur(20px) saturate(200%);
-  backdrop-filter: blur(20px) saturate(200%);
-  border-radius: 1.5rem;
-  border: 1px solid rgba(251, 191, 36, 0.2);
-  box-shadow: 0 8px 32px rgba(0, 255, 240, 0.1);
-}
-
-.glass-subtle {
-  background: rgba(15, 15, 35, 0.5);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
-  backdrop-filter: blur(12px) saturate(150%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-}
 
 .section-bg {
   position: relative;
-  background: linear-gradient(135deg, #0a0a0a 0%, #0a1f1f 50%, #0a0a0a 100%);
+  background: #000;
   overflow: hidden;
 }
-.section-bg .section-overlay { position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-.section-bg .section-overlay .neon-blob-1 {
-  position: absolute; left: 50%; top: 20%; width: 60vw; height: 40vw;
-  transform: translate(-50%, -50%); border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(251, 191, 36, 0.25) 0%, rgba(0, 255, 240, 0.2) 50%, rgba(34, 211, 238, 0.15) 100%);
-  filter: blur(100px); opacity: 0.8; animation: moveInCircle 20s ease-in-out infinite;
-}
-.section-bg .section-overlay .neon-blob-2 {
-  position: absolute; right: 0; bottom: 0; width: 30vw; height: 30vw; border-radius: 50%;
-  background: radial-gradient(ellipse at center, rgba(0, 255, 240, 0.2) 0%, rgba(34, 211, 238, 0.15) 50%, rgba(251, 191, 36, 0.1) 100%);
-  filter: blur(80px); opacity: 0.6; animation: moveVertical 25s ease-in-out infinite;
+
+.section-bg .section-overlay { 
+  position: absolute; 
+  inset: 0; 
+  pointer-events: none; 
+  z-index: 0; 
+  background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 70%);
 }
 
-.neon-text {
-  color: rgba(0, 255, 240, 0.9);
-  text-shadow: 0 0 5px rgba(0, 255, 240, 0.5), 0 0 10px rgba(0, 255, 240, 0.3), 0 0 15px rgba(0, 255, 240, 0.2);
-}
-
-.modern-gradient-bg {
-  background: linear-gradient(135deg, rgba(251, 191, 36, 0.08) 0%, rgba(0, 255, 240, 0.06) 25%, rgba(251, 191, 36, 0.04) 50%, rgba(0, 255, 240, 0.08) 75%, rgba(251, 191, 36, 0.06) 100%);
-  background-size: 400% 400%;
-  animation: gradient-shift 8s ease infinite;
+.glass-subtle {
+  background: rgba(15, 15, 15, 0.5);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 /* ═══════════════════════════════════════════

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
 const ChromeGrid = dynamic(
   () => import("@/components/ui/chrome-grid").then((mod) => mod.ChromeGrid),
   {
@@ -36,27 +37,35 @@ export const Hero = () => {
 
   return (
     <LazyMotion features={domAnimation}>
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black selection:bg-white/20 selection:text-white">
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-black selection:bg-white/20 selection:text-white section-bg">
         {/* Sleek Chrome Grid Background */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute top-0 left-0 right-0 h-screen z-0 overflow-hidden">
           <ChromeGrid />
-          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none section-overlay" />
         </div>
 
+        {/* Sporadic Star Glows */}
+        <div className="star-glow top-[15%] left-[20%]" />
+        <div className="star-glow top-[35%] right-[15%]" />
+        <div className="star-glow top-[65%] left-[10%]" />
+        <div className="star-glow top-[80%] right-[25%]" />
+        <div className="star-glow top-[50%] left-[80%]" />
+        <div className="star-glow top-[25%] right-[40%]" />
+
         {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-20">
-          <div className="max-w-4xl mx-auto">
-            
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-16 pb-12">
+          <div className="max-w-5xl mx-auto">
+
             {/* Premium Badge */}
             <m.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ ...springTransition, delay: 0.1 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/[0.02] backdrop-blur-md border border-white/[0.06] mb-8 hover:bg-white/[0.04] transition-colors duration-500 cursor-default"
+              className="inline-flex items-center gap-3 px-6 py-2.5 rounded-full bg-white/[0.02] backdrop-blur-md border border-white/[0.06] mb-8 hover:bg-white/[0.04] transition-colors duration-500 cursor-default"
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-[#00fff0] animate-pulse" />
-              <span className="text-sm font-medium text-neutral-300 tracking-wide">
+              <div className="w-2 h-2 rounded-full bg-white/80 animate-pulse shadow-[0_0_10px_2px_rgba(255,255,255,0.5)]" />
+              <span className="text-sm font-medium text-neutral-300 tracking-wide uppercase letter-spacing-widest">
                 AI Product Builder
               </span>
             </m.div>
@@ -67,10 +76,10 @@ export const Hero = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ ...springTransition, delay: 0.2 }}
-              className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter mb-8 text-white leading-[1.1]"
+              className="text-6xl md:text-7xl lg:text-[6.5rem] font-bold tracking-tighter mb-8 text-white leading-[1.05]"
             >
-              <span className="block text-white/90">Think it.</span>
-              <span className="block bg-gradient-to-b from-white to-white/40 bg-clip-text text-transparent pb-2">
+              <span className="block text-white/95">Think it.</span>
+              <span className="block bg-gradient-to-b from-white via-white/80 to-white/40 bg-clip-text text-transparent pb-4">
                 Build it instantly.
               </span>
             </m.h1>
@@ -81,9 +90,9 @@ export const Hero = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ ...springTransition, delay: 0.3 }}
-              className="text-lg md:text-xl text-neutral-400/80 mb-12 max-w-2xl mx-auto leading-relaxed font-light tracking-wide"
+              className="text-xl md:text-2xl text-neutral-400/80 mb-10 max-w-3xl mx-auto leading-relaxed font-light tracking-wide"
             >
-              A premium, sandboxed environment that transforms plain text into production-ready React applications with zero friction.
+              A high-end, sandboxed environment that transforms plain text into production-ready React applications with zero friction.
             </m.p>
 
             {/* Sleek CTA Buttons */}
@@ -92,29 +101,27 @@ export const Hero = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ ...springTransition, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-5 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-6 justify-center items-center"
             >
               <ClerkLoading>
                 <Link
                   href="/sign-up"
-                  className={cn(buttonVariants({ size: "lg" }), "group relative overflow-hidden px-8 py-6 h-auto text-base font-semibold bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] transition-all duration-500 rounded-2xl w-full sm:w-auto hover:bg-white/[0.02]")}
+                  className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-10 py-7 h-auto text-lg font-medium rounded-2xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
                 >
-                  <div className="absolute inset-0 animate-shimmer" />
                   <span className="relative z-10 flex items-center">
                     Start Building
-                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="ml-3 w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </ClerkLoading>
               <SignedOut>
-                <SignUpButton mode="modal" asChild>
+                <SignUpButton mode="modal">
                   <AuthButton
-                    className={cn(buttonVariants({ size: "lg" }), "group relative overflow-hidden px-8 py-6 h-auto text-base font-semibold bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] transition-all duration-500 rounded-2xl w-full sm:w-auto hover:bg-white/[0.02]")}
+                    className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-10 py-7 h-auto text-lg font-medium rounded-2xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
                   >
-                    <div className="absolute inset-0 animate-shimmer" />
                     <span className="relative z-10 flex items-center">
                       Start Building
-                      <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                      <ArrowRight className="ml-3 w-5 h-5 transition-transform group-hover:translate-x-1" />
                     </span>
                   </AuthButton>
                 </SignUpButton>
@@ -122,12 +129,11 @@ export const Hero = () => {
               <SignedIn>
                 <Link
                   href="/dashboard"
-                  className={cn(buttonVariants({ size: "lg" }), "group relative overflow-hidden px-8 py-6 h-auto text-base font-semibold bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] transition-all duration-500 rounded-2xl w-full sm:w-auto hover:bg-white/[0.02]")}
+                  className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-10 py-7 h-auto text-lg font-medium rounded-2xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
                 >
-                  <div className="absolute inset-0 animate-shimmer" />
                   <span className="relative z-10 flex items-center">
                     Go to Dashboard
-                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="ml-3 w-5 h-5 transition-transform group-hover:translate-x-1" />
                   </span>
                 </Link>
               </SignedIn>
@@ -136,9 +142,9 @@ export const Hero = () => {
                 href="https://github.com/Rewant-1/zync"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "px-8 py-6 h-auto text-base font-medium bg-transparent border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.03] text-neutral-300 hover:text-white transition-all duration-500 rounded-2xl w-full sm:w-auto")}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "inner-shimmer px-10 py-7 h-auto text-lg font-medium bg-transparent border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.03] text-neutral-300 hover:text-white transition-all duration-500 rounded-2xl w-full sm:w-auto")}
               >
-                <Star className="mr-2 w-4 h-4 opacity-70" />
+                <Star className="mr-3 w-5 h-5 opacity-70" />
                 Star on GitHub
               </Link>
             </m.div>
@@ -149,18 +155,18 @@ export const Hero = () => {
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
               transition={{ ...springTransition, delay: 0.6 }}
-              className="mt-20 flex items-center justify-center gap-10 md:gap-16 pt-10 border-t border-white/[0.04]"
+              className="mt-20 flex flex-wrap items-center justify-center gap-12 md:gap-24 pt-10 border-t border-white/[0.04]"
             >
               {[
                 { value: "100%", label: "Open Source" },
-                { value: "6+", label: "Verified AI Models" },
+                { value: "6+", label: "Verified Models" },
                 { value: "Zero", label: "Setup Required" },
               ].map((stat, i) => (
                 <div key={i} className="text-center group cursor-default">
-                  <div className="text-xl md:text-2xl font-semibold text-white/90 group-hover:text-white transition-colors duration-500 tracking-tight">
+                  <div className="text-3xl md:text-4xl font-semibold text-white/90 group-hover:text-white transition-colors duration-500 tracking-tight mb-2">
                     {stat.value}
                   </div>
-                  <div className="text-xs md:text-sm text-neutral-500 mt-1.5 font-medium tracking-wide">
+                  <div className="text-sm md:text-base text-neutral-500 font-medium tracking-wide uppercase">
                     {stat.label}
                   </div>
                 </div>

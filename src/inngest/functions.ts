@@ -82,11 +82,12 @@ export const codeAgentFunction = inngest.createFunction(
     // Default to free models if none specified
     if (modelCandidates.length === 0) {
       modelCandidates.push(
-        "openai/gpt-oss-120b:free",
-        "qwen/qwen3-coder:free",
-        "kwaipilot/kat-coder-pro:free", 
-        "qwen/qwen3-4b:free",
-        
+        "qwen/qwen3-coder:free",           // Best free coding model, 480B A35B
+        "openai/gpt-oss-120b:free",        // Strong reasoning, 117B MoE
+        "poolside/laguna-m.1:free",        // Purpose-built for software engineering
+        "baidu/cobuddy:free",              // Optimized for code gen + agent workflows
+        "google/gemma-4-31b-it:free",      // Strong all-rounder, 262K context
+        "kwaipilot/kat-coder-pro:free",    // Reliable coding fallback
       );
     }
     console.log("Model candidates:", modelCandidates);

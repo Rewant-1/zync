@@ -1,4 +1,4 @@
-// Middleware for handling authentication with Clerk
+// Proxy for handling authentication with Clerk (Next.js 16: middleware.ts → proxy.ts)
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 import { NextResponse } from 'next/server';
 

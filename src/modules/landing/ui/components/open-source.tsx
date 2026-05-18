@@ -1,127 +1,106 @@
 "use client";
 
 import { LazyMotion, domAnimation, m } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { FileCode2, Star } from "lucide-react";
+import { GitFork, Star, Terminal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const OpenSource = () => {
   return (
     <LazyMotion features={domAnimation}>
-      <section className="relative py-16">
+      <section className="relative py-12">
         <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="text-center mb-10"
         >
-          <h3 className="text-3xl md:text-4xl font-bold mb-3">
-            Open{" "}
-            <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
-              Source
-            </span>
-          </h3>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Clone the repo, drop your API keys into{" "}
-            <code className="px-1 py-0.5 rounded bg-black/30">.env</code>, and
-            customize{" "}
-            <code className="px-1 py-0.5 rounded bg-black/30">
-              src/prompts.ts
-            </code>{" "}
-            to make it yours.
-          </p>
-        </m.div>
+          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-10 relative overflow-hidden">
+            {/* Subtle gradient background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#ffc107]/[0.02] to-[#00fff0]/[0.02]" />
 
-        <m.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
-          <Card className="h-full border-0 shadow-2xl hover:shadow-3xl transition-all duration-300 glass relative overflow-hidden">
-            <div className="absolute -inset-1 rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gradient-to-r from-[#ffc107]/30 via-[#00fff0]/30 to-[#fff]/30 blur-lg" />
-            <CardHeader className="relative text-center">
-              <div className="w-12 h-12 mx-auto rounded-xl bg-gradient-to-r from-[#ffc107] to-[#00fff0] p-3 mb-4 shadow-lg">
-                <FileCode2 className="w-6 h-6 text-white" />
+            <div className="relative z-10">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl md:text-3xl font-bold mb-3 text-white">
+                  Fully{" "}
+                  <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
+                    Open Source
+                  </span>
+                </h3>
+                <p className="text-sm text-neutral-400 max-w-lg mx-auto">
+                  Clone the repo, add your API keys, customize the prompts. Make it yours.
+                </p>
               </div>
-              <CardTitle className="text-xl">Your AI Website Builder, your way</CardTitle>
-            </CardHeader>
-            <CardContent className="relative">
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="p-4 rounded-lg bg-black/5 dark:bg-white/5">
-                  <div className="text-sm font-semibold mb-2 text-foreground">
-                    1. Clone
-                  </div>
-                  <pre className="text-xs md:text-sm text-muted-foreground overflow-auto">
-                    git clone &lt;your-fork&gt; && cd zync
-                  </pre>
-                </div>
-                <div className="p-4 rounded-lg bg-black/5 dark:bg-white/5">
-                  <div className="text-sm font-semibold mb-2 text-foreground">
-                    2. Configure .env
-                  </div>
-                  <pre className="text-xs md:text-sm text-muted-foreground overflow-auto">
-                    OPENAI_API_KEY=...
-                    <br />
-                    ANTHROPIC_API_KEY=...
-                    <br />
-                    E2B_API_KEY=...
-                  </pre>
-                </div>
-                <div className="p-4 rounded-lg bg-black/5 dark:bg-white/5">
-                  <div className="text-sm font-semibold mb-2 text-foreground">
-                    3. Customize prompts
-                  </div>
-                  <pre className="text-xs md:text-sm text-muted-foreground overflow-auto">
-                    {`// src/prompts.ts
-export const SYSTEM_PROMPT = 'You are Zync, an expert AI web dev. Prefer TypeScript, Tailwind, and accessible UI. Respond with concise, actionable steps.';
 
-// Tweak defaults
-export const DEFAULT_STACK = ['nextjs', 'react', 'tailwind'];
-// ...add your own tools or guidance here`}
-                  </pre>
-                </div>
+              {/* Steps */}
+              <div className="grid md:grid-cols-3 gap-4 mb-8">
+                {[
+                  {
+                    step: "1",
+                    title: "Clone",
+                    code: "git clone <your-fork> && cd zync",
+                  },
+                  {
+                    step: "2",
+                    title: "Configure",
+                    code: "cp .env.example .env\n# Add your API keys",
+                  },
+                  {
+                    step: "3",
+                    title: "Run",
+                    code: "npm install && npm run dev",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.step}
+                    className="rounded-xl bg-white/[0.03] border border-white/[0.06] p-4"
+                  >
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-5 h-5 rounded-md bg-gradient-to-r from-[#ffc107] to-[#00fff0] flex items-center justify-center text-[10px] font-bold text-black">
+                        {item.step}
+                      </div>
+                      <span className="text-sm font-medium text-white">{item.title}</span>
+                    </div>
+                    <pre className="text-xs text-neutral-500 font-mono overflow-auto whitespace-pre-wrap">
+                      {item.code}
+                    </pre>
+                  </div>
+                ))}
               </div>
-              <div className="mt-6 flex justify-center gap-3">
+
+              {/* CTAs */}
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <Button
                   asChild
-                  variant="outline"
                   size="lg"
-                  className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
+                  className="bg-white/[0.06] text-white hover:bg-white/[0.1] border border-white/[0.06] rounded-xl px-6 font-medium"
                 >
                   <Link
                     href="https://github.com/Rewant-1/zync"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="inline-flex items-center">
-                      <FileCode2 className="mr-2 w-5 h-5" />
-                      View Repository
-                    </span>
+                    <GitFork className="mr-2 w-4 h-4" />
+                    Fork Repository
                   </Link>
                 </Button>
                 <Button
                   asChild
-                  variant="outline"
                   size="lg"
-                  className="px-10 py-6 text-lg font-semibold border-2 border-[#ffc107]/20 hover:bg-[#ffc107]/10 hover:border-[#ffc107]/40 transition-all duration-300 animate-shimmer text-white rounded-xl group"
+                  className="bg-white/[0.06] text-white hover:bg-white/[0.1] border border-white/[0.06] rounded-xl px-6 font-medium"
                 >
                   <Link
                     href="https://github.com/Rewant-1/zync"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    <span className="inline-flex items-center">
-                      <Star className="mr-2 w-5 h-5" />
-                      Star us on GitHub
-                    </span>
+                    <Star className="mr-2 w-4 h-4" />
+                    Star on GitHub
                   </Link>
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </m.div>
       </section>
     </LazyMotion>

@@ -10,8 +10,9 @@ import {
   ClerkLoaded,
 } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
-import { LazyMotion, domAnimation, m } from "framer-motion";
-import { Sparkles } from "lucide-react";
+import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const navLinks = [
   { href: "#features", label: "Features" },
@@ -20,59 +21,66 @@ const navLinks = [
 ];
 
 export const LandingNavbar = () => {
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+
+  // Track scroll for background opacity
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <LazyMotion features={domAnimation}>
-      <m.nav className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 glass border border-[rgba(251,191,36,0.12)] shadow-lg backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl">
-        <div className="px-4 sm:px-6">
+      <m.nav
+        className={`fixed top-4 left-1/2 transform -translate-x-1/2 z-50 rounded-2xl w-[92%] max-w-2xl transition-all duration-300 ${
+          scrolled
+            ? "bg-black/80 backdrop-blur-xl border border-white/[0.08] shadow-lg shadow-black/20"
+            : "bg-black/40 backdrop-blur-md border border-white/[0.05]"
+        }`}
+      >
+        <div className="px-4 sm:px-5">
           <div className="flex justify-between items-center h-12">
+            {/* Logo */}
             <Link href="/" className="flex items-center gap-2 group">
-              <div className="relative">
-                <Image
-                  src="/logo.png"
-                  alt="zync"
-                  width={32}
-                  height={32}
-                  className="rounded-full shadow-lg shadow-[#00fff0]/30 transition-all duration-300 group-hover:shadow-[#ffc107]/50 group-hover:scale-110"
-                />
-                <div className="absolute -inset-1 bg-gradient-to-r from-[#ffc107]/20 to-[#00fff0]/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-all duration-300" />
-              </div>
-              <span className="text-xl font-bold text-[#00fff0] group-hover:text-white transition-colors duration-300">
+              <Image
+                src="/logo.png"
+                alt="zync"
+                width={28}
+                height={28}
+                className="rounded-full transition-transform duration-300 group-hover:scale-110"
+              />
+              <span className="text-lg font-bold text-white">
                 zync
               </span>
             </Link>
 
-            <div className="flex items-center gap-4">
+            {/* Desktop Nav */}
+            <div className="hidden sm:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="relative group px-3 py-1.5 rounded-lg transition-all duration-300 hover:bg-[#1a1a1a] border border-transparent hover:border-[rgba(251,191,36,0.12)]"
+                  className="px-3 py-1.5 rounded-lg text-sm text-neutral-400 hover:text-white transition-colors duration-200"
                 >
-                  <span className="text-sm font-medium text-neutral-400 group-hover:text-[#ffc107] transition-colors">
-                    {link.label}
-                  </span>
-                  <div className="absolute -inset-1 bg-gradient-to-r from-[#ffc107]/10 to-[#00fff0]/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 -z-10" />
+                  {link.label}
                 </Link>
               ))}
             </div>
 
-            <div className="flex items-center gap-2">
+            {/* Desktop Auth */}
+            <div className="hidden sm:flex items-center gap-2">
               <ClerkLoading>
                 <Button
                   variant="ghost"
                   size="sm"
                   disabled
-                  className="text-neutral-400 text-xs px-3 py-1"
+                  className="text-neutral-500 text-xs px-3 h-8"
                 >
                   Sign In
-                </Button>
-                <Button
-                  size="sm"
-                  disabled
-                  className="bg-neutral-800 text-black font-semibold px-3 py-1 rounded-lg text-xs"
-                >
-                  <Sparkles className="w-3 h-3 mr-1" />
-                  Get Started
                 </Button>
               </ClerkLoading>
               <ClerkLoaded>
@@ -81,7 +89,7 @@ export const LandingNavbar = () => {
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="text-neutral-400 hover:text-white hover:bg-[#1a1a1a] transition-all duration-300 border border-transparent hover:border-[rgba(251,191,36,0.12)] text-xs px-3 py-1"
+                      className="text-neutral-400 hover:text-white text-xs px-3 h-8"
                     >
                       Sign In
                     </Button>
@@ -89,17 +97,75 @@ export const LandingNavbar = () => {
                   <SignUpButton mode="modal">
                     <Button
                       size="sm"
-                      className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] shadow-lg shadow-[#ffc107]/40 hover:shadow-[#00fff0]/60 transition-all duration-300 font-semibold px-3 py-1 rounded-lg text-xs"
+                      className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] font-semibold px-4 h-8 rounded-lg text-xs shadow-sm"
                     >
-                      <Sparkles className="w-3 h-3 mr-1" />
                       Get Started
+                      <ArrowRight className="w-3 h-3 ml-1" />
                     </Button>
                   </SignUpButton>
                 </SignedOut>
               </ClerkLoaded>
             </div>
+
+            {/* Mobile Hamburger */}
+            <button
+              className="sm:hidden w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-neutral-400 hover:text-white transition-colors"
+              onClick={() => setMobileOpen(!mobileOpen)}
+              aria-label="Toggle menu"
+            >
+              {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        <AnimatePresence>
+          {mobileOpen && (
+            <m.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.2 }}
+              className="sm:hidden border-t border-white/[0.06] overflow-hidden"
+            >
+              <div className="px-4 py-4 space-y-2">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="block px-3 py-2 rounded-lg text-sm text-neutral-400 hover:text-white hover:bg-white/[0.04] transition-all duration-200"
+                    onClick={() => setMobileOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+                <div className="pt-2 border-t border-white/[0.06] flex gap-2">
+                  <ClerkLoaded>
+                    <SignedOut>
+                      <SignInButton mode="modal">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="flex-1 text-neutral-400 text-xs h-9"
+                        >
+                          Sign In
+                        </Button>
+                      </SignInButton>
+                      <SignUpButton mode="modal">
+                        <Button
+                          size="sm"
+                          className="flex-1 bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black font-semibold text-xs h-9 rounded-lg"
+                        >
+                          Get Started
+                        </Button>
+                      </SignUpButton>
+                    </SignedOut>
+                  </ClerkLoaded>
+                </div>
+              </div>
+            </m.div>
+          )}
+        </AnimatePresence>
       </m.nav>
     </LazyMotion>
   );

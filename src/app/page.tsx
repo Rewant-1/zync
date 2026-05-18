@@ -1,6 +1,7 @@
 // Landing page component, redirects authenticated users to dashboard
 import type { Metadata } from "next";
 import { Hero } from "@/modules/landing/ui/components/hero";
+import { DemoSection } from "@/modules/landing/ui/components/demo-section";
 import { Features } from "@/modules/landing/ui/components/features";
 import { Testimonials } from "@/modules/landing/ui/components/testimonials";
 import { Pricing } from "@/modules/landing/ui/components/pricing";
@@ -28,10 +29,11 @@ export default async function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-black">
       <LandingNavbar />
       <main className="relative">
         <Hero />
+        <DemoSection />
         <Features />
         <Testimonials />
         <Pricing />

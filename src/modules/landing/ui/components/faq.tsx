@@ -1,47 +1,44 @@
 "use client";
 
-import { LazyMotion, domAnimation, m } from "framer-motion";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { Plus, Minus } from "lucide-react";
 import { useState } from "react";
 
 const faqs = [
   {
-    question: "How does zync generate code?",
+    question: "How does Zync generate code?",
     answer:
-      "zync uses advanced AI models trained on millions of code repositories and best practices. When you describe your application, our AI understands the requirements and generates clean, production-ready code following industry standards and your specified tech stack.",
+      "Zync uses a multi-model AI orchestration system. Your prompt is sent to the best available AI model (with automatic fallback to 6+ models). The AI generates complete React + TypeScript + Tailwind applications with proper file structure, imports, and styling — all validated before execution.",
   },
   {
     question: "Can I customize the generated code?",
     answer:
-      "Absolutely! All generated code is fully editable and customizable. You have complete control over the codebase and can modify, extend, or refactor it as needed. The AI serves as a starting point to accelerate your development process.",
+      "Absolutely. All generated code is visible in the file explorer and fully editable. You can also iterate by describing changes in the chat — Zync remembers your last 4 messages for context-aware refinement.",
   },
   {
-    question: "What technologies does zync support?",
+    question: "What technologies are used in generated apps?",
     answer:
-      "zync supports popular modern technologies including React, Next.js, Vue, Angular, Node.js, Python, TypeScript, JavaScript, and many more. We regularly update our AI models to support the latest frameworks and libraries.",
+      "Generated apps use React 18, TypeScript, Vite, Tailwind CSS, and Shadcn UI components. The sandbox comes pre-installed with Radix UI primitives, Lucide icons, and common utilities. No extra npm installs needed.",
   },
   {
     question: "Is my code and data secure?",
     answer:
-      "Security is our top priority. All code is stored in encrypted repositories, and we use industry-standard security practices. Your code remains private and is never used to train our AI models without explicit permission.",
+      "Yes. Each generation runs in an isolated E2B sandbox container that's destroyed after 30 minutes. Your code is stored in your project database, protected by Clerk authentication. We use strict CSP headers and session-based access control.",
   },
-
   {
-    question: "What if I need help or have issues?",
+    question: "What if a model is rate-limited?",
     answer:
-      "We offer comprehensive support including documentation, community forums, and direct support channels. Pro and Enterprise users get priority support with faster response times.",
+      "Zync has a built-in fallback chain with exponential backoff. If one model hits rate limits or fails, it automatically switches to the next model in the chain — typically within milliseconds. You'll almost never see a failed generation.",
   },
-
   {
-    question: "I just want to try it out. Is there a free trial?",
+    question: "Is there a free tier?",
     answer:
-      "Yes! You are given 5 credits to try it out. You can explore all features without any commitment. No credit card required for the trial period.",
+      "Yes — 5 generations per month, no credit card required. That's enough to build 5 complete React applications. Credits reset on a 30-day rolling window.",
   },
 ];
 
@@ -57,71 +54,74 @@ export const FAQ = () => {
   return (
     <LazyMotion features={domAnimation}>
       <section id="faq" className="relative py-24 overflow-hidden">
-      
-      <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(186,85,255,0.02),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
 
-      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <m.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 font-heading">
-            Frequently Asked{" "}
-            <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
-              Questions
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground">
-            Everything you need to know about zync.
-          </p>
-        </m.div>
+        <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <m.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-center mb-14"
+          >
+            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
+                FAQ
+              </span>
+            </h2>
+            <p className="text-lg text-neutral-400">
+              Common questions about Zync.
+            </p>
+          </m.div>
 
-        <div className="space-y-4">
-          {faqs.map((faq, index) => (
-            <m.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.05 }}
-              viewport={{ once: true }}
-              whileHover={{ scale: 1.03 }}
-            >
-              <Card className="border border-[rgba(255,193,7,0.15)] bg-card/80 backdrop-blur-sm hover:border-[rgba(255,193,7,0.3)] transition-all duration-300 hover:shadow-lg hover:shadow-[#ffc107]/10 relative overflow-hidden">
+          <div className="space-y-3">
+            {faqs.map((faq, index) => (
+              <m.div
+                key={index}
+                initial={{ opacity: 0, y: 12 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: index * 0.04 }}
+                viewport={{ once: true }}
+              >
                 <Collapsible
                   open={openItems.includes(index)}
                   onOpenChange={() => toggleItem(index)}
                 >
                   <CollapsibleTrigger asChild>
-                    <CardHeader className="cursor-pointer hover:bg-accent/10 transition-colors duration-200 p-6">
-                      <CardTitle className="flex items-center justify-between text-left group">
-                        <span className="text-lg font-semibold pr-8 font-heading group-hover:text-primary transition-colors">
+                    <button className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 p-5 text-left group">
+                      <div className="flex items-center justify-between">
+                        <span className="text-base font-medium text-white pr-4 group-hover:text-[#ffc107] transition-colors">
                           {faq.question}
                         </span>
-                        {openItems.includes(index) ? (
-                          <ChevronUp className="w-5 h-5 text-primary flex-shrink-0" />
-                        ) : (
-                          <ChevronDown className="w-5 h-5 text-muted-foreground flex-shrink-0 group-hover:text-primary transition-colors" />
-                        )}
-                      </CardTitle>
-                    </CardHeader>
+                        <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-[#ffc107]/20 transition-colors">
+                          {openItems.includes(index) ? (
+                            <Minus className="w-3.5 h-3.5 text-[#ffc107]" />
+                          ) : (
+                            <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-[#ffc107] transition-colors" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
                   </CollapsibleTrigger>
                   <CollapsibleContent>
-                    <CardContent className="pt-0 pb-6 px-6">
-                      <p className="text-muted-foreground leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </CardContent>
+                    <AnimatePresence>
+                      <m.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: "auto" }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="px-5 pb-5 -mt-1"
+                      >
+                        <p className="text-sm text-neutral-400 leading-relaxed pt-3 border-t border-white/[0.04]">
+                          {faq.answer}
+                        </p>
+                      </m.div>
+                    </AnimatePresence>
                   </CollapsibleContent>
                 </Collapsible>
-              </Card>
-            </m.div>
-          ))}
+              </m.div>
+            ))}
+          </div>
         </div>
-      </div>
       </section>
     </LazyMotion>
   );

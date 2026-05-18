@@ -55,25 +55,25 @@ export default function RootLayout({
   return (
     <ClerkProvider
       appearance={{
-        // Custom dark theme that matches Zync's cyber aesthetic
+        // Custom dark theme that matches Zync's premium minimalist aesthetic
         variables: {
-          colorPrimary: "#ffc107",           // Amber primary
-          colorBackground: "#0a0a0a",       // Deep black background
-          colorInputBackground: "#1a1a1a",  // Dark input fields
+          colorPrimary: "#ffffff",           // Pure white primary
+          colorBackground: "#050505",       // Deep black background
+          colorInputBackground: "#0a0a0a",  // Dark input fields
           colorInputText: "#ffffff",        // White text
           colorText: "#ffffff",             // Primary text color
           colorTextSecondary: "#a1a1aa",    // Muted gray text
-          colorSuccess: "#00fff0",          // Cyan success color
+          colorSuccess: "#ffffff",          // White success color
           borderRadius: "0.75rem",          // Rounded corners
           fontFamily: "var(--font-inter)",  // Match app font
         },
         elements: {
           // Auth modal styling to match app design
           card: {
-            backgroundColor: "#0a0a0a",
-            border: "1px solid rgba(255, 193, 7, 0.12)",
+            backgroundColor: "#050505",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
             borderRadius: "1rem",
-            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)",
           },
           headerTitle: {
             color: "#ffffff",
@@ -83,24 +83,24 @@ export default function RootLayout({
           headerSubtitle: {
             color: "#a1a1aa",
           },
-          // Gradient button effect
+          // Solid white primary button
           formButtonPrimary: {
-            background: "linear-gradient(135deg, #ffc107 0%, #00fff0 100%)",
+            backgroundColor: "#ffffff",
             color: "#000000",
             fontWeight: "600",
             borderRadius: "0.5rem",
             "&:hover": {
-              background: "linear-gradient(135deg, #00fff0 0%, #ffc107 100%)",
+              backgroundColor: "#e5e5e5",
             },
           },
           formFieldInput: {
-            backgroundColor: "#1a1a1a",
-            border: "1px solid rgba(255, 193, 7, 0.12)",
+            backgroundColor: "#0a0a0a",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
             borderRadius: "0.5rem",
             color: "#ffffff",
             "&:focus": {
-              borderColor: "#ffc107",
-              boxShadow: "0 0 0 3px rgba(255, 193, 7, 0.12)",
+              borderColor: "#ffffff",
+              boxShadow: "0 0 0 1px rgba(255, 255, 255, 0.5)",
             },
           },
           formFieldLabel: {
@@ -108,17 +108,17 @@ export default function RootLayout({
             fontWeight: "500",
           },
           socialButtonsBlockButton: {
-            border: "1px solid rgba(255, 193, 7, 0.12)",
-            backgroundColor: "#1a1a1a",
+            border: "1px solid rgba(255, 255, 255, 0.08)",
+            backgroundColor: "#0a0a0a",
             color: "#ffffff",
             "&:hover": {
-              backgroundColor: "#2a2a2a",
+              backgroundColor: "#1a1a1a",
             },
           },
           footerActionLink: {
-            color: "#ffc107",
+            color: "#ffffff",
             "&:hover": {
-              color: "#00fff0",
+              color: "#a1a1aa",
             },
           },
         },

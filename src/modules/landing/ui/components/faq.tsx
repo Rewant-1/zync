@@ -42,6 +42,12 @@ const faqs = [
   },
 ];
 
+const springTransition = {
+  type: "spring" as const,
+  stiffness: 40,
+  damping: 20,
+};
+
 export const FAQ = () => {
   const [openItems, setOpenItems] = useState<number[]>([]);
 
@@ -53,51 +59,49 @@ export const FAQ = () => {
 
   return (
     <LazyMotion features={domAnimation}>
-      <section id="faq" className="relative py-24 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/80 to-black/90" />
+      <section id="faq" className="relative py-32 overflow-hidden bg-black">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(255,255,255,0.02),transparent_70%)]" />
 
         <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            viewport={{ once: true }}
-            className="text-center mb-14"
+            transition={springTransition}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-20"
           >
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] bg-clip-text text-transparent">
-                FAQ
-              </span>
+            <h2 className="text-3xl md:text-5xl font-semibold tracking-tight text-white mb-5">
+              Common <span className="text-white/40">Questions</span>
             </h2>
-            <p className="text-lg text-neutral-400">
-              Common questions about Zync.
+            <p className="text-lg text-neutral-400 font-light tracking-wide">
+              Everything you need to know about Zync.
             </p>
           </m.div>
 
-          <div className="space-y-3">
+          <div className="space-y-4">
             {faqs.map((faq, index) => (
               <m.div
                 key={index}
-                initial={{ opacity: 0, y: 12 }}
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: index * 0.04 }}
-                viewport={{ once: true }}
+                transition={{ ...springTransition, delay: index * 0.05 }}
+                viewport={{ once: true, margin: "-50px" }}
               >
                 <Collapsible
                   open={openItems.includes(index)}
                   onOpenChange={() => toggleItem(index)}
                 >
                   <CollapsibleTrigger asChild>
-                    <button className="w-full rounded-xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12] hover:bg-white/[0.04] transition-all duration-300 p-5 text-left group">
+                    <button className="w-full rounded-2xl border border-white/[0.03] bg-[#050505] hover:bg-[#080808] hover:border-white/[0.08] transition-all duration-500 p-6 text-left group">
                       <div className="flex items-center justify-between">
-                        <span className="text-base font-medium text-white pr-4 group-hover:text-[#ffc107] transition-colors">
+                        <span className="text-base md:text-lg font-medium text-white/90 pr-4 group-hover:text-white transition-colors tracking-tight">
                           {faq.question}
                         </span>
-                        <div className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center flex-shrink-0 group-hover:border-[#ffc107]/20 transition-colors">
+                        <div className="w-8 h-8 rounded-full bg-white/[0.03] border border-white/[0.05] flex items-center justify-center flex-shrink-0 group-hover:bg-white/[0.08] transition-all duration-500">
                           {openItems.includes(index) ? (
-                            <Minus className="w-3.5 h-3.5 text-[#ffc107]" />
+                            <Minus className="w-4 h-4 text-white/70" />
                           ) : (
-                            <Plus className="w-3.5 h-3.5 text-neutral-400 group-hover:text-[#ffc107] transition-colors" />
+                            <Plus className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
                           )}
                         </div>
                       </div>
@@ -109,9 +113,10 @@ export const FAQ = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="px-5 pb-5 -mt-1"
+                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
+                        className="px-6 pb-6 -mt-2 bg-[#050505] rounded-b-2xl border-x border-b border-white/[0.03]"
                       >
-                        <p className="text-sm text-neutral-400 leading-relaxed pt-3 border-t border-white/[0.04]">
+                        <p className="text-sm md:text-base text-neutral-400 font-light leading-relaxed pt-4 border-t border-white/[0.03]">
                           {faq.answer}
                         </p>
                       </m.div>

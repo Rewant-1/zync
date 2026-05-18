@@ -9,10 +9,26 @@ import {
   ClerkLoading,
   ClerkLoaded,
 } from "@clerk/nextjs";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import { LazyMotion, domAnimation, m, AnimatePresence } from "framer-motion";
 import { ArrowRight, Menu, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
+
+// ForwardRef wrappers that strip Clerk's `asChild` prop before it hits the DOM
+const GhostAuthButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<"button"> & { asChild?: boolean }>(
+  ({ asChild, ...props }, ref) => <button ref={ref} {...props} />
+);
+GhostAuthButton.displayName = "GhostAuthButton";
+
+const ShimmerAuthButton = forwardRef<HTMLButtonElement, React.ComponentPropsWithoutRef<"button"> & { asChild?: boolean }>(
+  ({ asChild, children, className, ...props }, ref) => (
+    <button ref={ref} className={className} {...props}>
+      {children}
+    </button>
+  )
+);
+ShimmerAuthButton.displayName = "ShimmerAuthButton";
 
 const navLinks = [
   { href: "#features", label: "Features" },
@@ -59,7 +75,7 @@ export const LandingNavbar = () => {
             </Link>
 
             {/* Desktop Nav */}
-            <div className="hidden sm:flex items-center gap-1">
+            <div className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
@@ -72,7 +88,7 @@ export const LandingNavbar = () => {
             </div>
 
             {/* Desktop Auth */}
-            <div className="hidden sm:flex items-center gap-2">
+            <div className="hidden md:flex items-center gap-2">
               <ClerkLoading>
                 <Button
                   variant="ghost"
@@ -85,23 +101,23 @@ export const LandingNavbar = () => {
               </ClerkLoading>
               <ClerkLoaded>
                 <SignedOut>
-                  <SignInButton mode="modal">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-neutral-400 hover:text-white text-xs px-3 h-8"
+                  <SignInButton mode="modal" asChild>
+                    <GhostAuthButton
+                      className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "text-neutral-400 hover:text-white text-xs px-3 h-8")}
                     >
                       Sign In
-                    </Button>
+                    </GhostAuthButton>
                   </SignInButton>
-                  <SignUpButton mode="modal">
-                    <Button
-                      size="sm"
-                      className="bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black hover:from-[#00fff0] hover:to-[#ffc107] font-semibold px-4 h-8 rounded-lg text-xs shadow-sm"
+                  <SignUpButton mode="modal" asChild>
+                    <ShimmerAuthButton
+                      className={cn(buttonVariants({ size: "sm" }), "group relative overflow-hidden bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] font-medium px-5 h-9 rounded-xl text-xs transition-all duration-500 hover:bg-white/[0.02]")}
                     >
-                      Get Started
-                      <ArrowRight className="w-3 h-3 ml-1" />
-                    </Button>
+                      <div className="absolute inset-0 animate-shimmer" />
+                      <span className="relative z-10 flex items-center">
+                        Get Started
+                        <ArrowRight className="w-3.5 h-3.5 ml-1.5 transition-transform group-hover:translate-x-0.5" />
+                      </span>
+                    </ShimmerAuthButton>
                   </SignUpButton>
                 </SignedOut>
               </ClerkLoaded>
@@ -109,7 +125,7 @@ export const LandingNavbar = () => {
 
             {/* Mobile Hamburger */}
             <button
-              className="sm:hidden w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-neutral-400 hover:text-white transition-colors"
+              className="md:hidden w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-neutral-400 hover:text-white transition-colors"
               onClick={() => setMobileOpen(!mobileOpen)}
               aria-label="Toggle menu"
             >
@@ -126,7 +142,7 @@ export const LandingNavbar = () => {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.2 }}
-              className="sm:hidden border-t border-white/[0.06] overflow-hidden"
+              className="md:hidden border-t border-white/[0.06] overflow-hidden"
             >
               <div className="px-4 py-4 space-y-2">
                 {navLinks.map((link) => (
@@ -142,22 +158,20 @@ export const LandingNavbar = () => {
                 <div className="pt-2 border-t border-white/[0.06] flex gap-2">
                   <ClerkLoaded>
                     <SignedOut>
-                      <SignInButton mode="modal">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="flex-1 text-neutral-400 text-xs h-9"
+                      <SignInButton mode="modal" asChild>
+                        <GhostAuthButton
+                          className={cn(buttonVariants({ variant: "ghost", size: "sm" }), "flex-1 text-neutral-400 text-xs h-9 hover:text-white")}
                         >
                           Sign In
-                        </Button>
+                        </GhostAuthButton>
                       </SignInButton>
-                      <SignUpButton mode="modal">
-                        <Button
-                          size="sm"
-                          className="flex-1 bg-gradient-to-r from-[#ffc107] to-[#00fff0] text-black font-semibold text-xs h-9 rounded-lg"
+                      <SignUpButton mode="modal" asChild>
+                        <ShimmerAuthButton
+                          className={cn(buttonVariants({ size: "sm" }), "group relative overflow-hidden flex-1 bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] font-medium text-xs h-10 rounded-xl transition-all duration-500 hover:bg-white/[0.02]")}
                         >
-                          Get Started
-                        </Button>
+                          <div className="absolute inset-0 animate-shimmer" />
+                          <span className="relative z-10">Get Started</span>
+                        </ShimmerAuthButton>
                       </SignUpButton>
                     </SignedOut>
                   </ClerkLoaded>

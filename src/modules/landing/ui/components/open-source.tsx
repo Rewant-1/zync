@@ -81,7 +81,7 @@ export const OpenSource = () => {
                   href="https://github.com/Rewant-1/zync"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(buttonVariants({ size: "lg" }), "group relative overflow-hidden px-8 py-6 h-14 text-base font-semibold bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] transition-all duration-500 rounded-2xl hover:bg-white/[0.02]")}
+                  className={cn(buttonVariants({ size: "lg" }), "group relative overflow-hidden px-6 py-3 h-12 text-base font-semibold bg-transparent text-white border border-white/[0.1] hover:border-white/[0.2] transition-all duration-500 rounded-xl hover:bg-white/[0.02]")}
                 >
                   <div className="absolute inset-0 animate-shimmer" />
                   <span className="relative z-10 flex items-center">
@@ -93,7 +93,7 @@ export const OpenSource = () => {
                   href="https://github.com/Rewant-1/zync"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={cn(buttonVariants({ size: "lg" }), "bg-transparent border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.03] text-neutral-300 hover:text-white transition-all duration-500 rounded-2xl px-8 h-14 font-medium")}
+                  className={cn(buttonVariants({ size: "lg" }), "bg-transparent border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.03] text-neutral-300 hover:text-white transition-all duration-500 rounded-xl px-6 h-12 font-medium")}
                 >
                   <Star className="mr-2 w-4 h-4 opacity-70" />
                   Star on GitHub

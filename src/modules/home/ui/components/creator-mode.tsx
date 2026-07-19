@@ -300,7 +300,7 @@ export const CreatorMode = () => {
                   onClick={() => form.setValue("appType", type.id)}
                 >
                   <CardContent className="p-5 flex items-start gap-3">
-                    <type.icon className="w-6 h-6 text-[#00fff0] mt-1" />
+                    <type.icon className="w-6 h-6 text-[#fbbf24] mt-1" />
                     <div>
                       <h4 className="font-semibold text-white">{type.label}</h4>
                       <p className="text-sm text-neutral-400">
@@ -332,20 +332,20 @@ export const CreatorMode = () => {
                   className={cn(
                     "cursor-pointer transition-all duration-300 border border-[rgba(251,191,36,0.12)] bg-transparent hover:bg-[rgba(251,191,36,0.06)] rounded-2xl glass",
                     form.watch("techStack") === stack.id &&
-                      "border-[#fbbf24] shadow-lg shadow-[#00fff0]/10"
+                      "border-[#fbbf24] shadow-lg shadow-[#fbbf24]/10"
                   )}
                   onClick={() => form.setValue("techStack", stack.id)}
                 >
                   <CardContent className="p-5 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <Code2 className="w-5 h-5 text-[#00fff0]" />
+                      <Code2 className="w-5 h-5 text-[#fbbf24]" />
                       <div>
                         <div className="flex items-center gap-2">
                           <h4 className="font-semibold text-white">
                             {stack.label}
                           </h4>
                           {stack.popular && (
-                            <span className="px-2 py-1 text-xs bg-[#00fff0] text-black rounded-full font-medium">
+                            <span className="px-2 py-1 text-xs bg-[#fbbf24] text-black rounded-full font-medium">
                               Popular
                             </span>
                           )}

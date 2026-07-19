@@ -86,8 +86,8 @@ className="h-full gap-y-0"
 
             </div>
             </div>
-<TabsContent value="preview" >{!!activeFragment && <FragmentWeb data ={activeFragment}/>}</TabsContent>
-<TabsContent value="code"  className="min-h-0">
+<TabsContent value="preview" className="flex flex-col min-h-0 flex-1">{!!activeFragment && <FragmentWeb data ={activeFragment}/>}</TabsContent>
+<TabsContent value="code" className="flex flex-col min-h-0 flex-1">
     {!!activeFragment ?.files &&(<FileExplorer files={activeFragment.files as {[path:string]:string}}/>)}
 </TabsContent>
 

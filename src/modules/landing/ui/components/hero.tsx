@@ -101,12 +101,12 @@ export const Hero = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ ...springTransition, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-6 justify-center items-center"
+              className="flex flex-col sm:flex-row gap-4 justify-center items-center"
             >
               <ClerkLoading>
                 <Link
                   href="/sign-up"
-                  className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-10 py-7 h-auto text-lg font-medium rounded-2xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
+                  className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-6 py-3 h-12 text-lg font-medium rounded-xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
                 >
                   <span className="relative z-10 flex items-center">
                     Start Building
@@ -117,7 +117,7 @@ export const Hero = () => {
               <SignedOut>
                 <SignUpButton mode="modal">
                   <AuthButton
-                    className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-10 py-7 h-auto text-lg font-medium rounded-2xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
+                    className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-6 py-3 h-12 text-lg font-medium rounded-xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
                   >
                     <span className="relative z-10 flex items-center">
                       Start Building
@@ -129,7 +129,7 @@ export const Hero = () => {
               <SignedIn>
                 <Link
                   href="/dashboard"
-                  className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-10 py-7 h-auto text-lg font-medium rounded-2xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
+                  className={cn(buttonVariants({ size: "lg" }), "glimmer-button group px-6 py-3 h-12 text-lg font-medium rounded-xl w-full sm:w-auto text-white hover:text-white/90 transition-colors")}
                 >
                   <span className="relative z-10 flex items-center">
                     Go to Dashboard
@@ -142,7 +142,7 @@ export const Hero = () => {
                 href="https://github.com/Rewant-1/zync"
                 target="_blank"
                 rel="noopener noreferrer"
-                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "inner-shimmer px-10 py-7 h-auto text-lg font-medium bg-transparent border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.03] text-neutral-300 hover:text-white transition-all duration-500 rounded-2xl w-full sm:w-auto")}
+                className={cn(buttonVariants({ variant: "outline", size: "lg" }), "inner-shimmer px-6 py-3 h-12 text-lg font-medium bg-transparent border border-white/[0.1] hover:border-white/[0.2] hover:bg-white/[0.03] text-neutral-300 hover:text-white transition-all duration-500 rounded-xl w-full sm:w-auto")}
               >
                 <Star className="mr-3 w-5 h-5 opacity-70" />
                 Star on GitHub

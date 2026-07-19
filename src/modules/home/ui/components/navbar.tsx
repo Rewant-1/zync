@@ -18,7 +18,7 @@ export const Navbar = () => {
       transition={{ duration: 0.5 }}
       className={cn(
         "fixed top-4 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 border border-transparent backdrop-blur-xl rounded-2xl w-[90%] max-w-2xl glass",
-        isScrolled && "border-[rgba(251,191,36,0.12)] shadow-xl shadow-[#fbbf24]/10"
+        isScrolled && "border-[rgba(0,255,240,0.12)] shadow-xl shadow-[#00fff0]/5"
       )}
     >
       <div className="px-4 sm:px-6">

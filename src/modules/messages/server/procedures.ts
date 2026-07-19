@@ -52,7 +52,7 @@ create: protectedProcedure
          if(!existingProject){
             throw new TRPCError({code:"NOT_FOUND",message:"Project not found"})};
 try {
-    await consumeCredits();
+    await consumeCredits(ctx.auth.userId);
 } catch (error) {
     if(error instanceof Error ) {
         throw new TRPCError({

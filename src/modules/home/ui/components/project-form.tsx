@@ -80,9 +80,9 @@ export const ProjectForm = () => {
         <form
           onSubmit={form.handleSubmit(onSubmit)}
           className={cn(
-            "relative border border-[rgba(251,191,36,0.12)] p-6 rounded-2xl glass transition-all duration-300",
+            "relative border border-[rgba(0,255,240,0.12)] p-6 rounded-2xl glass transition-all duration-300",
             isFocused &&
-              "border-[rgba(251,191,36,0.3)] shadow-lg shadow-[#fbbf24]/10"
+              "border-[rgba(0,255,240,0.3)] shadow-lg shadow-[#00fff0]/10"
           )}
         >
           <FormField
@@ -109,8 +109,8 @@ export const ProjectForm = () => {
           />
           <div className="flex gap-x-4 items-center justify-between pt-4">
             <div className="text-sm text-neutral-500 font-mono"></div>
-            <kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 px-2 text-xs text-neutral-400 bg-[rgba(251,191,36,0.1)] rounded-md border border-[rgba(251,191,36,0.2)]">
-              <span className="text-[#fbbf24]">⌘</span>Enter to submit
+            <kbd className="pointer-events-none inline-flex h-6 select-none items-center gap-1 px-2 text-xs text-neutral-400 bg-[rgba(0,255,240,0.05)] rounded-md border border-[rgba(0,255,240,0.2)]">
+              <span className="text-[#00fff0]">⌘</span>Enter to submit
             </kbd>
             <Button
               disabled={isButtonDisabled}
@@ -134,7 +134,7 @@ export const ProjectForm = () => {
             <Button
               key={template.title}
               variant="outline"
-              className="bg-[rgba(251,191,36,0.05)] border-[rgba(251,191,36,0.2)] text-white hover:bg-[rgba(251,191,36,0.1)] hover:border-[rgba(251,191,36,0.3)] transition-all duration-300"
+              className="bg-[rgba(0,255,240,0.03)] border-[rgba(0,255,240,0.15)] text-white hover:bg-[rgba(0,255,240,0.08)] hover:border-[rgba(0,255,240,0.25)] transition-all duration-300"
               onClick={() => onSelect(template.prompt)}
             >
               {template.emoji} {template.title}
